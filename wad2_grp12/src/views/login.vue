@@ -19,12 +19,12 @@ const router = useRouter();
 <template>
   <section>
     <div class="container-fluid h-custom">
-      <div class="row d-flex justify-content-around align-items-center h-100">
-        <div class="col-md-9 col-lg-5 col-xl-4">
-          <img src="https://cdn.pixabay.com/photo/2024/05/08/17/47/chemical-8748832_640.png"
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-md-9 col-lg-7 col-xl-4">
+          <img src="../assets/images/chemical-8748832_640.webp"
           class="img-fluid">
         </div>
-        <div class="col-md-8 col-lg-7 col-xl-4 offset-xl-1">
+        <div class="col-md-8 col-lg-7 col-xl-4 offset-xl-1 row justify-content-center">
         
           <!-- Pills Navs (Tabs) -->
           <ul class="nav nav-pills my-4 d-flex" id="pills-tab" role="tablist">
