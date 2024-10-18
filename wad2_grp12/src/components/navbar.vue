@@ -2,19 +2,19 @@
     <nav class="navbar bg-light py-3 border-bottom border-secondary-subtle" :class="{ 'shifted': sidebarOpen }">
       <div class="container-fluid d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-          <a class="navbar-brand mx-3" href="#">
+          <a class="navbar-brand mx-3 d-flex align-items-center" href="#">
             <img src="../assets/images/chemical-8748832_640.webp" alt="Logo" width="30" height="24" class="d-inline-block align-text-top me-2">
-            <span>Elemental Heroes</span>
+            <!-- Add Bootstrap responsive classes to the span -->
+            <span class="d-none d-lg-inline">Elemental Heroes</span>
           </a>
           <!-- Search Bar -->
           <form class="d-flex" role="search">
             <input class="form-control me-3" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
           </form>
         </div>
         <div class="d-flex align-items-center">
-          <button class="btn btn-primary rounded-pill me-5">Upgrade</button>
-          <a href="#" class="d-flex align-items-center link-dark text-decoration-none me-5">
+          <button class="btn btn-primary rounded-pill me-3">Upgrade</button>
+          <a href="#" class="d-flex align-items-center link-dark text-decoration-none me-3">
             <img src="../assets/images/trophy.svg" alt="">
           </a>
           <div class="dropdown pe-2">
@@ -53,18 +53,18 @@
     left: 0;
     margin-left: 60px;
     width: calc(100% - 60px);
-    z-index: 10; /* Lower z-index to ensure sidebar appears above */
-    /* width: 100%; */
-    transition: 0.3s ease; /* Transition for smooth shifting */
+    z-index: 10; /* Ensure sidebar appears above */
+    transition: 0.3s ease; /* Smooth shifting */
   }
   
   /* Shift the navbar when the sidebar is expanded */
   .shifted {
-    margin-left: 250px; /* Shifted position when the sidebar is expanded */
+    margin-left: 250px;
     width: calc(100% - 250px);
     transition: 0.3s ease;
   }
   </style>
+  
   
   
   
