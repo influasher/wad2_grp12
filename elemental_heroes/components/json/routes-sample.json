@@ -1,0 +1,30 @@
+[
+    {
+     "name": "Sample",
+     "icon": "bi:award-fill",
+     "color": "indigo",
+     "children": [
+      {
+       "name": "SampleContent",
+       "path": "#"
+      },
+      {
+       "name": "SampleContent2",
+       "path": "#"
+      }
+     ]
+    },
+    {
+     "name": "Sample2",
+     "icon": "bi:airplane-fill",
+     "color": "green",
+     "children": [
+      {
+       "name": "SampleContent3",
+       "path": "#"
+      }
+     ]
+    }
+   ]
+     
+   
