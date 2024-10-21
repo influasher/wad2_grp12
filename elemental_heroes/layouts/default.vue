@@ -1,53 +1,31 @@
-!-- layouts/default.vue -->
 <template>
     <div class="wrapper d-flex">
         <!-- Sidebar - Fixed on the left -->
         <nav id="sidebar" :class="{ active: isSidebarActive }">
-            <div class="sidebar-header">
-                <h3>Bootstrap Sidebar</h3>
-                <strong>BS</strong>
+            <div class="sidebar-header d-flex align-items-center justify-content-between">
+                <h3>Elemental Heroes</h3>
+                <button id="sidebarCollapse" @click="toggleSidebar">
+                    <img src="../assets/images/hamburger.svg" alt="Toggle Sidebar" width="24" height="24">
+                </button>
+            </div>
+            <div class="mt-4">
+                <img src="../assets/images/gamepad-joystick-svgrepo-com.svg" width="50">
+                <span v-if="!isSidebarActive" class="ms-2">Play a game!</span>
+
+
             </div>
 
-            <ul class="list-unstyled components">
-                <li class="active">
-                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                        <i class="fas fa-home"></i>
-                        Home
-                    </a>
-                    <ul class="collapse list-unstyled" id="homeSubmenu">
-                        <li>
-                            <a href="#">Home 1</a>
-                        </li>
-                        <li>
-                            <a href="#">Home 2</a>
-                        </li>
-                        <li>
-                            <a href="#">Home 3</a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fas fa-briefcase"></i>
-                        About
-                    </a>
-                    <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                        <i class="fas fa-copy"></i>
-                        Pages
-                    </a>
-                    <ul class="collapse list-unstyled" id="pageSubmenu">
-                        <li>
-                            <a href="#">Page 1</a>
-                        </li>
-                        <li>
-                            <a href="#">Page 2</a>
-                        </li>
-                        <li>
-                            <a href="#">Page 3</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+            <div class="mt-4">
+                <img src="../assets/images/git2-svgrepo-com.svg" width="50">
+                <span v-if="!isSidebarActive" class="ms-2">Time to revise!</span>
+
+
+            </div>
+            <div class="mt-4">
+                <!--here we will render the friends dynamicaally-->
+
+
+            </div>
         </nav>
 
         <!-- Main content wrapper - Takes remaining width -->
@@ -55,45 +33,37 @@
             <!-- Your existing Navbar -->
             <Navbar expand="lg" background-color="body-tertiary">
                 <Container type="fluid">
-                    <NavbarBrand>Elemental Heroes
+                    <NavbarBrand>
+                        <img src="/assets/images/chemical-8748832_640.webp" alt="Elemental Heroes Logo" width="30"
+                            height="30" class="d-inline-block align-top" />
                     </NavbarBrand>
                     <NavbarToggler />
-                    <button id="sidebarCollapse" @click="toggleSidebar">Toggle Sidebar</button>
+                    <!-- <button id="sidebarCollapse" @click="toggleSidebar">Toggle Sidebar</button> -->
 
                     <NavbarCollapse>
                         <NavbarNavList margin="e-auto b-2 b-lg-0">
                             <NavItem>
-                                <NavLink active>
-                                    Home
-                                </NavLink>
+                                <NavLink active>Home</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink to="">
-                                    Profile
-                                </NavLink>
+                                <NavLink to="">Profile</NavLink>
                             </NavItem>
                             <NavItemDropdown>
                                 <NavItemDropdownToggle>Dropdown</NavItemDropdownToggle>
                                 <DropdownMenu>
                                     <DropdownItem>Action</DropdownItem>
-                                    <DropdownItem to="/lang-en/components/navbar/">
-                                        Another action
-                                    </DropdownItem>
+                                    <DropdownItem to="/lang-en/components/navbar/">Another action</DropdownItem>
                                     <DropdownItemDivider />
                                     <DropdownItem>Something else here</DropdownItem>
                                 </DropdownMenu>
                             </NavItemDropdown>
                             <NavItem>
-                                <NavLink disabled>
-                                    Disabled
-                                </NavLink>
+                                <NavLink disabled>Disabled</NavLink>
                             </NavItem>
                         </NavbarNavList>
                         <BForm flex role="search">
                             <BFormInput margin="e-2" type="search" placeholder="Search" />
-                            <b-button color="outline-success" type="submit">
-                                Search
-                            </b-button>
+                            <b-button color="outline-success" type="submit">Search</b-button>
                         </BForm>
                     </NavbarCollapse>
                 </Container>
@@ -120,7 +90,8 @@ function toggleSidebar() {
 <style scoped>
 /* Basic structure styling */
 .wrapper {
-    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
 }
 
 /* Sidebar styling */
@@ -133,8 +104,10 @@ function toggleSidebar() {
     left: 0;
     z-index: 1000;
     transition: all 0.3s;
-    background: #7386D5;
-    color: #fff;
+    background: #CECAE7;
+    color: #1E1E1E;
+    padding: 0 20px ;
+    /* Remove top/bottom padding */
 }
 
 /* Content wrapper styling */
@@ -154,8 +127,52 @@ function toggleSidebar() {
     text-align: center;
 }
 
-#sidebar .sidebar-header strong {
-    display: none;
+#sidebar .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #1E1E1E;
+    height: 72px;
+    position: relative;
+}
+
+#sidebar .sidebar-header h3 {
+    position: absolute;
+    top: 50%;
+    /* Center vertically */
+    transform: translateY(-50%);
+    /* Fine-tune vertical position */
+    margin: 0;
+    padding-top: 20px;
+    /* Adjust this value to move the text down */
+}
+
+#sidebar .sidebar-header button#sidebarCollapse {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+/* Update the button styles for active state */
+#sidebar.active .sidebar-header button#sidebarCollapse {
+    display: block;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+
+/* Update the active state header styles */
+#sidebar.active .sidebar-header {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    /* Center the content */
+    align-items: center;
+    position: relative;
 }
 
 #sidebar.active .sidebar-header h3 {
@@ -191,8 +208,6 @@ function toggleSidebar() {
     top: auto;
     bottom: 10px;
     right: 50%;
-    -webkit-transform: translateX(50%);
-    -ms-transform: translateX(50%);
     transform: translateX(50%);
 }
 
@@ -201,6 +216,18 @@ function toggleSidebar() {
     position: sticky;
     top: 0;
     z-index: 999;
+    height: 72px;
+    /* Fixed height to match with sidebar header */
+    padding: 0 20px;
+    /* Adjust horizontal padding */
+    display: flex;
+    align-items: center;
+}
+
+.navbar .container-fluid {
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 main {
@@ -259,8 +286,6 @@ main {
         top: auto;
         bottom: 10px;
         right: 50%;
-        -webkit-transform: translateX(50%);
-        -ms-transform: translateX(50%);
         transform: translateX(50%);
     }
 }
