@@ -20,72 +20,71 @@ class LabGameScene extends Phaser.Scene {
         console.log(this.scale.width) // 1280
         console.log(this.scale.height) // 639
         // Add background
-        this.add.image(this.scale.width / 2, this.scale.height / 2, 'labBackground').setOrigin(0.5).setDisplaySize(1250, 1000);
+        // this.add.image(this.scale.width / 2, this.scale.height / 2, 'labBackground').setOrigin(0.5).setDisplaySize(1250, 1000);
+        const bg = this.add.image(this.scale.width * 0.5, this.scale.height * 0.5, 'labBackground').setOrigin(0.5);
+        // Determine the scale factor for the background to cover the full screen while preserving aspect ratio
+        const scaleX = this.scale.width / bg.width;
+        const scaleY = this.scale.height / bg.height;
+        const scale = Math.max(scaleX, scaleY); // Use the larger scale factor to ensure it covers the entire canvas
+
+        bg.setScale(scale);
 
         // Add test tube (empty) to the scene
-        this.testTube1 = this.add.image(380, 500, 'testTubeEmpty').setDisplaySize(90, 90);
-        this.testTube2 = this.add.image(450, 500, 'testTubeEmpty').setDisplaySize(90, 90);
+        this.testTube1 = this.add.image(this.scale.width * 0.35 , this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.004);
+        this.testTube2 = this.add.image(this.scale.width * 0.45 , this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.004);
 
         // Add rack on the table
-        this.add.image(1050, 400, 'rack').setDisplaySize(500, 500);
+        this.add.image(this.scale.width * 0.80, this.scale.height * 0.55, 'rack').setScale(this.scale.width * 0.00085);
 
         // Add sodium hydroxide bottle and label
-        const naohOriginalPos = { x: 1075, y: 365 };
-        this.bottleNaOH = this.add.image(1075, 365, 'bottle').setDisplaySize(90, 90).setInteractive();
-        this.bottleLabelNaOH = this.add.text(1040, 420, 'NaOH (aq)', { 
-            fontSize: '16px', 
+        // const naohOriginalPos = { x: 1075, y: 365 };
+        this.bottleNaOH = this.add.image(this.scale.width * 0.75, this.scale.height * 0.47 , 'bottle').setScale(this.scale.width * 0.0035).setInteractive();
+        this.bottleLabelNaOH = this.add.text(this.scale.width * 0.7, this.scale.height * 0.55, 'NaOH (aq)', { 
+            fontSize: `${this.scale.width * 0.015}px`, 
             fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
             color: '#000',
             backgroundColor: '#e2e4e6',
             padding: {
-                left: 10,
-                right: 10,
-                top: 10,
-                bottom: 10
+                x: this.scale.width * 0.005,
+                y: this.scale.height * 0.006
             } });
         this.input.setDraggable(this.bottleNaOH);
 
         // Add aqueous ammonia bottle and label
-        const nh3OriginalPos = { x: 975, y: 350 };
-        this.bottleNH3 = this.add.image(975, 350, 'bottle').setDisplaySize(90, 90).setInteractive();
-        this.bottleLabelNH3 = this.add.text(940, 405, 'NH3 (aq)', { 
-            fontSize: '16px', 
+        // const nh3OriginalPos = { x: 975, y: 350 };
+        this.bottleNH3 = this.add.image(this.scale.width * 0.83, this.scale.height * 0.49, 'bottle').setScale(this.scale.width * 0.0035).setInteractive();
+        this.bottleLabelNH3 = this.add.text(this.scale.width * 0.8, this.scale.height * 0.57, 'NH3 (aq)', { 
+            fontSize:`${this.scale.width * 0.015}px`, 
             fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
             color: '#000',
             backgroundColor: '#e2e4e6',
             padding: {
-                left: 10,
-                right: 10,
-                top: 10,
-                bottom: 10
+                x: this.scale.width * 0.005,
+                y: this.scale.height * 0.006
             } });
         this.input.setDraggable(this.bottleNH3);
 
         // Add instruction text
-        this.instructionText = this.add.text(20, 20, 'Drag a bottle to the test tube to test for the cation.', {
-            fontSize: '24px',
+        this.instructionText = this.add.text(this.scale.width * 0.03, this.scale.height * 0.03, 'Drag a bottle to the test tube to test for the cation.', {
+            fontSize: `${this.scale.width * 0.03}px`,
             fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
             color: '#000',
             backgroundColor: '#e2e4e6',
             padding: {
-                left: 5,
-                right: 5,
-                top: 5,
-                bottom: 5
+                x: this.scale.width * 0.005,
+                y: this.scale.height * 0.006
             }
         });
 
         // Dynamic label for holding bottle
-        this.holdingText = this.add.text(20, 60, '', { 
-            fontSize: '18px', 
+        this.holdingText = this.add.text(this.scale.width * 0.03, this.scale.height * 0.1, '', { 
+            fontSize: `${this.scale.width * 0.025}px`, 
             fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
             color: '#000',
             backgroundColor: '#e2e4e6',
             padding: {
-                left: 5,
-                right: 5,
-                top: 5,
-                bottom: 5
+                x: this.scale.width * 0.005,
+                y: this.scale.height * 0.006
             } });
 
         // Set test tube as a drop zone

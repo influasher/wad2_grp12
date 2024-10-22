@@ -5,34 +5,56 @@ class ChemicalMatchingScene extends Phaser.Scene {
 
     preload() {
         // Load assets for elements and card background
-        this.load.image('woodenbackground', 'assets/images/woodenTable.jpg'); // Background for the scene
+        this.load.image('woodenBackground', 'assets/images/woodenTable.jpg'); // Background for the scene
         this.load.image('card', 'assets/images/card.png'); // Single card image
         this.load.image('potassium', 'assets/elements/potassium.png');
         this.load.image('neon', 'assets/elements/neon.png');
         this.load.image('gold', 'assets/elements/gold.png');
         this.load.image('chlorine', 'assets/elements/chlorine.png');
         this.load.image('iron', 'assets/elements/iron.png');
+        this.load.image('backButton', 'assets/images/backButton.png'); // Add your back button image
+        this.load.image('restartButton', 'assets/images/restartButton.png'); // Add your back button image
+        this.load.image('exitButton', 'assets/images/exitButton.png'); // Add your back button image
     }
 
     create() {
 
-        this.add.image(this.scale.width / 2, this.scale.height / 2, 'woodenbackground').setOrigin(0.5).setDisplaySize(this.scale.width, this.scale.height);
+        // this.add.image(this.scale.width / 2, this.scale.height / 2, 'woodenbackground').setOrigin(0.5).setDisplaySize(this.scale.width, this.scale.height);
 
+        const bg = this.add.image(this.scale.width * 0.5, this.scale.height * 0.5, 'woodenBackground').setOrigin(0.5);
+        // Determine the scale factor for the background to cover the full screen while preserving aspect ratio
+        const scaleX = this.scale.width / bg.width;
+        const scaleY = this.scale.height / bg.height;
+        const scale = Math.max(scaleX, scaleY); // Use the larger scale factor to ensure it covers the entire canvas
+
+        bg.setScale(scale);
+
+        const backButton = this.add.sprite(this.scale.width * 0.03, this.scale.height * 0.055, 'backButton')
+        .setInteractive()
+        .setScale(0.1)  // Adjust the size of the button
+        .on('pointerdown', () => {
+            this.scene.start('CasualGameScene');  // Switch back to LoadingScene when clicked
+        });
+
+    // Optionally, you can change the button's appearance when hovering or clicking
+            backButton.on('pointerover', () => backButton.setTint(0xAAAAAA));  // Change color on hover
+            backButton.on('pointerout', () => backButton.clearTint());  // Reset color on hover out
+        
         // Initialize score and timer
     
         this.score = 0;
         this.timeRemaining = 60; // 60 seconds for the game
 
         // Display score text
-        this.scoreText = this.add.text(20, 20, 'Score: 0', {
-            fontSize: '24px',
+        this.scoreText = this.add.text(this.scale.width * 0.065, this.scale.height * 0.03, 'Score: 0', {
+            fontSize: `${this.scale.width * 0.03}px`,
             color: '#000',
             fontFamily: 'Georgia, serif',
         });
 
         // Display timer text
-        this.timerText = this.add.text(this.scale.width - 120, 20, `Time: ${this.timeRemaining}`, {
-            fontSize: '24px',
+        this.timerText = this.add.text(this.scale.width * 0.83, this.scale.height * 0.03, `Time: ${this.timeRemaining}`, {
+            fontSize: `${this.scale.width * 0.03}px`,
             color: '#000',
             fontFamily: 'Georgia, serif',
         });
@@ -48,16 +70,16 @@ class ChemicalMatchingScene extends Phaser.Scene {
 
         // Set up the draggable elements
         const elements = [
-            { name: 'potassium', x: 100, y: 100 },
-            { name: 'neon', x: 200, y: 100 },
-            { name: 'gold', x: 300, y: 100 },
-            { name: 'chlorine', x: 400, y: 100 },
-            { name: 'iron', x: 500, y: 100 },
+            { name: 'potassium', x: this.scale.width * 0.1, y: this.scale.height * 0.2 },
+            { name: 'neon', x: this.scale.width * 0.25, y: this.scale.height * 0.2 },
+            { name: 'gold', x: this.scale.width * 0.4, y: this.scale.height * 0.2 },
+            { name: 'chlorine', x: this.scale.width * 0.55, y: this.scale.height * 0.2 },
+            { name: 'iron', x: this.scale.width * 0.7, y: this.scale.height * 0.2 },
         ];
 
         elements.forEach((elementData) => {
             const element = this.add.image(elementData.x, elementData.y, elementData.name)
-                .setDisplaySize(100, 100)
+                .setScale(0.8)
                 .setInteractive();
             this.input.setDraggable(element);
 
@@ -78,10 +100,10 @@ class ChemicalMatchingScene extends Phaser.Scene {
 
         // Position cards with properties
         const cardPositions = [
-            { x: this.scale.width / 4, y: this.scale.height / 4 },
-            { x: (3 * this.scale.width) / 4, y: this.scale.height / 4 },
-            { x: this.scale.width / 4, y: (3 * this.scale.height) / 4 },
-            { x: (3 * this.scale.width) / 4, y: (3 * this.scale.height) / 4 },
+            { x: this.scale.width / 4, y: this.scale.height * 0.5 },
+            { x: (3 * this.scale.width) / 4, y: this.scale.height * 0.5 },
+            { x: this.scale.width / 4, y: this.scale.height * 0.8 },
+            { x: (3 * this.scale.width) / 4, y: this.scale.height * 0.8},
         ];
 
         elementProperties.forEach((prop, index) => {
@@ -95,13 +117,13 @@ class ChemicalMatchingScene extends Phaser.Scene {
         
             // Add property text to each card
             const typeText = this.add.text(pos.x, pos.y - 20, prop.type, {
-                fontSize: '18px',
+                fontSize: `${this.scale.width * 0.025}px`,
                 color: '#000',
                 fontFamily: 'Georgia, serif',
             }).setOrigin(0.5);
         
             const propertyText = this.add.text(pos.x, pos.y + 20, prop.property, {
-                fontSize: '20px',
+                fontSize: `${this.scale.width * 0.025}px`,
                 color: '#000',
                 fontFamily: 'Georgia, serif',
             }).setOrigin(0.5);
