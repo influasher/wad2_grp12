@@ -106,7 +106,7 @@ function toggleSidebar() {
     transition: all 0.3s;
     background: #CECAE7;
     color: #1E1E1E;
-    padding: 0 20px ;
+    padding: 0 20px;
     /* Remove top/bottom padding */
 }
 
