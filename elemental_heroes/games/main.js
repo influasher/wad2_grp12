@@ -1,6 +1,7 @@
 const gameContainer = document.getElementById('game-container');
 const containerWidth = gameContainer.clientWidth;
 const containerHeight = gameContainer.clientHeight;
+let backgroundMusic;
 
 // Game configuration object
 const config = {

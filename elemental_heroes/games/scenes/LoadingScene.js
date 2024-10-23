@@ -7,10 +7,18 @@ class LoadingScene extends Phaser.Scene {
         // Load assets for start screen if needed (e.g., background images, button sprites)
         this.load.image('startBackground', 'assets/images/start_background.jpg');
         this.load.image('button', 'assets/images/button.png');
+        if (!backgroundMusic) {
+        this.load.audio('backgroundMusic', 'assets/audio/loadingMusic.wav')
+        }
     }
     
 
     create() {
+        if (!backgroundMusic) {
+            backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
+            backgroundMusic.play();
+        }
+
         const buttonScale = this.scale.width * 0.00045;
         console.log(this.scale.width)
         // Add background
