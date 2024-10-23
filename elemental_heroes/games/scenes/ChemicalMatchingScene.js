@@ -47,7 +47,7 @@ class ChemicalMatchingScene extends Phaser.Scene {
         // Initialize score and timer
     
         this.score = 0;
-        this.timeRemaining = 60; // 60 seconds for the game
+        this.timeRemaining = 5; // 60 seconds for the game
 
         // Display score text
         this.scoreText = this.add.text(this.scale.width * 0.065, this.scale.height * 0.03, 'Score: 0', {
@@ -252,6 +252,7 @@ class ChemicalMatchingScene extends Phaser.Scene {
         });
 
         // Stop all interactive events
+        // this.input.enabled = false;
         // this.input.enabled = false;
 
         // Optionally, restart the scene after a delay or navigate to a main menu
