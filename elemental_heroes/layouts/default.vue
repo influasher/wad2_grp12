@@ -15,18 +15,24 @@
           />
         </button>
       </div>
-      <div class="mt-4">
-        <img
-          src="../assets/images/gamepad-joystick-svgrepo-com.svg"
-          width="50"
-        />
-        <span v-if="!isSidebarActive" class="ms-2">Play a game!</span>
-      </div>
+      <a href="/gamelist">
+        <div class="mt-4">
+          <img
+            src="../assets/images/gamepad-joystick-svgrepo-com.svg"
+            width="50"
+          />
+          <span v-if="!isSidebarActive" class="ms-2">Play a game!</span>
+        </div>
+      </a>
+      <a href="/revision">
+        <div class="mt-4">
+          <!-- <button type="button" class="btn btn-block"> -->
 
-      <div class="mt-4">
-        <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
-        <span v-if="!isSidebarActive" class="ms-2">Time to revise!</span>
-      </div>
+          <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
+          <span v-if="!isSidebarActive" class="ms-2">Time to revise!</span>
+          <!-- </button> -->
+        </div>
+      </a>
       <div class="mt-4">
         <!--here we will render the friends dynamicaally-->
       </div>
@@ -52,10 +58,10 @@
           <NavbarCollapse>
             <NavbarNavList margin="e-auto b-2 b-lg-0">
               <NavItem>
-                <NavLink active>Home</NavLink>
+                <NavLink active to="/">Home</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to="">Profile</NavLink>
+                <NavLink to="profile">Profile</NavLink>
               </NavItem>
               <NavItemDropdown>
                 <NavItemDropdownToggle>Dropdown</NavItemDropdownToggle>
