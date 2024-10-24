@@ -67,9 +67,7 @@
                 <NavItemDropdownToggle>Dropdown</NavItemDropdownToggle>
                 <DropdownMenu>
                   <DropdownItem>Action</DropdownItem>
-                  <DropdownItem to=""
-                    >Another action</DropdownItem
-                  >
+                  <DropdownItem to="">Another action</DropdownItem>
                   <DropdownItemDivider />
                   <DropdownItem>Something else here</DropdownItem>
                 </DropdownMenu>
@@ -87,7 +85,7 @@
       </Navbar>
 
       <!-- Main content area -->
-      <main class="container-fluid py-4">
+      <main>
         <slot />
       </main>
     </div>
