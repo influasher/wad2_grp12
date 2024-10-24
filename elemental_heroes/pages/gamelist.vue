@@ -1,14 +1,7 @@
 <template>
-  <div class="game">
-    gamelist    
-    
-  </div>
+  <div class="game">gamelists</div>
 </template>
 
-<script lang="js" setup>
+<script lang="js" setup></script>
 
-</script>
-
-<style>
-
-</style>
+<style></style>

@@ -25,7 +25,7 @@
         </div>
       </a>
       <a href="/revision" class="sidebarButton">
-        <div class="mt-4 p-3">
+        <div class="p-3">
           <!-- <button type="button" class="btn btn-block"> -->
 
           <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
