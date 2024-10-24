@@ -25,7 +25,7 @@
         </div>
       </a>
       <a href="/revision" class="sidebarButton">
-        <div class="mt-4 p-3">
+        <div class="p-3">
           <!-- <button type="button" class="btn btn-block"> -->
 
           <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
@@ -61,15 +61,13 @@
                 <NavLink active to="/">Home</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to="profile">Profile</NavLink>
+                <NavLink active to="profile">Profile</NavLink>
               </NavItem>
               <NavItemDropdown>
                 <NavItemDropdownToggle>Dropdown</NavItemDropdownToggle>
                 <DropdownMenu>
                   <DropdownItem>Action</DropdownItem>
-                  <DropdownItem to="/lang-en/components/navbar/"
-                    >Another action</DropdownItem
-                  >
+                  <DropdownItem to="">Another action</DropdownItem>
                   <DropdownItemDivider />
                   <DropdownItem>Something else here</DropdownItem>
                 </DropdownMenu>
@@ -87,7 +85,7 @@
       </Navbar>
 
       <!-- Main content area -->
-      <main class="container-fluid py-4">
+      <main>
         <slot />
       </main>
     </div>
