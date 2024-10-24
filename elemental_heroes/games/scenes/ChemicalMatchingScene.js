@@ -12,6 +12,9 @@ class ChemicalMatchingScene extends Phaser.Scene {
         this.load.image('gold', 'assets/elements/gold.png');
         this.load.image('chlorine', 'assets/elements/chlorine.png');
         this.load.image('iron', 'assets/elements/iron.png');
+        this.load.image('copper', 'assets/elements/copper.png');
+        this.load.image('astatine', 'assets/elements/astatine.png');
+        this.load.image('bromine', 'assets/elements/bromine.png');
         this.load.image('backButton', 'assets/images/backButton.png'); // Add your back button image
         this.load.image('restartButton', 'assets/images/restartButton.png'); // Add your back button image
         this.load.image('exitButton', 'assets/images/exitButton.png'); // Add your back button image
@@ -64,22 +67,46 @@ class ChemicalMatchingScene extends Phaser.Scene {
         });
 
         // Set up the element properties
-        const elementProperties = [
-            { element: 'potassium', property: 'K', type: 'Chemical Formula' },
-            { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
-            { element: 'gold', property: 'Soft, malleable', type: 'Physical Property' },
-            { element: 'chlorine', property: 'Cl', type: 'Chemical Formula' },
-            { element: 'iron', property: 'Metallic', type: 'Physical Property' },
-        ];
+        // const elementProperties = [
+        //     { element: 'potassium', property: 'K', type: 'Chemical Formula' },
+        //     { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
+        //     { element: 'gold', property: 'Soft, malleable', type: 'Physical Property' },
+        //     { element: 'chlorine', property: 'Cl', type: 'Chemical Formula' },
+        //     { element: 'iron', property: 'Metallic', type: 'Physical Property' },
+        // ];
 
-        // Set up the draggable elements
-        const elements = [
-            { name: 'potassium', x: this.scale.width * 0.1, y: this.scale.height * 0.2 },
-            { name: 'neon', x: this.scale.width * 0.25, y: this.scale.height * 0.2 },
-            { name: 'gold', x: this.scale.width * 0.4, y: this.scale.height * 0.2 },
-            { name: 'chlorine', x: this.scale.width * 0.55, y: this.scale.height * 0.2 },
-            { name: 'iron', x: this.scale.width * 0.7, y: this.scale.height * 0.2 },
-        ];
+        // // Set up the draggable elements
+        // const elements = [
+        //     { name: 'potassium', x: this.scale.width * 0.1, y: this.scale.height * 0.2 },
+        //     { name: 'neon', x: this.scale.width * 0.25, y: this.scale.height * 0.2 },
+        //     { name: 'gold', x: this.scale.width * 0.4, y: this.scale.height * 0.2 },
+        //     { name: 'chlorine', x: this.scale.width * 0.55, y: this.scale.height * 0.2 },
+        //     { name: 'iron', x: this.scale.width * 0.7, y: this.scale.height * 0.2 },
+        // ];
+
+                // Set up a full list of element properties with additional elements
+            const allElementProperties = [
+                { element: 'potassium', property: 'K', type: 'Chemical Formula' },
+                { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
+                { element: 'gold', property: 'Soft, malleable', type: 'Physical Property' },
+                { element: 'chlorine', property: 'Cl', type: 'Chemical Formula' },
+                { element: 'iron', property: 'Metallic', type: 'Physical Property' },
+                { element: 'copper', property: 'Cu', type: 'Chemical Formula' },
+                { element: 'silicon', property: 'Semi-conductor', type: 'Chemical Property' },
+                { element: 'astatine', property: 'Radioactive', type: 'Physical Property' },
+                { element: 'bromine', property: 'Br', type: 'Chemical Formula' },
+                { element: 'calcium', property: 'Ca', type: 'Chemical Formula' },
+            ];
+    
+            // Randomly select 5 elements from the full list
+            const shuffledElements = Phaser.Utils.Array.Shuffle(allElementProperties);
+            const elementProperties = shuffledElements.slice(0, 4); // Get 5 random elements
+    
+            // Set up the draggable elements based on the randomly selected ones
+            const elements = elementProperties.map((prop, index) => {
+                const xPosition = this.scale.width * (0.1 + index * 0.15); // Adjust positions dynamically
+                return { name: prop.element, x: xPosition, y: this.scale.height * 0.2 };
+            });
 
         elements.forEach((elementData) => {
             const element = this.add.image(elementData.x, elementData.y, elementData.name)

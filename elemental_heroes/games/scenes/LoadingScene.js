@@ -10,6 +10,8 @@ class LoadingScene extends Phaser.Scene {
         if (!backgroundMusic) {
         this.load.audio('backgroundMusic', 'assets/audio/loadingMusic.wav')
         }
+        this.load.image('soundOnButton', 'assets/images/soundOn.png');  // Sound on button image
+        this.load.image('soundOffButton', 'assets/images/soundOff.png');  // Sound off button image
     }
     
 
@@ -31,6 +33,7 @@ class LoadingScene extends Phaser.Scene {
 
         bg.setScale(scale);
         console.log('hi from loading scene')
+        this.createMusicToggleButton();
         // Add title text
         this.add.text(this.scale.width * 0.5, this.scale.height * 0.25 , 'Welcome to Elemental Heroes!', {
             fontSize: `${this.scale.width * 0.055}px`,
@@ -107,5 +110,25 @@ class LoadingScene extends Phaser.Scene {
     resetButton(button, buttonScale) {
         button.setScale(buttonScale); // Scale back down
         button.clearTint(); // Reset the color
+    }
+
+    createMusicToggleButton() {
+        // Initially show the "sound on" button
+        let isMusicOn = true;
+        let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.05, 'soundOnButton').setInteractive().setScale(0.13);
+
+        // Add click handler for toggling the music on/off
+        button.on('pointerdown', () => {
+            if (isMusicOn) {
+                backgroundMusic.pause();  // Pause the music
+                console.log('music paused')
+                isMusicOn = false;
+                button.setTexture('soundOffButton');  // Switch to "sound off" button image
+            } else {
+                backgroundMusic.resume();  // Resume the music
+                isMusicOn = true;
+                button.setTexture('soundOnButton');  // Switch back to "sound on" button image
+            }
+        });
     }
 }
