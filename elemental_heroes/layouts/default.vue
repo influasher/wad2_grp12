@@ -61,13 +61,13 @@
                 <NavLink active to="/">Home</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to="profile">Profile</NavLink>
+                <NavLink active to="profile">Profile</NavLink>
               </NavItem>
               <NavItemDropdown>
                 <NavItemDropdownToggle>Dropdown</NavItemDropdownToggle>
                 <DropdownMenu>
                   <DropdownItem>Action</DropdownItem>
-                  <DropdownItem to="/lang-en/components/navbar/"
+                  <DropdownItem to=""
                     >Another action</DropdownItem
                   >
                   <DropdownItemDivider />
