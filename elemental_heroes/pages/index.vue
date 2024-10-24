@@ -115,7 +115,8 @@
   display: block;
   background-color: #f5f5f5;
   max-width: 100%;
-
+  padding: 10px;
+  margin: 10px;
   h3 {
     text-align: center;
   }
@@ -127,6 +128,7 @@
 
 .slideshow {
   justify-content: center;
+  margin: 10px
 }
 
 .carousel-item img {
