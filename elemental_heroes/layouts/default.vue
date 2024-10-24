@@ -5,8 +5,8 @@
       <div
         class="sidebar-header d-flex align-items-center justify-content-between"
       >
-        <h3>Elemental Heroes</h3>
-        <button id="sidebarCollapse" @click="toggleSidebar">
+        <h3 class="px-4">Elemental Heroes</h3>
+        <button id="sidebarCollapse" @click="toggleSidebar" class="p-4">
           <img
             src="../assets/images/hamburger.svg"
             alt="Toggle Sidebar"
@@ -15,8 +15,8 @@
           />
         </button>
       </div>
-      <a href="/gamelist">
-        <div class="mt-4">
+      <a href="/gamelist" class="sidebarButton">
+        <div class="mt-4 p-3">
           <img
             src="../assets/images/gamepad-joystick-svgrepo-com.svg"
             width="50"
@@ -24,8 +24,8 @@
           <span v-if="!isSidebarActive" class="ms-2">Play a game!</span>
         </div>
       </a>
-      <a href="/revision">
-        <div class="mt-4">
+      <a href="/revision" class="sidebarButton">
+        <div class="mt-4 p-3">
           <!-- <button type="button" class="btn btn-block"> -->
 
           <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
@@ -123,8 +123,25 @@ function toggleSidebar() {
   transition: all 0.3s;
   background: #cecae7;
   color: #1e1e1e;
-  padding: 0 20px;
+  /* padding: 0 20px; */
   /* Remove top/bottom padding */
+}
+
+.sidebarButton {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  /* margin: 0 -20px;  /* Compensate for sidebar padding */
+  /* padding: 0 20px;  Add padding inside the button instead  */
+}
+
+.sidebarButton:hover {
+  background-color: #b2a9ec;
+  width: 100%;
+  /* padding-left: 20px;
+  padding-right: 20px; */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Content wrapper styling */
@@ -178,7 +195,7 @@ function toggleSidebar() {
 #sidebar.active .sidebar-header button#sidebarCollapse {
   display: block;
   margin: 0 auto;
-  padding: 10px;
+  /* padding: 10px; */
 }
 
 /* Update the active state header styles */
