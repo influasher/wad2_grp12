@@ -12,14 +12,21 @@ class ChemicalMatchingScene extends Phaser.Scene {
         this.load.image('gold', 'assets/elements/gold.png');
         this.load.image('chlorine', 'assets/elements/chlorine.png');
         this.load.image('iron', 'assets/elements/iron.png');
+        this.load.image('copper', 'assets/elements/copper.png');
+        this.load.image('astatine', 'assets/elements/astatine.png');
+        this.load.image('bromine', 'assets/elements/bromine.png');
         this.load.image('backButton', 'assets/images/backButton.png'); // Add your back button image
         this.load.image('restartButton', 'assets/images/restartButton.png'); // Add your back button image
         this.load.image('exitButton', 'assets/images/exitButton.png'); // Add your back button image
+        this.load.image('button', 'assets/images/button.png');
+        
     }
 
     create() {
-
-        // this.add.image(this.scale.width / 2, this.scale.height / 2, 'woodenbackground').setOrigin(0.5).setDisplaySize(this.scale.width, this.scale.height);
+        if (backgroundMusic) {
+            backgroundMusic.stop();  // Stop the music
+            backgroundMusic = null;  // Clear the reference to allow music to restart later
+        }
 
         const bg = this.add.image(this.scale.width * 0.5, this.scale.height * 0.5, 'woodenBackground').setOrigin(0.5);
         // Determine the scale factor for the background to cover the full screen while preserving aspect ratio
@@ -43,7 +50,7 @@ class ChemicalMatchingScene extends Phaser.Scene {
         // Initialize score and timer
     
         this.score = 0;
-        this.timeRemaining = 60; // 60 seconds for the game
+        this.timeRemaining = 5; // 60 seconds for the game
 
         // Display score text
         this.scoreText = this.add.text(this.scale.width * 0.065, this.scale.height * 0.03, 'Score: 0', {
@@ -60,22 +67,46 @@ class ChemicalMatchingScene extends Phaser.Scene {
         });
 
         // Set up the element properties
-        const elementProperties = [
-            { element: 'potassium', property: 'K', type: 'Chemical Formula' },
-            { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
-            { element: 'gold', property: 'Soft, malleable', type: 'Physical Property' },
-            { element: 'chlorine', property: 'Cl', type: 'Chemical Formula' },
-            { element: 'iron', property: 'Metallic', type: 'Physical Property' },
-        ];
+        // const elementProperties = [
+        //     { element: 'potassium', property: 'K', type: 'Chemical Formula' },
+        //     { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
+        //     { element: 'gold', property: 'Soft, malleable', type: 'Physical Property' },
+        //     { element: 'chlorine', property: 'Cl', type: 'Chemical Formula' },
+        //     { element: 'iron', property: 'Metallic', type: 'Physical Property' },
+        // ];
 
-        // Set up the draggable elements
-        const elements = [
-            { name: 'potassium', x: this.scale.width * 0.1, y: this.scale.height * 0.2 },
-            { name: 'neon', x: this.scale.width * 0.25, y: this.scale.height * 0.2 },
-            { name: 'gold', x: this.scale.width * 0.4, y: this.scale.height * 0.2 },
-            { name: 'chlorine', x: this.scale.width * 0.55, y: this.scale.height * 0.2 },
-            { name: 'iron', x: this.scale.width * 0.7, y: this.scale.height * 0.2 },
-        ];
+        // // Set up the draggable elements
+        // const elements = [
+        //     { name: 'potassium', x: this.scale.width * 0.1, y: this.scale.height * 0.2 },
+        //     { name: 'neon', x: this.scale.width * 0.25, y: this.scale.height * 0.2 },
+        //     { name: 'gold', x: this.scale.width * 0.4, y: this.scale.height * 0.2 },
+        //     { name: 'chlorine', x: this.scale.width * 0.55, y: this.scale.height * 0.2 },
+        //     { name: 'iron', x: this.scale.width * 0.7, y: this.scale.height * 0.2 },
+        // ];
+
+                // Set up a full list of element properties with additional elements
+            const allElementProperties = [
+                { element: 'potassium', property: 'K', type: 'Chemical Formula' },
+                { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
+                { element: 'gold', property: 'Soft, malleable', type: 'Physical Property' },
+                { element: 'chlorine', property: 'Cl', type: 'Chemical Formula' },
+                { element: 'iron', property: 'Metallic', type: 'Physical Property' },
+                { element: 'copper', property: 'Cu', type: 'Chemical Formula' },
+                { element: 'silicon', property: 'Semi-conductor', type: 'Chemical Property' },
+                { element: 'astatine', property: 'Radioactive', type: 'Physical Property' },
+                { element: 'bromine', property: 'Br', type: 'Chemical Formula' },
+                { element: 'calcium', property: 'Ca', type: 'Chemical Formula' },
+            ];
+    
+            // Randomly select 5 elements from the full list
+            const shuffledElements = Phaser.Utils.Array.Shuffle(allElementProperties);
+            const elementProperties = shuffledElements.slice(0, 4); // Get 5 random elements
+    
+            // Set up the draggable elements based on the randomly selected ones
+            const elements = elementProperties.map((prop, index) => {
+                const xPosition = this.scale.width * (0.1 + index * 0.15); // Adjust positions dynamically
+                return { name: prop.element, x: xPosition, y: this.scale.height * 0.2 };
+            });
 
         elements.forEach((elementData) => {
             const element = this.add.image(elementData.x, elementData.y, elementData.name)
@@ -138,18 +169,62 @@ class ChemicalMatchingScene extends Phaser.Scene {
             card.data.set('element', prop.element);
         });
         
-        // Drop event listener
         this.input.on('drop', (pointer, gameObject, dropZone) => {
+            gameObject.setOrigin(0, 0);
+            const cardWidth = 250;  // Assuming the card width is 250
+            const cardHeight = 150; // Assuming the card height is 150
+            const imageWidth = gameObject.displayWidth;
+            const imageHeight = gameObject.displayHeight;
+
+            // Set position to bottom-right of the card with some padding (e.g., 10px from the bottom and right)
+            const offsetX = (cardWidth / 2) - imageWidth - 10; // Adjust to position from the right
+            const offsetY = (cardHeight / 2) - imageHeight - 10; // Adjust to position from the bottom
+
+            // Set the position to be at the bottom-right of the card
+            gameObject.setPosition(dropZone.x + offsetX, dropZone.y + offsetY).setScale(0.5); // Position at bottom-right
+            gameObject.setDepth(1); // Ensure the image appears on top of the card
+            
+
+            // Remove any previous result text
+            if (this.resultText) {
+                this.resultText.destroy();
+            }
+        
+            // Check if the match is correct
             if (dropZone.getData('element') === gameObject.texture.key) {
                 // Correct match
                 gameObject.x = dropZone.x;
                 gameObject.y = dropZone.y;
-                gameObject.setTint(0x00ff00); // Highlight in green
-                this.updateScore(10); // Add points for correct match
+        
+                // Display "Correct!" text
+                this.resultText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Correct!', {
+                    fontSize: `${this.scale.width * 0.05}px`,
+                    color: '#00ff00',
+                    fontFamily: 'Georgia, serif',
+                }).setOrigin(0.5);
+        
+                // Fade out the text after 1 second
+                this.time.delayedCall(1000, () => {
+                    this.resultText.destroy();
+                });
+        
+                // Add points for the correct match
+                this.updateScore(10);
             } else {
-                // Incorrect match
-                gameObject.setTint(0xff0000); // Highlight in red
-                this.updateScore(-5); // Deduct points for incorrect match
+                // Display "Wrong!" text
+                this.resultText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Wrong!', {
+                    fontSize: `${this.scale.width * 0.05}px`,
+                    color: '#ff0000',
+                    fontFamily: 'Georgia, serif',
+                }).setOrigin(0.5);
+        
+                // Fade out the text after 1 second
+                this.time.delayedCall(1000, () => {
+                    this.resultText.destroy();
+                });
+        
+                // Deduct points for the incorrect match
+                this.updateScore(-5);
             }
         });
         
@@ -185,11 +260,27 @@ class ChemicalMatchingScene extends Phaser.Scene {
             fontSize: '32px',
             color: '#000',
             fontFamily: 'Georgia, serif',
-            align: 'center'
+            align: 'center',
+            backgroundColor: '#ffffff',
         }).setOrigin(0.5);
 
+        const exitButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.65, 'exitButton')
+        .setInteractive()
+        .setScale(0.1)  // Adjust the size of the button
+        .on('pointerdown', () => {
+            this.scene.start('CasualGameScene');  // Switch back to LoadingScene when clicked
+        });
+
+        const restartButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.75, 'restartButton')
+        .setInteractive()
+        .setScale(0.1)  // Adjust the size of the button
+        .on('pointerdown', () => {
+            this.scene.start('ChemicalMatchingScene');  // Switch back to LoadingScene when clicked
+        });
+
         // Stop all interactive events
-        this.input.enabled = false;
+        // this.input.enabled = false;
+        // this.input.enabled = false;
 
         // Optionally, restart the scene after a delay or navigate to a main menu
         // this.time.delayedCall(3000, () => {

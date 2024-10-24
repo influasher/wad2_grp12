@@ -3,6 +3,7 @@
     --unity-dark: #1E1E1E;
     --unity-gray: #F5F5F5;
     --unity-text: #333333;
+    --unity-hover: #B2A9EC;
   }
   
   body {
@@ -10,16 +11,7 @@
     background-color: var(--unity-gray);
     color: var(--unity-text);
   }
-  
-  .navbar {
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .navbar-brand {
-    font-weight: 700;
-    color: var(--unity-dark);
-  }
+
   
   .card {
     border: none;
