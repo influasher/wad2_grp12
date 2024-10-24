@@ -11,6 +11,8 @@ class LabGameScene extends Phaser.Scene {
         this.load.image('testTubePrecipitateBlue', 'assets/images/blueTestTube.png');
         this.load.image('bottle', 'assets/images/emptyBottle.png'); // Same image for both bottles
         this.load.image('rack', 'assets/images/rack.png');
+        this.load.image('exitButton', 'assets/images/exitButton.png'); // Add your back button image
+
         // this.load.image('sodiumHydroxideBottleTilted', 'assets/images/sodium_hydroxide_bottle_tilted.png');
         // this.load.image('pouringStream', 'assets/images/pouring_stream.png');
     }
@@ -19,6 +21,7 @@ class LabGameScene extends Phaser.Scene {
         console.log('hi from lab game scene')
         console.log(this.scale.width) // 1280
         console.log(this.scale.height) // 639
+
         // Add background
         // this.add.image(this.scale.width / 2, this.scale.height / 2, 'labBackground').setOrigin(0.5).setDisplaySize(1250, 1000);
         const bg = this.add.image(this.scale.width * 0.5, this.scale.height * 0.5, 'labBackground').setOrigin(0.5);
@@ -28,6 +31,17 @@ class LabGameScene extends Phaser.Scene {
         const scale = Math.max(scaleX, scaleY); // Use the larger scale factor to ensure it covers the entire canvas
 
         bg.setScale(scale);
+
+        const exitButton = this.add.sprite(this.scale.width * 0.92, this.scale.height * 0.055, 'exitButton')
+        .setInteractive()
+        .setScale(0.1)  // Adjust the size of the button
+        .on('pointerdown', () => {
+            this.scene.start('LoadingScene');  // Switch back to LoadingScene when clicked
+        });
+
+    //   Optionally, you can change the button's appearance when hovering or clicking
+            exitButton.on('pointerover', () => exitButton.setTint(0xAAAAAA));  // Change color on hover
+            exitButton.on('pointerout', () => exitButton.clearTint());  // Reset color on hover out
 
         // Add test tube (empty) to the scene
         this.testTube1 = this.add.image(this.scale.width * 0.35 , this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.004);
