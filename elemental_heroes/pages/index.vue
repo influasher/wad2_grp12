@@ -20,63 +20,20 @@
         data-bs-ride="carousel"
       >
         <div class="carousel-inner">
-          <div class="carousel-item active" data-bs-interval="3000">
+          <div
+            v-for="(game, index) in games"
+            :key="game.id"
+            :class="['carousel-item', { active: index === 0 }]"
+            data-bs-interval="3000"
+          >
             <div class="card text-bg-dark mx-auto">
-              <img
-                src="../assets/images/chemistry games/Firefly chemistry revision online game 12285 (1).jpg"
-                alt="..."
-                class="rounded"
-              />
+              <img :src="game.publicUrl" :alt="game.title" class="rounded" />
               <div
                 class="card-img-overlay d-flex flex-column justify-content-end"
               >
-                <h3 class="card-title">Game Title</h3>
-                <p class="card-text">
-                  This is a wider card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit
-                  longer.
-                </p>
-                <button type="button" class="btn btn-primary">Play Game</button>
-              </div>
-            </div>
-          </div>
-          <div class="carousel-item active" data-bs-interval="3000">
-            <div class="card text-bg-dark mx-auto">
-              <img
-                src="../assets/images/chemistry games/Firefly chemistry revision online game 5908 (1).jpg"
-                alt="..."
-                class="rounded"
-              />
-              <div
-                class="card-img-overlay d-flex flex-column justify-content-end"
-              >
-                <h3 class="card-title">Game Title</h3>
-                <p class="card-text">
-                  This is a wider card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit
-                  longer.
-                </p>
-                <button type="button" class="btn btn-primary">Play Game</button>
-              </div>
-            </div>
-          </div>
-          <div class="carousel-item active" data-bs-interval="3000">
-            <div class="card text-bg-dark mx-auto">
-              <img
-                src="../assets/images/chemistry games/Firefly chemistry revision online game 73535.jpg"
-                alt="..."
-                class="rounded"
-              />
-              <div
-                class="card-img-overlay d-flex flex-column justify-content-end"
-              >
-                <h3 class="card-title">Game Title</h3>
-                <p class="card-text">
-                  This is a wider card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit
-                  longer.
-                </p>
-                <button type="button" class="btn btn-primary">Play Game</button>
+                <h3 class="card-title">{{ game.title }}</h3>
+                <p class="card-text">{{ game.description }}</p>
+                <button type="button" class="btn btn-primary">Play</button>
               </div>
             </div>
           </div>
@@ -128,7 +85,7 @@
 
 .slideshow {
   justify-content: center;
-  margin: 10px
+  margin: 10px;
 }
 
 .carousel-item img {
@@ -154,6 +111,11 @@
     rgba(0, 0, 0, 0.4) 50%,
     transparent 100%
   );
+
+  padding-left: 18%;
+  padding-right: 18%;
+  padding-bottom: 5%;
+
 }
 
 .btn {
@@ -164,4 +126,43 @@
 
 <script setup>
 //for supabase queries
+import { ref, onMounted } from "vue";
+import { createClient } from "@supabase/supabase-js";
+import { useRuntimeConfig } from "#app";
+
+const config = useRuntimeConfig();
+const supabase = createClient(
+  config.public.supabaseUrl,
+  config.public.supabaseKey
+);
+const games = ref([]);
+
+async function fetchGames() {
+  const { data, error } = await supabase
+    .from("games")
+    .select("id, title, description, thumbnail_url");
+  if (error) {
+    console.error("Error fetching games:", error.message);
+  } else {
+    games.value = data;
+    // console.log(games.value)
+    for (const game of games.value) {
+      fetchThumbnail(game);
+    }
+  }
+}
+
+async function fetchThumbnail(game) {
+  // console.log(game)
+  const { data, error } = await supabase.storage
+    .from("files_wad2")
+    .getPublicUrl(game.thumbnail_url);
+  // console.log(data)
+  game.publicUrl = data.publicUrl;
+  console.log(game.publicUrl);
+}
+
+onMounted(() => {
+  fetchGames();
+});
 </script>
