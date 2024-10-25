@@ -18,7 +18,8 @@ class ChemicalMatchingScene extends Phaser.Scene {
         this.load.image('backButton', 'assets/images/backButton.png'); // Add your back button image
         this.load.image('restartButton', 'assets/images/restartButton.png'); // Add your back button image
         this.load.image('exitButton', 'assets/images/exitButton.png'); // Add your back button image
-        this.load.image('button', 'assets/images/button.png');
+        this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
+
         
     }
 
@@ -40,12 +41,13 @@ class ChemicalMatchingScene extends Phaser.Scene {
         .setInteractive()
         .setScale(0.1)  // Adjust the size of the button
         .on('pointerdown', () => {
+            this.sound.play('glassClick');
             this.scene.start('CasualGameScene');  // Switch back to LoadingScene when clicked
         });
 
     // Optionally, you can change the button's appearance when hovering or clicking
-            backButton.on('pointerover', () => backButton.setTint(0xAAAAAA));  // Change color on hover
-            backButton.on('pointerout', () => backButton.clearTint());  // Reset color on hover out
+        backButton.on('pointerover', () => backButton.setTint(0xAAAAAA));  // Change color on hover
+        backButton.on('pointerout', () => backButton.clearTint());  // Reset color on hover out
         
         // Initialize score and timer
     
@@ -66,47 +68,28 @@ class ChemicalMatchingScene extends Phaser.Scene {
             fontFamily: 'Georgia, serif',
         });
 
-        // Set up the element properties
-        // const elementProperties = [
-        //     { element: 'potassium', property: 'K', type: 'Chemical Formula' },
-        //     { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
-        //     { element: 'gold', property: 'Soft, malleable', type: 'Physical Property' },
-        //     { element: 'chlorine', property: 'Cl', type: 'Chemical Formula' },
-        //     { element: 'iron', property: 'Metallic', type: 'Physical Property' },
-        // ];
-
-        // // Set up the draggable elements
-        // const elements = [
-        //     { name: 'potassium', x: this.scale.width * 0.1, y: this.scale.height * 0.2 },
-        //     { name: 'neon', x: this.scale.width * 0.25, y: this.scale.height * 0.2 },
-        //     { name: 'gold', x: this.scale.width * 0.4, y: this.scale.height * 0.2 },
-        //     { name: 'chlorine', x: this.scale.width * 0.55, y: this.scale.height * 0.2 },
-        //     { name: 'iron', x: this.scale.width * 0.7, y: this.scale.height * 0.2 },
-        // ];
-
                 // Set up a full list of element properties with additional elements
-            const allElementProperties = [
-                { element: 'potassium', property: 'K', type: 'Chemical Formula' },
-                { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
-                { element: 'gold', property: 'Soft, malleable', type: 'Physical Property' },
-                { element: 'chlorine', property: 'Cl', type: 'Chemical Formula' },
-                { element: 'iron', property: 'Metallic', type: 'Physical Property' },
-                { element: 'copper', property: 'Cu', type: 'Chemical Formula' },
-                { element: 'silicon', property: 'Semi-conductor', type: 'Chemical Property' },
-                { element: 'astatine', property: 'Radioactive', type: 'Physical Property' },
-                { element: 'bromine', property: 'Br', type: 'Chemical Formula' },
-                { element: 'calcium', property: 'Ca', type: 'Chemical Formula' },
-            ];
-    
-            // Randomly select 5 elements from the full list
-            const shuffledElements = Phaser.Utils.Array.Shuffle(allElementProperties);
-            const elementProperties = shuffledElements.slice(0, 4); // Get 5 random elements
-    
-            // Set up the draggable elements based on the randomly selected ones
-            const elements = elementProperties.map((prop, index) => {
-                const xPosition = this.scale.width * (0.1 + index * 0.15); // Adjust positions dynamically
-                return { name: prop.element, x: xPosition, y: this.scale.height * 0.2 };
-            });
+        const allElementProperties = [
+            { element: 'potassium', property: 'K', type: 'Chemical Formula' },
+            { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
+            { element: 'gold', property: 'Very unreactive', type: 'Physical Property' },
+            { element: 'chlorine', property: 'Diatomic Gas', type: 'Chemical Property' },
+            { element: 'iron', property: 'Metallic', type: 'Physical Property' },
+            { element: 'copper', property: 'Red brown', type: 'Physical Property' },
+            { element: 'astatine', property: 'Radioactive', type: 'Physical Property' },
+            { element: 'bromine', property: 'Br', type: 'Chemical Formula' },
+        ];
+
+        // Randomly select 5 elements from the full list
+        const shuffledElements = Phaser.Utils.Array.Shuffle(allElementProperties);
+        const elementProperties = shuffledElements.slice(0, 4); // Get 5 random elements
+
+        // Set up the draggable elements based on the randomly selected ones
+        const elements = elementProperties.map((prop, index) => {
+            const xPosition = this.scale.width * (0.25 + index * 0.15); // Adjust positions dynamically
+            console.log(index)
+            return { name: prop.element, x: xPosition, y: this.scale.height * 0.2 };
+        });
 
         elements.forEach((elementData) => {
             const element = this.add.image(elementData.x, elementData.y, elementData.name)
@@ -177,8 +160,8 @@ class ChemicalMatchingScene extends Phaser.Scene {
             const imageHeight = gameObject.displayHeight;
 
             // Set position to bottom-right of the card with some padding (e.g., 10px from the bottom and right)
-            const offsetX = (cardWidth / 2) - imageWidth - 10; // Adjust to position from the right
-            const offsetY = (cardHeight / 2) - imageHeight - 10; // Adjust to position from the bottom
+            const offsetX = (cardWidth / 2) - imageWidth - 5; // Adjust to position from the right
+            const offsetY = (cardHeight / 2) - imageHeight - 15; // Adjust to position from the bottom
 
             // Set the position to be at the bottom-right of the card
             gameObject.setPosition(dropZone.x + offsetX, dropZone.y + offsetY).setScale(0.5); // Position at bottom-right
@@ -266,25 +249,23 @@ class ChemicalMatchingScene extends Phaser.Scene {
 
         const exitButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.65, 'exitButton')
         .setInteractive()
-        .setScale(0.1)  // Adjust the size of the button
+        .setScale(0.15)  // Adjust the size of the button
         .on('pointerdown', () => {
-            this.scene.start('CasualGameScene');  // Switch back to LoadingScene when clicked
+            this.sound.play('glassClick');
+            this.scene.start('CasualGameScene');  // Switch back to CasualGameScene when clicked
         });
+
+        exitButton.on('pointerover', () => exitButton.setTint(0xAAAAAA));  // Change color on hover
+        exitButton.on('pointerout', () => exitButton.clearTint());  // Reset color on hover out
 
         const restartButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.75, 'restartButton')
         .setInteractive()
-        .setScale(0.1)  // Adjust the size of the button
+        .setScale(0.15)  // Adjust the size of the button
         .on('pointerdown', () => {
             this.scene.start('ChemicalMatchingScene');  // Switch back to LoadingScene when clicked
         });
 
-        // Stop all interactive events
-        // this.input.enabled = false;
-        // this.input.enabled = false;
-
-        // Optionally, restart the scene after a delay or navigate to a main menu
-        // this.time.delayedCall(3000, () => {
-        //     this.scene.start('MainMenuScene'); // Change this to your main menu scene key
-        // });
+        restartButton.on('pointerover', () => restartButton.setTint(0xAAAAAA));  // Change color on hover
+        restartButton.on('pointerout', () => restartButton.clearTint());  // Reset color on hover out
     }
 }

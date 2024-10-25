@@ -8,6 +8,8 @@ class CasualGameScene extends Phaser.Scene {
         this.load.image('background', 'assets/images/start_background.jpg'); // Background for the scene
         this.load.image('backButton', 'assets/images/backButton.png'); // Add your back button image
         this.load.image('button', 'assets/images/button.png');
+        this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
+
     }
 
     create() {
@@ -25,6 +27,7 @@ class CasualGameScene extends Phaser.Scene {
         .setInteractive()
         .setScale(0.1)  // Adjust the size of the button
         .on('pointerdown', () => {
+            this.sound.play('glassClick');
             this.scene.start('LoadingScene');  // Switch back to LoadingScene when clicked
         });
 
@@ -38,9 +41,9 @@ class CasualGameScene extends Phaser.Scene {
         // Array of game titles and associated scenes
         const games = [
             { title: 'Chemical Matching', scene: 'ChemicalMatchingScene' },
-            { title: 'Monster Elimination', scene: 'MonsterEliminationScene' },
-            { title: 'Environmental Cleanup', scene: 'EnvironmentalCleanupScene' },
-            { title: 'Fourth Game', scene: 'FourthScene' }
+            { title: 'Monster Elimination\n[Coming Soon]', scene: 'MonsterEliminationScene' },
+            { title: 'Environmental Cleanup\n[Coming Soon]', scene: 'EnvironmentalCleanupScene' },
+            { title: 'Catalyst Clash\n[Coming Soon]', scene: 'FourthScene' }
         ];
 
         const cardWidth = this.scale.width * 0.4;
@@ -60,11 +63,17 @@ class CasualGameScene extends Phaser.Scene {
 
             // Add button sprite for the game
             const gameButton = this.add.sprite(x, y, 'button')
-                .setInteractive()
                 .setScale(buttonScale)
-                .on('pointerdown', () => {
-                    this.scene.start(game.scene); // Start the corresponding game scene
+
+                // Disable interactivity for "Coming Soon" games
+            if (game.title.includes('[Coming Soon]')) {
+                gameButton.setTint(0xAAAAAA); // Grey out the button
+            } else {
+                gameButton.setInteractive().on('pointerdown', () => {
+                    this.sound.play('glassClick');
+                    this.scene.start(game.scene);
                 });
+            }
 
             // Add hover effects
             gameButton.on('pointerover', () => {
@@ -79,6 +88,7 @@ class CasualGameScene extends Phaser.Scene {
                 fontSize: `${this.scale.width * 0.03}px`,
                 color: '#000',
                 fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+                align: 'center',
             }).setOrigin(0.5);
         });
  
