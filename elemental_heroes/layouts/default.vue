@@ -152,7 +152,6 @@ function toggleSidebar() {
   margin-left: 80px;
 }
 
-/* Your existing sidebar styles */
 #sidebar.active {
   min-width: 80px;
   max-width: 80px;
@@ -184,7 +183,6 @@ function toggleSidebar() {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  padding: 0;
   border: none;
   background: none;
 }
@@ -193,15 +191,13 @@ function toggleSidebar() {
 #sidebar.active .sidebar-header button#sidebarCollapse {
   display: block;
   margin: 0 auto;
-  /* padding: 10px; */
+  left:0
 }
 
-/* Update the active state header styles */
 #sidebar.active .sidebar-header {
   padding: 0;
   display: flex;
   justify-content: center;
-  /* Center the content */
   align-items: center;
   position: relative;
 }
@@ -242,7 +238,6 @@ function toggleSidebar() {
   transform: translateX(50%);
 }
 
-/* Your existing navbar styles */
 .navbar {
   position: sticky;
   top: 0;
@@ -265,7 +260,6 @@ main {
   min-height: calc(100vh - 70px);
 }
 
-/* Your existing media queries */
 @media (max-width: 768px) {
   #sidebar {
     margin-left: -250px;
