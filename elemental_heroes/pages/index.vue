@@ -115,7 +115,6 @@
   padding-left: 18%;
   padding-right: 18%;
   padding-bottom: 5%;
-
 }
 
 .btn {
