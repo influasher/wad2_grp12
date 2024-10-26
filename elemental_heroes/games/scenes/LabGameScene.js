@@ -6,22 +6,26 @@ class LabGameScene extends Phaser.Scene {
     preload() {
         // Load assets
         this.load.image('labBackground', 'assets/images/labBackground.png');
-        this.load.image('testTubeEmpty', 'assets/images/emptyTestTube.png');
-        this.load.image('testTubePrecipitateRed', 'assets/images/redTestTube.png');
-        this.load.image('testTubePrecipitateBlue', 'assets/images/blueTestTube.png');
-        this.load.image('testTubePrecipitateGreen', 'assets/images/greenTestTube.png');
-        this.load.image('testTubePrecipitateWhite', 'assets/images/whiteTestTube.png');
-        this.load.image('testTubeSolutionDarkBlue', 'assets/images/darkBlueTestTube.png'); // Dark blue solution for NH3 excess in blue test tube
-        this.load.image('testTubeSolutionColorless', 'assets/images/emptyTestTube.png'); // Colorless solution for white test tubes with excess
-        this.load.image('bottle', 'assets/images/emptyBottle.png');
+        this.load.image('testTubeEmpty', 'assets/images/colourlessSolution.png');
+        this.load.image('testTubePrecipitateRed', 'assets/images/redPrecipitate.png');
+        this.load.image('testTubePrecipitateBlue', 'assets/images/lightBluePrecipitate.png');
+        this.load.image('testTubePrecipitateGreen', 'assets/images/greenPrecipitate.png');
+        this.load.image('testTubePrecipitateWhite', 'assets/images/whitePrecipitate.png');
+        this.load.image('testTubeSolutionDarkBlue', 'assets/images/darkBlueSolution.png'); // Dark blue solution for NH3 excess in blue test tube
+        this.load.image('testTubeSolutionColorless', 'assets/images/colourlessSolution.png'); // Colorless solution for white test tubes with excess
+        this.load.image('bottle', 'assets/images/bottle.png');
         this.load.image('rack', 'assets/images/rack.png');
         this.load.image('exitButton', 'assets/images/exitButton.png');
         this.load.image('resetButton', 'assets/images/resetButton.png'); // Reset button image
         this.load.image('soundOnButton', 'assets/images/soundOn.png');  // Sound on button image
         this.load.image('soundOffButton', 'assets/images/soundOff.png');  // Sound off button image
+
+        // audio load
         this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
         this.load.audio('errorClick', 'assets/audio/errorClick.wav');  // error sound
         this.load.audio('resetClick', 'assets/audio/resetClick.wav');  // reset sound
+        this.load.image('pouringStream', 'assets/images/pouringBottle.png');
+
 
     }
 
@@ -56,9 +60,9 @@ class LabGameScene extends Phaser.Scene {
 
         // Add test tubes
         this.testTubes = [
-            this.add.image(this.scale.width * 0.35, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.004).setInteractive({ dropZone: true }),
-            this.add.image(this.scale.width * 0.45, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.004).setInteractive({ dropZone: true }),
-            this.add.image(this.scale.width * 0.55, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.004).setInteractive({ dropZone: true })
+            this.add.image(this.scale.width * 0.35, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.002).setInteractive({ dropZone: true }),
+            this.add.image(this.scale.width * 0.45, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.002).setInteractive({ dropZone: true }),
+            this.add.image(this.scale.width * 0.55, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.002).setInteractive({ dropZone: true })
         ];
 
         // Precipitate colors and randomization
@@ -80,12 +84,12 @@ class LabGameScene extends Phaser.Scene {
         const naohOriginalPos = { x: this.scale.width * 0.75, y: this.scale.height * 0.47 };
         const nh3OriginalPos = { x: this.scale.width * 0.83, y: this.scale.height * 0.49 };
 
-        this.bottleNaOH = this.add.image(naohOriginalPos.x, naohOriginalPos.y, 'bottle').setScale(this.scale.width * 0.0035).setInteractive();
+        this.bottleNaOH = this.add.image(naohOriginalPos.x, naohOriginalPos.y, 'bottle').setScale(this.scale.width * 0.00175).setInteractive();
         this.bottleLabelNaOH = this.add.text(this.scale.width * 0.7, this.scale.height * 0.55, 'NaOH (aq)', { 
             ...baseTextStyle, fontSize: `${this.scale.width * 0.015}px`
             });
 
-        this.bottleNH3 = this.add.image(nh3OriginalPos.x, nh3OriginalPos.y, 'bottle').setScale(this.scale.width * 0.0035).setInteractive();
+        this.bottleNH3 = this.add.image(nh3OriginalPos.x, nh3OriginalPos.y, 'bottle').setScale(this.scale.width * 0.00175).setInteractive();
         this.bottleLabelNH3 = this.add.text(this.scale.width * 0.8, this.scale.height * 0.57, 'NH3 (aq)', { 
             ...baseTextStyle, fontSize: `${this.scale.width * 0.015}px`
             });
@@ -127,6 +131,7 @@ class LabGameScene extends Phaser.Scene {
             const testTubeIndex = this.testTubes.indexOf(dropZone);
             if (testTubeIndex !== -1) {
                 const bottleName = this.getBottleName(gameObject);
+                this.playPouringAnimation(testTubeIndex, gameObject);
 
                 // Check if excess has already been added
                 if (this.excessAdded[testTubeIndex]) {
@@ -217,6 +222,29 @@ class LabGameScene extends Phaser.Scene {
         this.addedSolution[testTubeIndex] = null;
         this.instructionText.setText('Test tube reset.');
     }
+    
+    // Create the pouring animation function
+    playPouringAnimation(testTubeIndex, bottle) {
+        console.log('pouring')
+        const testTube = this.testTubes[testTubeIndex];
+    
+        // Create the pouring stream
+        const pouringStream = this.add.image(bottle.x, bottle.y, 'pouringStream').setScale(1);
+    
+        // Animate the pouring (move the stream downwards towards the test tube and fade it out)
+        this.tweens.add({
+            targets: pouringStream,
+            x: testTube.x,  // Move to the x position of the test tube
+            y: testTube.y - 50,  // Move down near the top of the test tube
+            alpha: { from: 1, to: 0 },  // Fade out the stream
+            duration: 2000,  // Adjust timing for a smooth pour
+            onComplete: () => {
+                pouringStream.destroy();  // Remove the stream after animation
+                this.addPrecipitateToTestTube(testTubeIndex, this.getBottleName(bottle));  // Call function to add precipitate
+            }
+        });
+    }
+    
 
     createMusicToggleButton() {
         // Initially show the "sound on" button
