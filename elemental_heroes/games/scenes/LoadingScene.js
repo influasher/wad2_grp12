@@ -12,6 +12,8 @@ class LoadingScene extends Phaser.Scene {
         }
         this.load.image('soundOnButton', 'assets/images/soundOn.png');  // Sound on button image
         this.load.image('soundOffButton', 'assets/images/soundOff.png');  // Sound off button image
+        this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
+
     }
     
 
@@ -63,6 +65,7 @@ class LoadingScene extends Phaser.Scene {
         const legitLabButton = this.add.sprite(this.scale.width * 0.25, this.scale.height * 0.70, 'button')
             .setInteractive().setScale(buttonScale)
             .on('pointerdown', () => {
+                this.sound.play('glassClick');
                 this.scene.start('LabGameScene'); // Change to the LabGameScene
             })
             .on('pointerover', () => this.bloomButton(legitLabButton, buttonScale))
@@ -83,6 +86,7 @@ class LoadingScene extends Phaser.Scene {
         const casualGamesButton = this.add.sprite(this.scale.width * 0.75, this.scale.height * 0.70, 'button')
             .setInteractive().setScale(buttonScale)
             .on('pointerdown', () => {
+                this.sound.play('glassClick');
                 this.scene.start('CasualGameScene'); // Change to the CasualGameMenuScene
             })
             .on('pointerover', () => this.bloomButton(casualGamesButton, buttonScale))
