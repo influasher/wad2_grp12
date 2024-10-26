@@ -40,20 +40,46 @@
               </div>
             </div>
           </div>
-          <!-- <div class="carousel-item" data-bs-interval="3000">
-            <img
-              src="../assets/images/chemistry games/Firefly chemistry revision online game 5908 (1).jpg"
-              alt="..."
-              class="rounded"
-            />
+          <div class="carousel-item active" data-bs-interval="3000">
+            <div class="card text-bg-dark mx-auto">
+              <img
+                src="../assets/images/chemistry games/Firefly chemistry revision online game 5908 (1).jpg"
+                alt="..."
+                class="rounded"
+              />
+              <div
+                class="card-img-overlay d-flex flex-column justify-content-end"
+              >
+                <h3 class="card-title">Game Title</h3>
+                <p class="card-text">
+                  This is a wider card with supporting text below as a natural
+                  lead-in to additional content. This content is a little bit
+                  longer.
+                </p>
+                <button type="button" class="btn btn-primary">Play Game</button>
+              </div>
+            </div>
           </div>
-          <div class="carousel-item" data-bs-interval="3000">
-            <img
-              src="../assets/images/chemistry games/Firefly chemistry revision online game 73535.jpg"
-              alt="..."
-              class="rounded"
-            />
-          </div> -->
+          <div class="carousel-item active" data-bs-interval="3000">
+            <div class="card text-bg-dark mx-auto">
+              <img
+                src="../assets/images/chemistry games/Firefly chemistry revision online game 73535.jpg"
+                alt="..."
+                class="rounded"
+              />
+              <div
+                class="card-img-overlay d-flex flex-column justify-content-end"
+              >
+                <h3 class="card-title">Game Title</h3>
+                <p class="card-text">
+                  This is a wider card with supporting text below as a natural
+                  lead-in to additional content. This content is a little bit
+                  longer.
+                </p>
+                <button type="button" class="btn btn-primary">Play Game</button>
+              </div>
+            </div>
+          </div>
         </div>
         <button
           class="carousel-control-prev"
@@ -89,7 +115,8 @@
   display: block;
   background-color: #f5f5f5;
   max-width: 100%;
-
+  padding: 10px;
+  margin: 10px;
   h3 {
     text-align: center;
   }
@@ -101,19 +128,23 @@
 
 .slideshow {
   justify-content: center;
+  margin: 10px
 }
 
 .carousel-item img {
-  /* width: 60%; */
-  /* height: 245px;
-  max-height: 245px; */
-  /* margin: auto;
-  display: block; */
+  width: 100%;
+  /* height: 260px; */
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
 }
 
 .card {
-  width: 60%;
-  /* justify-content: center; */
+  width: 100%;
+  max-height: 500px;
+  display: inline-block;
+  position: relative;
+  overflow: hidden; /*This will crop off image portions that overflow the container*/
 }
 
 .card-img-overlay {
