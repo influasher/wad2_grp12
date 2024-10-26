@@ -2,21 +2,20 @@ class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
         this.checklists = {
-            Titration: ["Beaker", "Bunsen Burner", "Test Tube"],
-            QA: ["Thermometer", "Graduated Cylinder"],
+            QA: ["NaOH (aq)", "NH3 (aq)", "Test Tube"],
+            Titration: ["Thermometer", "Graduated Cylinder"],
             Electrochemistry: ["Scale", "Measuring Spoon"],
             Metals: ["Dropper", "Glass Stirring Rod"]
         };
         this.currentTable = null; // Track the current table for showing popup
         this.inventory = []; // Inventory items the player currently has
-        this.teacherInventory = ["Beaker", "Lab Report", "Lab Coat"]; // Items in the teacher's table
+        this.teacherInventory = ["NaOH (aq)", "NH3 (aq)", "Test Tube"]; // Items in the teacher's table
     }
 
     preload() {
         this.load.image('backgroundTile', 'assets/images/background_blue.png');
         this.load.image('player', 'assets/images/ball_red_small.png');
         this.load.image('table', 'assets/images/table.png');
-        this.load.image('titration','assets/images/purifier.png');
         this.load.image('clipboard','assets/images/clipboard.png');
         this.load.image('tick', 'assets/images/tick.png');
         this.load.image('cross', 'assets/images/cross.png');
@@ -52,7 +51,7 @@ class GameScene extends Phaser.Scene {
         const verticalSpacing = (this.scale.height - (rows * tableHeight)) / (rows + 1);
 
         // Define table names
-        const tableNames = ["Titration", "QA", "Electrochemistry", "Metals"];
+        const tableNames = [ "QA", "Titration", "Electrochemistry", "Metals"];
 
         let index = 0;
         for (let row = 0; row < rows; row++) {
@@ -161,9 +160,26 @@ class GameScene extends Phaser.Scene {
             // Position the items within the inventory slots
             // Difference between items in columns and rows = 50
             let slotPositions = [
+                // Row 1
                 { x: -75, y: -75 },
+                { x: -25, y: -75 },
+                { x: 25, y: -75 },
+                { x: 75, y: -75 },
+                // Row 2
+                { x: -75, y: -25 },
                 { x: -25, y: -25 },
-                { x: 25, y: 25 }
+                { x: 25, y: -25 },
+                { x: 75, y: -25 },
+                // Row 3
+                { x: -75, y: 25 },
+                { x: -25, y: 25 },
+                { x: 25, y: 25 },
+                { x: 75, y: 25 },
+                // Row 4
+                { x: -75, y: 75 },
+                { x: -25, y: 75 },
+                { x: 25, y: 75 },
+                { x: 75, y: 75 }
             ];
     
             let inventoryItems = [];
@@ -174,7 +190,7 @@ class GameScene extends Phaser.Scene {
                     let slotPos = slotPositions[index];
     
                     // Create the sprite for the inventory item (adjust the frame index)
-                    let itemIcon = this.add.sprite(this.cameras.main.centerX + slotPos.x, this.cameras.main.centerY + slotPos.y, 'labIcons', this.getFrameIndex(item));
+                    let itemIcon = this.add.sprite(this.cameras.main.centerX + slotPos.x, this.cameras.main.centerY + slotPos.y, 'labIcons', this.getFrameIndex(item)).setScale(1.5);
                     
                     itemIcon.setInteractive();
     
@@ -241,20 +257,36 @@ class GameScene extends Phaser.Scene {
                 // Position the items within the inventory slots
                 // Difference between items in columns and rows = 50
                 let slotPositions = [
+                    // Row 1
                     { x: -75, y: -75 },
+                    { x: -25, y: -75 },
+                    { x: 25, y: -75 },
+                    { x: 75, y: -75 },
+                    // Row 2
+                    { x: -75, y: -25 },
                     { x: -25, y: -25 },
-                    { x: 25, y: 25 }
+                    { x: 25, y: -25 },
+                    { x: 75, y: -25 },
+                    // Row 3
+                    { x: -75, y: 25 },
+                    { x: -25, y: 25 },
+                    { x: 25, y: 25 },
+                    { x: 75, y: 25 },
+                    // Row 4
+                    { x: -75, y: 75 },
+                    { x: -25, y: 75 },
+                    { x: 25, y: 75 },
+                    { x: 75, y: 75 }
                 ];
         
                 let inventoryItems = [];
         
-                // Loop through teacher's inventory and add items as icons
+                // Loop through player's inventory and add items as icons
                 this.inventory.forEach((item, index) => {
                     if (index < slotPositions.length) {
                         let slotPos = slotPositions[index];
-        
                         // Create the sprite for the inventory item (adjust the frame index)
-                        let itemIcon = this.add.sprite(this.cameras.main.centerX + slotPos.x, this.cameras.main.centerY + slotPos.y, 'labIcons', this.getFrameIndex(item));
+                        let itemIcon = this.add.sprite(this.cameras.main.centerX + slotPos.x, this.cameras.main.centerY + slotPos.y, 'labIcons', this.getFrameIndex(item)).setScale(1.5);
                         
                         itemIcon.setInteractive();
         
@@ -321,9 +353,9 @@ class GameScene extends Phaser.Scene {
         getFrameIndex(item) {
             // Return the correct frame index based on the item name
             const itemFrames = {
-                "Beaker": 0,
-                "Lab Report": 1,
-                "Lab Coat": 2,
+                "Test Tube": 0,
+                "NaOH (aq)": 1,
+                "NH3 (aq)": 2,
                 // Add other items and their frame indexes here
             };
             return itemFrames[item] !== undefined ? itemFrames[item] : 0;
@@ -386,9 +418,11 @@ class GameScene extends Phaser.Scene {
                 let icon;
                 if (this.inventory.includes(item)) {
                     // Show tick image
+                    console.log('Player has ' + item)
                     icon = this.add.image(iconX, startY + (index * spacingY) + 15, 'tick').setScale(0.2).setOrigin(0.5);
                 } else {
                     // Show cross image
+                    console.log('Player does not have ' + item)
                     icon = this.add.image(iconX, startY + (index * spacingY) + 15, 'cross').setScale(0.2).setOrigin(0.5);
                 }
     
@@ -409,9 +443,10 @@ class GameScene extends Phaser.Scene {
                 // backgroundColor: '#000000',  // Optional: black background for text
                 padding: { x: 10, y: 10 }
             }).setOrigin(0.5);
-    
+
+            this.checkInventoryForChecklist();
+            
             checklistItems.push(overlay, clipboard, instructionText, hint);  // Add overlay, clipboard, and instruction text to the array
-    
             // Allow closing the checklist by pressing the Escape key
             let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
             escapeKey.on('down', () => {
@@ -424,5 +459,61 @@ class GameScene extends Phaser.Scene {
                 this.canMove = true;
             });
         }
+
+        // Function to check if the player's inventory matches the checklist
+        checkInventoryForChecklist() {
+            console.log('Checking');
+            if (this.currentTable && this.checklists[this.currentTable.name]) {
+                // Check if all items in the checklist are in the player's inventory
+                const checklist = this.checklists[this.currentTable.name];
+                const hasAllItems = checklist.every(item => this.inventory.includes(item));
+
+                if (hasAllItems) {
+                    this.showPlayButton(); // Show the button if all items are present
+                }
+            }
+        }
+
+        // Function to display the play button
+        showPlayButton() {
+            console.log('Game button');
+            const buttonScale = 0.2 // Adjust scale as needed
+            const legitLabButton = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY + 180, 'button')
+                .setInteractive().setScale(buttonScale)
+                .on('pointerdown', () => {
+                    this.scene.start(this.currentTable.name); // Change to the next scene
+                })
+                .on('pointerover', () => this.bloomButton(legitLabButton, buttonScale))
+                .on('pointerout', () => this.resetButton(legitLabButton, buttonScale))
+                .on('pointerup', () => {
+                    this.scene.start(this.currentTable.name); // For iPad interaction
+                });
+
+            const buttonText = this.add.text(legitLabButton.x, legitLabButton.y, 'Start Game', { 
+                fontSize: '15px', 
+                color: '#000000',
+            }).setOrigin(0.5);
+
+            let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+            escapeKey.on('down', () => {
+                console.log('Escape pressed, closing button');
+                legitLabButton.destroy();
+                buttonText.destroy();
+            });
+
+            
+        }
+
+        bloomButton(button, buttonScale) {
+            button.setScale(buttonScale + 0.05); // Scale up the button
+            button.setTint(0xdddddd); // Change color for effect (optional)
+        }
+    
+        resetButton(button, buttonScale) {
+            button.setScale(buttonScale); // Scale back down
+            button.clearTint(); // Reset the color
+        }
+
+        
     }
 
