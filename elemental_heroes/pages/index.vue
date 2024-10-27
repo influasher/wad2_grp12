@@ -98,7 +98,7 @@
 
 .card {
   width: 100%;
-  max-height: 500px;
+  max-height: 650px;
   display: inline-block;
   position: relative;
   overflow: hidden; /*This will crop off image portions that overflow the container*/
