@@ -60,9 +60,9 @@ class LabGameScene extends Phaser.Scene {
 
         // Add test tubes
         this.testTubes = [
-            this.add.image(this.scale.width * 0.35, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.002).setInteractive({ dropZone: true }),
-            this.add.image(this.scale.width * 0.45, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.002).setInteractive({ dropZone: true }),
-            this.add.image(this.scale.width * 0.55, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.002).setInteractive({ dropZone: true })
+            this.add.image(this.scale.width * 0.35, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.0007).setInteractive({ dropZone: true }),
+            this.add.image(this.scale.width * 0.45, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.0007).setInteractive({ dropZone: true }),
+            this.add.image(this.scale.width * 0.55, this.scale.height * 0.7, 'testTubeEmpty').setScale(this.scale.width * 0.0007).setInteractive({ dropZone: true })
         ];
 
         // Precipitate colors and randomization
@@ -229,7 +229,7 @@ class LabGameScene extends Phaser.Scene {
         const testTube = this.testTubes[testTubeIndex];
     
         // Create the pouring stream
-        const pouringStream = this.add.image(bottle.x, bottle.y, 'pouringStream').setScale(1);
+        const pouringStream = this.add.image(testTube.x+20, testTube.y-60, 'pouringStream').setScale(1);
     
         // Animate the pouring (move the stream downwards towards the test tube and fade it out)
         this.tweens.add({

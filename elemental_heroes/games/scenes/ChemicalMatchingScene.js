@@ -52,7 +52,7 @@ class ChemicalMatchingScene extends Phaser.Scene {
         // Initialize score and timer
     
         this.score = 0;
-        this.timeRemaining = 5; // 60 seconds for the game
+        this.timeRemaining = 60; // 60 seconds for the game
 
         // Display score text
         this.scoreText = this.add.text(this.scale.width * 0.065, this.scale.height * 0.03, 'Score: 0', {
@@ -72,12 +72,12 @@ class ChemicalMatchingScene extends Phaser.Scene {
         const allElementProperties = [
             { element: 'potassium', property: 'K', type: 'Chemical Formula' },
             { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
-            { element: 'gold', property: 'Very unreactive', type: 'Physical Property' },
-            { element: 'chlorine', property: 'Diatomic Gas', type: 'Chemical Property' },
+            { element: 'gold', property: 'Au', type: 'Chemical Formula' },
+            { element: 'chlorine', property: 'Greenish-yellow\ngas', type: 'Chemical Property' },
             { element: 'iron', property: 'Metallic', type: 'Physical Property' },
-            { element: 'copper', property: 'Red brown', type: 'Physical Property' },
+            { element: 'copper', property: 'Red brown\nsolid', type: 'Physical Property' },
             { element: 'astatine', property: 'Radioactive', type: 'Physical Property' },
-            { element: 'bromine', property: 'Br', type: 'Chemical Formula' },
+            { element: 'bromine', property: 'Group 17\nelement', type: 'Chemical Property' },
         ];
 
         // Randomly select 5 elements from the full list
@@ -97,6 +97,9 @@ class ChemicalMatchingScene extends Phaser.Scene {
                 .setInteractive();
             this.input.setDraggable(element);
 
+            element.originalX = elementData.x;
+            element.originalY = elementData.y;
+
             element.on('pointerdown', () => {
                 element.setScale(1.1); // Scale up on select
             });
@@ -108,8 +111,10 @@ class ChemicalMatchingScene extends Phaser.Scene {
 
         // Add dragging functionality
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
+            if (!this.gameOver) {
+                gameObject.x = dragX;
+                gameObject.y = dragY;
+            }
         });
 
         // Position cards with properties
@@ -134,12 +139,14 @@ class ChemicalMatchingScene extends Phaser.Scene {
                 fontSize: `${this.scale.width * 0.025}px`,
                 color: '#000',
                 fontFamily: 'Georgia, serif',
+                align: 'center'
             }).setOrigin(0.5);
         
             const propertyText = this.add.text(pos.x, pos.y + 20, prop.property, {
                 fontSize: `${this.scale.width * 0.025}px`,
                 color: '#000',
                 fontFamily: 'Georgia, serif',
+                align: 'center'
             }).setOrigin(0.5);
         
             // Define drop zone for each card
@@ -151,64 +158,45 @@ class ChemicalMatchingScene extends Phaser.Scene {
             card.setDataEnabled();
             card.data.set('element', prop.element);
         });
+
+        this.correctMatches = 0; // Initialize a counter for correct matches
         
         this.input.on('drop', (pointer, gameObject, dropZone) => {
-            gameObject.setOrigin(0, 0);
-            const cardWidth = 250;  // Assuming the card width is 250
-            const cardHeight = 150; // Assuming the card height is 150
-            const imageWidth = gameObject.displayWidth;
-            const imageHeight = gameObject.displayHeight;
-
-            // Set position to bottom-right of the card with some padding (e.g., 10px from the bottom and right)
-            const offsetX = (cardWidth / 2) - imageWidth - 5; // Adjust to position from the right
-            const offsetY = (cardHeight / 2) - imageHeight - 15; // Adjust to position from the bottom
-
-            // Set the position to be at the bottom-right of the card
-            gameObject.setPosition(dropZone.x + offsetX, dropZone.y + offsetY).setScale(0.5); // Position at bottom-right
-            gameObject.setDepth(1); // Ensure the image appears on top of the card
-            
-
-            // Remove any previous result text
-            if (this.resultText) {
-                this.resultText.destroy();
-            }
-        
             // Check if the match is correct
             if (dropZone.getData('element') === gameObject.texture.key) {
-                // Correct match
-                gameObject.x = dropZone.x;
-                gameObject.y = dropZone.y;
-        
-                // Display "Correct!" text
+                // Correct match: position at bottom-right of the card
+                gameObject.setPosition(dropZone.x + 70, dropZone.y + 30).setScale(0.35);
+                gameObject.setDepth(1); // Ensure it appears on top`
+                gameObject.disableInteractive(); // Disable dragging for correct match
+                this.correctMatches++;
                 this.resultText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Correct!', {
                     fontSize: `${this.scale.width * 0.05}px`,
                     color: '#00ff00',
                     fontFamily: 'Georgia, serif',
                 }).setOrigin(0.5);
-        
-                // Fade out the text after 1 second
-                this.time.delayedCall(1000, () => {
-                    this.resultText.destroy();
-                });
-        
-                // Add points for the correct match
+                
                 this.updateScore(10);
+
+                        // Check if all matches are correct
+                if (this.correctMatches === elements.length) {
+                    this.endGame();
+                }
             } else {
-                // Display "Wrong!" text
+                // Incorrect match: return to original position
+                gameObject.setPosition(gameObject.originalX, gameObject.originalY).setScale(0.8);
                 this.resultText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Wrong!', {
                     fontSize: `${this.scale.width * 0.05}px`,
                     color: '#ff0000',
                     fontFamily: 'Georgia, serif',
                 }).setOrigin(0.5);
-        
-                // Fade out the text after 1 second
-                this.time.delayedCall(1000, () => {
-                    this.resultText.destroy();
-                });
-        
-                // Deduct points for the incorrect match
+                
                 this.updateScore(-5);
             }
+
+            // Fade out the result text after 1 second
+            this.time.delayedCall(1000, () => {
+                if (this.resultText) this.resultText.destroy();
+            });
         });
         
 
@@ -238,6 +226,7 @@ class ChemicalMatchingScene extends Phaser.Scene {
     }
 
     endGame() {
+        this.timerEvent.remove(); // Stop the timer
         // Display game over message and final score
         this.add.text(this.scale.width / 2, this.scale.height / 2, `Game Over\nFinal Score: ${this.score}`, {
             fontSize: '32px',
@@ -245,7 +234,9 @@ class ChemicalMatchingScene extends Phaser.Scene {
             fontFamily: 'Georgia, serif',
             align: 'center',
             backgroundColor: '#ffffff',
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(10);
+        
+        this.gameOver = true; // Set game over flag
 
         const exitButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.65, 'exitButton')
         .setInteractive()
@@ -262,7 +253,8 @@ class ChemicalMatchingScene extends Phaser.Scene {
         .setInteractive()
         .setScale(0.15)  // Adjust the size of the button
         .on('pointerdown', () => {
-            this.scene.start('ChemicalMatchingScene');  // Switch back to LoadingScene when clicked
+            this.gameOver = false; // Reset the game over flag
+            this.scene.restart();  // Restart the game scene
         });
 
         restartButton.on('pointerover', () => restartButton.setTint(0xAAAAAA));  // Change color on hover
