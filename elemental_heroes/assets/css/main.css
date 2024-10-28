@@ -1,17 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+
 :root {
+    --primary-font: 'Press Start 2P', cursive;
+    --unity-purple: #8B6EF3;
+    --unity-dark: #1E1E1E;
+    --unity-gray: #F5F5F5;
+    --unity-text: #333333;
+    --unity-hover: #B2A9EC
+}
+
+body {
+    font-family: var(--primary-font);
+}
+
+/* Or create a specific class */
+.pixel-font {
+    font-family: var(--primary-font);
+}
+
+/* :root {
     --unity-purple: #8B6EF3;
     --unity-dark: #1E1E1E;
     --unity-gray: #F5F5F5;
     --unity-text: #333333;
     --unity-hover: #B2A9EC
   }
-  
+
   body {
     font-family: 'Inter', sans-serif;
     background-color: var(--unity-gray);
     color: var(--unity-text);
-  }
-
+  } */
   
   .card {
     border: none;

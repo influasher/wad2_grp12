@@ -6,7 +6,7 @@
         class="sidebar-header d-flex align-items-center justify-content-between"
       >
       <a href="/" class="elementalHome">
-        <h3 class="px-4">Elemental Heroes</h3>
+        <h3 class="px-4 fs-6">Elemental Heroes</h3>
       </a>
         <button id="sidebarCollapse" @click="toggleSidebar" class="p-4">
           <img
@@ -23,7 +23,7 @@
             src="../assets/images/gamepad-joystick-svgrepo-com.svg"
             width="50"
           />
-          <span v-if="!isSidebarActive" class="ms-2">Play a game!</span>
+          <span v-if="!isSidebarActive" class="ms-2 fs-6">Play a game!</span>
         </div>
       </a>
       <a href="/revision" class="sidebarButton">
@@ -31,7 +31,7 @@
           <!-- <button type="button" class="btn btn-block"> -->
 
           <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
-          <span v-if="!isSidebarActive" class="ms-2">Time to revise!</span>
+          <span v-if="!isSidebarActive" class="ms-2 fs-6">Time to revise!</span>
           <!-- </button> -->
         </div>
       </a>
