@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <h1>Chatbot Test</h1>
+
+    <div class="main">
+        <center>
+            <form action="/" method="POST">
+                <input type="prompt" type="text" placeholder="Ask your question here...">
+                <button type="submit">
+                    <i class="next-icon">&rsaquo;</i>
+                </button>
+            </form>
+        </center>
+    </div>
+    <br>
+    <div class="output">
+        <p class="text-center">{{ output }}</p>
+    </div>
+</body>
+</html>
