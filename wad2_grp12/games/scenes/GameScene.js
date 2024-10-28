@@ -20,7 +20,11 @@ class GameScene extends Phaser.Scene {
         this.load.image('tick', 'assets/images/tick.png');
         this.load.image('cross', 'assets/images/cross.png');
         this.load.image('inventorySlots', 'assets/images/InventorySlots.png');
-        this.load.image('keyboards', 'assets/images/keyboards.png');
+        this.load.image('w','assets/images/w.png');
+        this.load.image('a','assets/images/a.png');
+        this.load.image('s','assets/images/s.png');
+        this.load.image('d','assets/images/d.png');
+        this.load.image('i','assets/images/i.png');
 
         // Fixed the issue with loading spritesheet
         this.load.spritesheet('labIcons', 'assets/images/LabIcons.png', {
@@ -41,6 +45,31 @@ class GameScene extends Phaser.Scene {
         let teacherTable = this.tables.create(this.scale.width / 2, 70, 'table').setScale(4,2).refreshBody();
         teacherTable.name = "teacherTable"; // Set the teacher's table name
         this.add.text(teacherTable.x, teacherTable.y, "Teacher's Table", { fontSize: '16px', color: '#000' }).setOrigin(0.5);
+
+        const padding = 20; // Padding from the screen edges
+        const xLeft = padding;
+        const yBottom = this.scale.height - padding;
+
+        // Add WASD keys in a cross formation in the bottom-left corner
+        this.add.image(xLeft + 40, yBottom - 80, 'w').setScale(1).setOrigin(0); // W key above
+        this.add.image(xLeft, yBottom - 40, 'a').setScale(1).setOrigin(0); // A key to the left
+        this.add.image(xLeft + 40, yBottom - 40, 's').setScale(1).setOrigin(0); // S key in the center
+        this.add.image(xLeft + 80, yBottom - 40, 'd').setScale(1).setOrigin(0); // D key to the right
+        this.add.text(xLeft + 120, yBottom - 40, 'Move Around', {
+            fontSize: '20px',
+            fontWeight: 'Bold',
+            fill: '#000',
+            padding: { x: 10, y: 5 }
+        }).setOrigin(0);
+
+        // Add the I key for inventory, positioned slightly above the WASD keys
+        this.add.image(xLeft + 40, yBottom - 140, 'i').setScale(1).setOrigin(0); // I key for inventory
+        this.add.text(xLeft + 80, yBottom - 140, 'Open Inventory', {
+            fontSize: '20px',
+            fontWeight: 'Bold',
+            fill: '#000',
+            padding: { x: 10, y: 5 }
+        }).setOrigin(0);
 
         // Add other tables (as before)
         const rows = 2;
