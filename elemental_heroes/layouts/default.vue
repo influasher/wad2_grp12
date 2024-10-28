@@ -5,7 +5,9 @@
       <div
         class="sidebar-header d-flex align-items-center justify-content-between"
       >
+      <a href="/" class="elementalHome">
         <h3 class="px-4">Elemental Heroes</h3>
+      </a>
         <button id="sidebarCollapse" @click="toggleSidebar" class="p-4">
           <img
             src="../assets/images/hamburger.svg"
@@ -123,6 +125,11 @@ function toggleSidebar() {
   color: #1e1e1e;
   /* padding: 0 20px; */
   /* Remove top/bottom padding */
+}
+
+.elementalHome{
+  color: inherit;
+  text-decoration: none;
 }
 
 .sidebarButton {

@@ -14,7 +14,7 @@ const config = {
             debug: false                 // Set to true if you need to see collision boxes for debugging
         }
     },
-    scene: [LoadingScene, CasualGameScene, ChemicalMatchingScene],  // Add all scenes to the Phaser game instance
+    scene: [LoadingScene, CasualGameScene, ChemicalMatchingScene, GameScene],  // Add all scenes to the Phaser game instance
 };
 
 // Initialize the Phaser game with the config
