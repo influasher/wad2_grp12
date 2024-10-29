@@ -6,7 +6,7 @@
         class="sidebar-header d-flex align-items-center justify-content-between"
       >
       <a href="/" class="elementalHome">
-        <h3 class="px-4 fs-6">Elemental Heroes</h3>
+        <h3 class="px-4 press-start-2p-regular fs-6">Elemental Heroes</h3>
       </a>
         <button id="sidebarCollapse" @click="toggleSidebar" class="p-4">
           <img
@@ -23,7 +23,7 @@
             src="../assets/images/gamepad-joystick-svgrepo-com.svg"
             width="50"
           />
-          <span v-if="!isSidebarActive" class="ms-2 fs-6">Play a game!</span>
+          <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular">Games</span>
         </div>
       </a>
       <a href="/revision" class="sidebarButton">
@@ -31,7 +31,7 @@
           <!-- <button type="button" class="btn btn-block"> -->
 
           <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
-          <span v-if="!isSidebarActive" class="ms-2 fs-6">Time to revise!</span>
+          <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular">Revision</span>
           <!-- </button> -->
         </div>
       </a>
@@ -90,7 +90,22 @@
       <main>
         <slot />
       </main>
+      <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col text-center">
+            <p>&copy; 2024 Elemental Heroes. All rights reserved.</p>
+            <nav>
+              <a href="/about">About</a> |
+              <a href="/contact">Contact</a> |
+              <a href="/privacy">Privacy Policy</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </footer>
     </div>
+    
   </div>
 </template>
 
@@ -105,6 +120,15 @@ function toggleSidebar() {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.press-start-2p-regular {
+  font-family: "Press Start 2P", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
 /* Basic structure styling */
 .wrapper {
   display: flex;
@@ -137,6 +161,7 @@ function toggleSidebar() {
   text-decoration: none;
   display: block;
   width: 100%;
+  font-size: 12.5px;
   /* margin: 0 -20px;  /* Compensate for sidebar padding */
   /* padding: 0 20px;  Add padding inside the button instead  */
 }
@@ -181,7 +206,7 @@ function toggleSidebar() {
   transform: translateY(-50%);
   /* Fine-tune vertical position */
   margin: 0;
-  padding-top: 20px;
+  padding-top: 10px;
   /* Adjust this value to move the text down */
 }
 
