@@ -11,7 +11,9 @@ const config = {
     height: containerHeight,          // Set game height to full window height
     scale: {
         mode: Phaser.Scale.FIT,          // Scale the game to fit the screen
-        autoCenter: Phaser.Scale.CENTER_BOTH // Center the game both horizontally and vertically
+        autoCenter: Phaser.Scale.CENTER_BOTH, // Center the game both horizontally and vertically
+        width: '100%',
+        height: '100%'
     },
     physics: {
         default: 'arcade',               // Use arcade physics for simplicity
@@ -20,7 +22,7 @@ const config = {
             debug: false                 // Set to true if you need to see collision boxes for debugging
         }
     },
-    scene: [LoadingScene, CasualGameScene, ChemicalMatchingScene, LabGameScene],  // Add all scenes to the Phaser game instance
+    scene: [LoadingScene, CasualGameScene, ChemicalMatchingScene, GameScene, QA],  // Add all scenes to the Phaser game instance
 };
 
 // Initialize the Phaser game with the config

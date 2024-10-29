@@ -66,13 +66,13 @@ class LoadingScene extends Phaser.Scene {
             .setInteractive().setScale(buttonScale)
             .on('pointerdown', () => {
                 this.sound.play('glassClick');
-                this.scene.start('LabGameScene'); // Change to the LabGameScene
+                this.scene.start('GameScene'); // Change to the LabGameScene
             })
             .on('pointerover', () => this.bloomButton(legitLabButton, buttonScale))
             .on('pointerout', () => this.resetButton(legitLabButton, buttonScale))
             .on('pointerup', () => {
                 // for ipad interaction
-                this.scene.start('LabGameScene'); // Change to the LabGameScene
+                this.scene.start('GameScene'); // Change to the LabGameScene
             });;
 
         this.add.text(legitLabButton.x, legitLabButton.y, 'Lab Skills Training', { 
