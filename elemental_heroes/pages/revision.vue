@@ -9,6 +9,7 @@
             </div>
 
             <div class="row g-4">
+                
                 <div class="col-md-4" v-for="note in ['Upload Notes', 'OG Chem', 'Thermodynamics']" :key="note">
                     <div class="card">
                         <div class="card-body">
@@ -42,3 +43,9 @@
 <script setup>
 //for supabase queries
 </script>
+
+<style scoped>
+.home-page {
+  padding: 10px;
+}
+</style>
