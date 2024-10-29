@@ -1,6 +1,5 @@
-/* static/styles.css */
 :root {
-    --primary-color: #6c5dd3;
+    --primary-color: #4a90e2;
     --secondary-color: #f5f5f5;
     --text-color: #333;
     --border-radius: 8px;
@@ -8,7 +7,7 @@
 
 * {
     margin: 0;
-    padding: 5px;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -75,13 +74,12 @@ button:hover {
 }
 
 .flashcard {
-    background: white;
+    background: var(--secondary-color);
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: transform 0.3s;
 }
-
 
 .flashcard:hover {
     transform: translateY(-5px);
@@ -138,107 +136,4 @@ button:hover {
     text-align: center;
     padding: 20px;
     color: #666;
-}
-
-.flashcard-navigation {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.answer-choices {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-    color: #333;
-}
-
-.answer-choice {
-    text-align: left;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #333;
-}
-
-.answer-choice:hover:not([disabled]) {
-    background: #f5f5f5;
-}
-
-.answer-choice.correct {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.answer-choice.incorrect {
-    background-color: #f44336;
-    color: white;
-}
-
-.feedback {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: var(--border-radius);
-}
-
-.feedback .correct {
-    color: #4CAF50;
-}
-
-.feedback .incorrect {
-    color: #f44336;
-}
-
-.retry-button {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: var(--border-radius);
-    margin-top: 15px;
-    cursor: pointer;
-}
-
-.retry-button:hover {
-    background-color: #5a4caf;
-}
-
-.feedback {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: var(--border-radius);
-}
-
-.feedback .correct {
-    color: #4CAF50;
-}
-
-.feedback .incorrect {
-    color: #f44336;
-}
-
-.source {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f5f5f5;
-    border-radius: var(--border-radius);
-}
-
-button[disabled] {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.error-message {
-    color: #f44336;
-    padding: 15px;
-    background-color: #ffebee;
-    border-radius: 4px;
-    margin: 10px 0;
-    text-align: center;
 }

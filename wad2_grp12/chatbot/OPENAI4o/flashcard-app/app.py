@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import os
@@ -8,7 +7,7 @@ import json
 import PyPDF2
 import uuid
 from werkzeug.utils import secure_filename
-import traceback
+import re
 
 # Load environment variables
 load_dotenv()
@@ -50,113 +49,27 @@ def extract_text_from_pdf(pdf_path):
 
 def generate_flashcard_prompt(content, file_id):
     return f"""
-    Create 5 multiple-choice flashcards from the following content. Each flashcard should follow this exact format:
-    1. A clear, specific question
-    2. One correct answer
-    3. Three plausible but incorrect answers
-    4. The page number where the information was found
-    5. A relevant quote from the text (if applicable)
+    Create flashcards from the following content. Each flashcard should include:
+    1. A clear question
+    2. A comprehensive answer
+    3. The page number where the information was found
+    4. A direct quote or reference from the text (if relevant)
 
     Content: {content}
     
-    Return the flashcards in this exact JSON format, with no additional text or explanation:
-    {{
-        "flashcards": [
-            {{
-                "question": "Question text here",
-                "correct_answer": "Correct answer text here",
-                "wrong_answers": [
-                    "First wrong answer here",
-                    "Second wrong answer here",
-                    "Third wrong answer here"
-                ],
-                "page": page_number,
-                "quote": "relevant quote from text (optional)",
-                "file_id": "{file_id}"
-            }}
-        ]
-    }}
+    Generate the flashcards in this exact JSON format:
+    [
+        {{
+            "question": "...",
+            "answer": "...",
+            "page": page_number,
+            "quote": "relevant quote from text",
+            "file_id": "{file_id}"
+        }}
+    ]
+    
+    Make questions clear and concise. Include page numbers where the information was found.
     """
-
-@app.route('/api/generate-flashcards', methods=['POST'])
-def generate_flashcards():
-    try:
-        # Get and validate file_id
-        file_id = request.json.get('file_id')
-        if not file_id:
-            return jsonify({"error": "No file ID provided"}), 400
-
-        # Find the PDF file
-        pdf_files = [f for f in os.listdir(UPLOAD_FOLDER) if f'{file_id}' in f]
-        if not pdf_files:
-            return jsonify({"error": "PDF file not found"}), 404
-
-        pdf_path = os.path.join(UPLOAD_FOLDER, pdf_files[0])
-        
-        # Extract text with error handling
-        try:
-            text_by_page = extract_text_from_pdf(pdf_path)
-        except Exception as e:
-            print(f"Error extracting PDF text: {str(e)}")
-            return jsonify({"error": "Failed to extract text from PDF"}), 500
-
-        # Combine pages with clear separation
-        full_text = "\n\nPAGE BREAK\n\n".join([f"[Page {page}]\n{text}" for page, text in text_by_page.items()])
-
-        try:
-            # Generate flashcards using GPT-4
-            response = client.chat.completions.create(
-                model="gpt-4",  # Fixed model name
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant that creates educational flashcards. Always return the response in the exact JSON format specified."},
-                    {"role": "user", "content": generate_flashcard_prompt(full_text, file_id)}
-                ],
-                temperature=0.7,
-                max_tokens=2000
-            )
-            
-            # Extract and parse the response
-            flashcards_text = response.choices[0].message.content.strip()
-            
-            # Log the response for debugging
-            print("OpenAI Response:", flashcards_text)
-            
-            try:
-                # Parse JSON response
-                flashcards_data = json.loads(flashcards_text)
-                
-                # Transform the data into the expected format
-                formatted_flashcards = []
-                for card in flashcards_data.get('flashcards', []):
-                    formatted_card = {
-                        'question': card['question'],
-                        'answer': card['correct_answer'],
-                        'wrong_answers': [
-                            {'text': wrong_answer, 'explanation': 'Incorrect option'}
-                            for wrong_answer in card['wrong_answers']
-                        ],
-                        'page': card['page'],
-                        'quote': card.get('quote', ''),
-                        'file_id': file_id
-                    }
-                    formatted_flashcards.append(formatted_card)
-                
-                return jsonify({"flashcards": formatted_flashcards})
-                
-            except json.JSONDecodeError as e:
-                print(f"JSON Parse Error: {str(e)}")
-                print(f"Problematic JSON: {flashcards_text}")
-                return jsonify({"error": "Failed to parse flashcards response"}), 500
-                
-        except Exception as e:
-            print(f"OpenAI API Error: {str(e)}")
-            traceback.print_exc()
-            return jsonify({"error": "Failed to generate flashcards"}), 500
-
-    except Exception as e:
-        print(f"General Error: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/')
 def home():
@@ -205,41 +118,51 @@ def upload_pdf():
     except Exception as e:
         print("Error uploading file:", str(e))
         return jsonify({"error": str(e)}), 500
-    
-@app.route('/api/explain-answer', methods=['POST'])
-def explain_answer():
+
+@app.route('/api/generate-flashcards', methods=['POST'])
+def generate_flashcards():
     try:
-        data = request.json
-        question = data.get('question')
-        correct_answer = data.get('correct_answer')
-        wrong_answer = data.get('wrong_answer')
+        file_id = request.json.get('file_id')
+        if not file_id:
+            return jsonify({"error": "No file ID provided"}), 400
 
-        prompt = f"""
-        The question was: "{question}"
-        The correct answer is: "{correct_answer}"
-        The student chose: "{wrong_answer}"
-        
-        Provide a brief (1-2 sentences) explanation of why the chosen answer is incorrect.
-        Focus on helping the student understand the key difference between their answer
-        and the correct answer. Be encouraging and educational in your explanation.
-        """
+        # Find the PDF file
+        pdf_files = [f for f in os.listdir(UPLOAD_FOLDER) if f'{file_id}' in f]
+        if not pdf_files:
+            return jsonify({"error": "PDF file not found"}), 404
 
+        pdf_path = os.path.join(UPLOAD_FOLDER, pdf_files[0])
+        text_by_page = extract_text_from_pdf(pdf_path)
+
+        # Combine all pages into one text, but keep track of page numbers
+        full_text = "\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()])
+
+        # Generate flashcards using GPT-4
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a helpful study assistant providing brief, clear explanations for incorrect answers."},
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": "You are a helpful assistant that creates educational flashcards with source references."},
+                {"role": "user", "content": generate_flashcard_prompt(full_text, file_id)}
             ],
             temperature=0.7,
-            max_tokens=100
+            max_tokens=2000
         )
 
-        return jsonify({
-            "explanation": response.choices[0].message.content.strip()
-        })
+        # Extract and parse the flashcards from the response
+        flashcards_text = response.choices[0].message.content
+        try:
+            flashcards = json.loads(flashcards_text)
+            # Add PDF filename to each flashcard
+            for card in flashcards:
+                card['pdf_filename'] = pdf_files[0]
+        except json.JSONDecodeError:
+            print("Error parsing JSON response:", flashcards_text)
+            return jsonify({"error": "Failed to parse flashcards"}), 500
+
+        return jsonify({"flashcards": flashcards})
 
     except Exception as e:
-        print("Error generating explanation:", str(e))
+        print("Error generating flashcards:", str(e))
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/chat', methods=['POST'])
