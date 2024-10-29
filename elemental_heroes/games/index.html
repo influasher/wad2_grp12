@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Phaser Game</title>
+
+    <!-- Bootstrap CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Include Phaser library -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+
+   
+    
+
+    <style>
+        /* @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: flex-start;  /* Center the game container horizontally */
+            align-items: center;      /* Center the game container vertically */
+            height: 100vh;            /* Full height of the viewport */
+        }
+
+        #game-container, #not-playable {
+            width: 60vw;               /* Set the fixed width of the game */
+            height: 85vh;              /* Set the fixed height of the game */
+            background-color: palevioletred;  /* Light background color */
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for effect */
+            border-radius: 10px;        /* Rounded corners for a modern look */
+            padding: 20px;              /* Add padding inside the container */
+            display: flex;
+            justify-content: center;    /* Center the game inside the container */
+            align-items: center;        /* Center the game vertically inside */
+            margin-left: 10vw;
+        }
+
+        @font-face {
+            font-family: 'MyPixelFont';
+            src: url('../assets/fonts/PressStart2P-Regular.ttf') format('ttf');
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Game Container -->
+    <div id="game-container" class="d-none d-md-block"></div>   
+    
+    <!-- if screen is smaller than lg then dont show the game -->
+    <div class="d-block d-md-none text-center">
+        <img id="not-playable" src="assets/images/woodenTable.jpg" alt="Game not playable on this device">
+    </div>
+    <!-- Scene Files -->
+
+    <script src="scenes/LoadingScene.js"></script>
+    <script src="scenes/QA.js"></script>
+    <script src="scenes/GameScene.js"></script>
+    <script src="scenes/CasualGameScene.js"></script>
+    <script src="scenes/ChemicalMatchingScene.js"></script>
+
+    <!-- Add other scene files as needed -->
+    <script src="main.js"></script>
+
+</body>
+</html>
