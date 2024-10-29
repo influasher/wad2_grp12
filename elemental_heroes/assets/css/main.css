@@ -1,17 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Tiny5&display=swap');
+
+
 :root {
+    --primary-font: 'Roboto', cursive;
+    --unity-purple: #8B6EF3;
+    --unity-dark: #1E1E1E;
+    --unity-gray: #F5F5F5;
+    --unity-text: #333333;
+    --unity-hover: #B2A9EC
+}
+
+body {
+    font-family: var(--primary-font);
+}
+
+/* Or create a specific class */
+.pixel-font {
+    font-family: var(--primary-font);
+}
+
+/* :root {
     --unity-purple: #8B6EF3;
     --unity-dark: #1E1E1E;
     --unity-gray: #F5F5F5;
     --unity-text: #333333;
     --unity-hover: #B2A9EC
   }
-  
+
   body {
     font-family: 'Inter', sans-serif;
     background-color: var(--unity-gray);
     color: var(--unity-text);
-  }
-
+  } */
   
   .card {
     border: none;
