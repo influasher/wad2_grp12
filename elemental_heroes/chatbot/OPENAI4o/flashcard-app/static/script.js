@@ -37,17 +37,16 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please upload a PDF first.');
             return;
         }
-
+    
         try {
             generateBtn.disabled = true;
             generateBtn.textContent = 'Generating...';
             flashcardsContainer.innerHTML = '<div class="loading">Generating flashcards...</div>';
-
+    
             const response = await axios.post('/api/generate-flashcards', { file_id: currentFileId });
             
-            // Log the response for debugging
             console.log('Flashcards response:', response.data);
-
+    
             if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
                 flashcards = response.data.flashcards;
                 currentCardIndex = 0;
@@ -263,4 +262,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
