@@ -33,6 +33,10 @@ class GameScene extends Phaser.Scene {
         });
         this.load.image('soundOnButton', 'assets/images/soundOn.png');  // Sound on button image
         this.load.image('soundOffButton', 'assets/images/soundOff.png');  // Sound off button image
+
+        // load audio
+        this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
+
     }
 
     create() {
@@ -131,6 +135,7 @@ class GameScene extends Phaser.Scene {
 
         // Show checklist on Enter key press
         this.input.keyboard.on('keydown-ENTER', () => {
+            this.sound.play('glassClick');
             if (this.currentTable.name == 'teacherTable'){
                 this.showTeacherInventory();
             }
@@ -141,6 +146,7 @@ class GameScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keydown-I', () => {
+            this.sound.play('glassClick');
                 this.showPlayerInventory();
             });
     }
@@ -241,6 +247,7 @@ class GameScene extends Phaser.Scene {
     
                     // Make the item clickable to add it to the player's inventory
                     itemIcon.on('pointerdown', () => {
+                        this.sound.play('glassClick');
                         this.addItemToPlayerInventory(item); // Add the clicked item to player's inventory
                         itemIcon.destroy(); // Remove the icon from the UI
                         this.hideItemName(); 
@@ -267,6 +274,7 @@ class GameScene extends Phaser.Scene {
             // Allow closing the inventory by pressing the Escape key
             let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
             escapeKey.on('down', () => {
+                this.sound.play('glassClick');
                 overlay.destroy(); // Destroy the overlay
                 inventorySlots.destroy(); // Destroy the inventory sprite
                 instructionText.destroy(); // Destroy the instruction text
@@ -337,6 +345,7 @@ class GameScene extends Phaser.Scene {
         
                         // Make the item clickable to add it to the player's inventory
                         itemIcon.on('pointerdown', () => {
+                            this.sound.play('glassClick');
                             this.addItemToTeacherInventory(item); // Add the clicked item to player's inventory
                             itemIcon.destroy(); // Remove the icon from the UI
                             this.hideItemName(); 
@@ -363,6 +372,7 @@ class GameScene extends Phaser.Scene {
                 // Allow closing the inventory by pressing the Escape key
                 let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
                 escapeKey.on('down', () => {
+                    this.sound.play('glassClick');
                     overlay.destroy(); // Destroy the overlay
                     inventorySlots.destroy(); // Destroy the inventory sprite
                     instructionText.destroy(); // Destroy the instruction text
@@ -486,6 +496,7 @@ class GameScene extends Phaser.Scene {
             // Allow closing the checklist by pressing the Escape key
             let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
             escapeKey.on('down', () => {
+                this.sound.play('glassClick')
                 console.log('Escape pressed, closing popup');
     
                 // Destroy only the items related to the checklist
@@ -517,6 +528,7 @@ class GameScene extends Phaser.Scene {
             const legitLabButton = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY + 130, 'button')
                 .setInteractive().setScale(buttonScale)
                 .on('pointerdown', () => {
+                    this.sound.play('glassClick')
                     console.log(this.currentTable.name);
                     this.scene.start(this.currentTable.name); // Change to the next scene
                 })
@@ -533,6 +545,7 @@ class GameScene extends Phaser.Scene {
 
             let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
             escapeKey.on('down', () => {
+                this.sound.play('glassClick');
                 console.log('Escape pressed, closing button');
                 legitLabButton.destroy();
                 buttonText.destroy();
