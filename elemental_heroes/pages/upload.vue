@@ -243,14 +243,14 @@ const handleAnswerChoice = async (index) => {
         }
       );
       feedbackMessage.value = `
-            <p class="incorrect">Incorrect.</p>
-            <p>${response.data.explanation}</p>
-          `;
+          <p class="incorrect">Incorrect.</p>
+          <p>${response.data.explanation}</p>
+        `;
     } catch (error) {
       console.error("Error getting explanation:", error);
       feedbackMessage.value = `
-            <p class="incorrect">Incorrect. Please try again.</p>
-          `;
+          <p class="incorrect">Incorrect. Please try again.</p>
+        `;
     }
   }
 };
