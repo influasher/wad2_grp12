@@ -66,7 +66,6 @@
   display: block;
   justify-content: center;
   align-items: center;
-  /* Remove the height: 100vh */
   padding-bottom: 20px; /* Add some bottom padding */
 }
 .announcements {
