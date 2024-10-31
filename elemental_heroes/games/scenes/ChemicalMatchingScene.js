@@ -1,4 +1,6 @@
-class ChemicalMatchingScene extends Phaser.Scene {
+import Phaser from 'phaser';
+
+export class ChemicalMatchingScene extends Phaser.Scene {
     constructor() {
         super({ key: 'ChemicalMatchingScene' });
     }
@@ -24,10 +26,10 @@ class ChemicalMatchingScene extends Phaser.Scene {
     }
 
     create() {
-        if (backgroundMusic) {
-            backgroundMusic.stop();  // Stop the music
-            backgroundMusic = null;  // Clear the reference to allow music to restart later
-        }
+        // if (backgroundMusic) {
+        //     backgroundMusic.stop();  // Stop the music
+        //     backgroundMusic = null;  // Clear the reference to allow music to restart later
+        // }
 
         const bg = this.add.image(this.scale.width * 0.5, this.scale.height * 0.5, 'woodenBackground').setOrigin(0.5);
         // Determine the scale factor for the background to cover the full screen while preserving aspect ratio

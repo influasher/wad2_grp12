@@ -1,4 +1,6 @@
-class QA extends Phaser.Scene {
+import Phaser from 'phaser';
+
+export class QA extends Phaser.Scene {
     constructor() {
         super({ key: 'QA' });
     }

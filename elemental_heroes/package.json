@@ -12,8 +12,12 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.45.6",
     "nuxt": "^3.13.2",
+    "phaser": "^3.86.0",
     "usebootstrap": "^3.5.82",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "nuxtjs-phaser": "^3.0.17"
   }
 }

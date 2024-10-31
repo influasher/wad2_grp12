@@ -1,4 +1,6 @@
-class CasualGameScene extends Phaser.Scene {
+import Phaser from 'phaser';
+
+export class CasualGameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'CasualGameScene' });
     }
@@ -14,10 +16,9 @@ class CasualGameScene extends Phaser.Scene {
 
     create() {
         console.log('hi from casual game scene');
-        if (!backgroundMusic) {
-            backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
+            let backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
             backgroundMusic.play();
-        }
+
         const buttonScale = this.scale.width * 0.0005;
         
         // Add a background

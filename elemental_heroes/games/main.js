@@ -1,56 +1,68 @@
-const gameContainer = document.getElementById('game-container');
-const containerWidth = gameContainer.clientWidth;
-const containerHeight = gameContainer.clientHeight;
-let backgroundMusic;
+import Phaser from 'phaser';
+import { LoadingScene } from './scenes/LoadingScene';
+import { GameScene } from './scenes/GameScene';
+import { QA } from './scenes/QA';
+import { CasualGameScene } from './scenes/CasualGameScene';
+import { ChemicalMatchingScene } from './scenes/ChemicalMatchingScene';
 
-// Game configuration object
-const config = {
-    type: Phaser.AUTO, // Phaser will use WebGL if available, else falls back to Canvas
-    parent: 'game-container',                   
-    width: containerWidth,            // Set game width to full window width
-    height: containerHeight,          // Set game height to full window height
-    scale: {
-        mode: Phaser.Scale.FIT,          // Scale the game to fit the screen
-        autoCenter: Phaser.Scale.CENTER_BOTH, // Center the game both horizontally and vertically
-        width: '100%',
-        height: '100%'
-    },
-    physics: {
-        default: 'arcade',               // Use arcade physics for simplicity
-        arcade: {
-            gravity: { y: 0 },           // Disable gravity as it’s not needed in a top-down game
-            debug: false                 // Set to true if you need to see collision boxes for debugging
-        }
-    },
-    scene: [LoadingScene, CasualGameScene, ChemicalMatchingScene, GameScene, QA],  // Add all scenes to the Phaser game instance
-};
+let game; // Declare game variable in outer scope
 
-// Initialize the Phaser game with the config
-const game = new Phaser.Game(config);
-
-game.scale.on('resize', (gameSize, baseSize, displaySize, resolution) => {
-    const width = gameSize.width;
-    const height = gameSize.height;
-
-    // Example: Reposition and resize game objects
-    if (game.scene.scenes.length > 0) {
-        game.scene.scenes.forEach(scene => {
-            if (scene.scale) {
-                scene.children.list.forEach(child => {
-                    if (child.isGameObject && child.setPosition && child.setDisplaySize) {
-                        // Reposition and resize game objects relatively
-                        child.setPosition(child.x / game.scale.baseSize.width * width, child.y / game.scale.baseSize.height * height);
-                        child.setDisplaySize(child.displayWidth / game.scale.baseSize.width * width, child.displayHeight / game.scale.baseSize.height * height);
-                    }
-                });
-            }
-        });
+export function initializeGame() {
+    const gameContainer = document.getElementById('game-container');
+    
+    // Check if gameContainer exists to avoid undefined error
+    if (!gameContainer) {
+        console.error("Game container element not found.");
+        return;
     }
-});
 
-// Optional: Handle resizing of the game window
-window.addEventListener('resize', () => {
-    const newContainerWidth = gameContainer.clientWidth;
-    const newContainerHeight = gameContainer.clientHeight;
-    game.scale.resize(newContainerWidth, newContainerHeight);
-});
+    const containerWidth = gameContainer.clientWidth;
+    const containerHeight = gameContainer.clientHeight;
+
+    // Game configuration object
+    const config = {
+        type: Phaser.AUTO,
+        parent: 'game-container',
+        width: containerWidth,
+        height: containerHeight,
+        scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            width: '600px',
+            height: '400px'
+        },
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 0 },
+                debug: false
+            }
+        },
+        scene: [LoadingScene, GameScene, QA, CasualGameScene, ChemicalMatchingScene]
+    };
+
+    game = new Phaser.Game(config); // Initialize the game only once
+
+    // Handle resizing
+    game.scale.on('resize', (gameSize) => {
+        const width = gameSize.width;
+        const height = gameSize.height;
+        
+        game.scene.scenes.forEach(scene => {
+            scene.children.list.forEach(child => {
+                if (child.setPosition && child.setDisplaySize) {
+                    child.setPosition(child.x / game.scale.baseSize.width * width, child.y / game.scale.baseSize.height * height);
+                    child.setDisplaySize(child.displayWidth / game.scale.baseSize.width * width, child.displayHeight / game.scale.baseSize.height * height);
+                }
+            });
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        const newContainerWidth = gameContainer.clientWidth;
+        const newContainerHeight = gameContainer.clientHeight;
+        game.scale.resize(newContainerWidth, newContainerHeight);
+    });
+
+    return game; // Return the game instance
+}

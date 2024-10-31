@@ -1,27 +1,25 @@
-class LoadingScene extends Phaser.Scene {
+import Phaser from 'phaser';
+ 
+ export class LoadingScene extends Phaser.Scene {
     constructor() {
         super({ key: 'LoadingScene' });
     }
 
     preload() {
         // Load assets for start screen if needed (e.g., background images, button sprites)
-        this.load.image('startBackground', 'assets/images/start_background.jpg');
-        this.load.image('button', 'assets/images/button.png');
-        if (!backgroundMusic) {
-        this.load.audio('backgroundMusic', 'assets/audio/loadingMusic.wav')
-        }
-        this.load.image('soundOnButton', 'assets/images/soundOn.png');  // Sound on button image
-        this.load.image('soundOffButton', 'assets/images/soundOff.png');  // Sound off button image
-        this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
+        this.load.image('startBackground', '/assets/images/start_background.jpg');
+        this.load.image('button', '/assets/images/button.png');
+        this.load.audio('backgroundMusic', '/assets/audio/loadingMusic.wav')
+        this.load.image('soundOnButton', '/assets/images/soundOn.png');  // Sound on button image
+        this.load.image('soundOffButton', '/assets/images/soundOff.png');  // Sound off button image
+        this.load.audio('glassClick', '/assets/audio/glassClick.wav');  // click sound
 
     }
     
 
     create() {
-        if (!backgroundMusic) {
-            backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
+            let backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
             backgroundMusic.play();
-        }
 
         const buttonScale = this.scale.width * 0.00045;
         console.log(this.scale.width)

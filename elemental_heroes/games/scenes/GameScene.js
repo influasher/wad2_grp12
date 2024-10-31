@@ -1,4 +1,6 @@
-class GameScene extends Phaser.Scene {
+import Phaser from 'phaser';
+
+export class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
         this.checklists = {
@@ -13,34 +15,32 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('backgroundTile', 'assets/images/background_blue.png');
-        this.load.image('player', 'assets/images/ball_red_small.png');
-        this.load.image('table', 'assets/images/table.png');
-        this.load.image('clipboard','assets/images/clipboard.png');
-        this.load.image('tick', 'assets/images/tick.png');
-        this.load.image('cross', 'assets/images/cross.png');
-        this.load.image('inventorySlots', 'assets/images/InventorySlots.png');
-        this.load.image('w','assets/images/w.png');
-        this.load.image('a','assets/images/a.png');
-        this.load.image('s','assets/images/s.png');
-        this.load.image('d','assets/images/d.png');
-        this.load.image('i','assets/images/i.png');
+        this.load.image('backgroundTile', '/assets/images/background_blue.png');
+        this.load.image('player', '/assets/images/ball_red_small.png');
+        this.load.image('table', '/assets/images/table.png');
+        this.load.image('clipboard','/assets/images/clipboard.png');
+        this.load.image('tick', '/assets/images/tick.png');
+        this.load.image('cross', '/assets/images/cross.png');
+        this.load.image('inventorySlots', '/assets/images/InventorySlots.png');
+        this.load.image('w','/assets/images/w.png');
+        this.load.image('a','/assets/images/a.png');
+        this.load.image('s','/assets/images/s.png');
+        this.load.image('d','/assets/images/d.png');
+        this.load.image('i','/assets/images/i.png');
 
         // Fixed the issue with loading spritesheet
-        this.load.spritesheet('labIcons', 'assets/images/LabIcons.png', {
+        this.load.spritesheet('labIcons', '/assets/images/LabIcons.png', {
             frameWidth: 16, // Width of one inventory block
             frameHeight: 16
         });
-        this.load.image('soundOnButton', 'assets/images/soundOn.png');  // Sound on button image
-        this.load.image('soundOffButton', 'assets/images/soundOff.png');  // Sound off button image
+        this.load.image('soundOnButton', '/assets/images/soundOn.png');  // Sound on button image
+        this.load.image('soundOffButton', '/assets/images/soundOff.png');  // Sound off button image
     }
 
     create() {
         // Add the background
-        if (!backgroundMusic) {
-            backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
+            let backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
             backgroundMusic.play();
-        }
         
         this.background = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'backgroundTile').setOrigin(0, 0);
         this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'player');
