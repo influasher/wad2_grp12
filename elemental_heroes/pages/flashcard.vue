@@ -146,7 +146,7 @@ const uploadPdf = async () => {
     uploadStatus.value = "Uploading PDF...";
 
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/upload-pdf",
+      "http://127.0.0.1:5000/api/supabase/upload-pdf",
       formData,
       {
         headers: {
@@ -243,14 +243,14 @@ const handleAnswerChoice = async (index) => {
         }
       );
       feedbackMessage.value = `
-          <p class="incorrect">Incorrect.</p>
-          <p>${response.data.explanation}</p>
-        `;
+            <p class="incorrect">Incorrect.</p>
+            <p>${response.data.explanation}</p>
+          `;
     } catch (error) {
       console.error("Error getting explanation:", error);
       feedbackMessage.value = `
-          <p class="incorrect">Incorrect. Please try again.</p>
-        `;
+            <p class="incorrect">Incorrect. Please try again.</p>
+          `;
     }
   }
 };

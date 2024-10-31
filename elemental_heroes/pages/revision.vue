@@ -1,51 +1,134 @@
 <!-- pages/index.vue -->
 <template>
-    <div class="home-page">
-        <!-- Top Section -->
-        <div class="mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="section-title">Announcement</h2>
-                <button class="btn btn-primary">Upload Notes</button>
-            </div>
+  <div class="home-page">
+    <!-- Top Section -->
+    <div class="mb-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="section-title">Announcement</h2>
+        <NuxtLink to="/upload">
+          <button class="btn btn-primary">Upload Notes</button>
+        </NuxtLink>
+      </div>
 
-            <div class="row g-4">
-                
-                <div class="col-md-4" v-for="note in ['Upload Notes', 'OG Chem', 'Thermodynamics']" :key="note">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ note }}</h5>
-                            <p class="card-text text-muted">Last modified: 2 days ago</p>
-                        </div>
-                    </div>
-                </div>
+      <div class="row g-4">
+        <div class="col-md-4" v-for="note in notes" :key="note">
+          <NuxtLink
+            to="/flashcard"
+            style="text-decoration: none; color: inherit"
+          >
+            <div class="card custom-card">
+              <div class="card-body">
+                <h5 class="card-title">{{ note.name }}</h5>
+                <p class="card-text text-muted">
+                  Uploaded: {{ note.formattedDate }}
+                </p>
+              </div>
             </div>
+          </NuxtLink>
         </div>
-
-        <!-- Shared Flashcards Section -->
-        <div class="mb-5">
-            <h2 class="section-title">Shared Flashcards</h2>
-            <div class="row g-4">
-                <div class="col-md-4" v-for="deck in ['OG Chem', 'Thermodynamics']" :key="deck">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ deck }}</h5>
-                            <p class="card-text text-muted">32 cards</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
+      </div>
     </div>
+
+    <!-- Shared Flashcards Section -->
+    <div class="mb-5">
+      <h2 class="section-title">Shared Flashcards</h2>
+      <div class="row g-4">
+        <div
+          class="col-md-4"
+          v-for="deck in ['OG Chem', 'Thermodynamics']"
+          :key="deck"
+        >
+          <div class="card custom-card">
+            <div class="card-body">
+              <h5 class="card-title">{{ deck }}</h5>
+              <p class="card-text text-muted">32 cards</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 //for supabase queries
+import { createClient } from "@supabase/supabase-js";
+import { useRuntimeConfig } from "#app";
+import { ref } from "vue";
+const config = useRuntimeConfig();
+const supabase = createClient(
+  config.public.supabaseUrl,
+  config.public.supabaseKey
+);
+const notes = ref([]);
+
+// Function to fetch and format notes
+async function getNotes() {
+  const { data, error } = await supabase.storage
+    .from("files_wad2")
+    .list("user_pdfs");
+
+  if (error) {
+    console.log("Error fetching notes:", error);
+  } else if (data) {
+    console.log("Fetched data:", data);
+
+    // Process and format each note
+    notes.value = data.map((item) => {
+      // **1. Remove File Extension from Name**
+      const nameWithoutExtension = item.name.replace(/\.[^/.]+$/, "");
+
+      // **2. Convert Upload Date to Human-Readable Format**
+      // Option 1: Using JavaScript's built-in Date
+      const formattedDate = new Date(item.created_at).toLocaleDateString(
+        undefined,
+        {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }
+      );
+      // Option 2: Using Day.js for more control (optional)
+      // const formattedDate = dayjs(item.created_at).format("MMMM D, YYYY h:mm A");
+
+      return {
+        ...item,
+        name: nameWithoutExtension,
+        formattedDate, // Adding a new field for the formatted date
+      };
+    });
+  }
+}
+
+onMounted(() => {
+  getNotes();
+});
 </script>
 
 <style scoped>
 .home-page {
-  padding: 10px;
+  padding: 20px;
+}
+
+.custom-card {
+  background-color: #ffffff; /* White background for contrast */
+  border: px solid #e0e0e0; /* Light border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for hover effect */
+}
+
+.custom-card:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+.card-title {
+  font-weight: bold;
+  color: #333; /* Darker text color for better readability */
+}
+
+.card-text {
+  color: #666; /* Slightly lighter text color for secondary information */
 }
 </style>
