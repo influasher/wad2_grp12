@@ -4,7 +4,7 @@
     <!-- Top Section -->
     <div class="mb-5">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="section-title">Announcement</h2>
+        <h2 class="section-title">My Notes</h2>
         <NuxtLink to="/upload">
           <button class="btn btn-primary">Upload Notes</button>
         </NuxtLink>
