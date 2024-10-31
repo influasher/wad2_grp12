@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What does macroeconomics study?",
+      "answer": "The aggregate behavior of economic agents.",
+      "wrong_answers": [
+        {
+          "text": "The behavior of individual consumers.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The stock market performance.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The monetary policy of a single country.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 3,
+      "quote": "The study of the aggregate behavior of economic agents.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What is Gross Domestic Product (GDP)?",
+      "answer": "The quantity of goods and services produced within a country’s borders during a specified period.",
+      "wrong_answers": [
+        {
+          "text": "The total wealth owned by a country's citizens.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The total number of imports and exports of a country.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The sum of all government expenditures.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 4,
+      "quote": "Gross Domestic Product (GDP) is the quantity of goods and services produced within a country’s borders during some specified period of time.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What are the three approaches to measure GDP?",
+      "answer": "Product approach, expenditure approach, income approach.",
+      "wrong_answers": [
+        {
+          "text": "Financial approach, consumption approach, investment approach.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Market approach, resource approach, labor approach.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Nominal approach, real approach, inflation approach.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 24,
+      "quote": "Three approaches: 1. Product approach. 2. Expenditure approach. 3. Income approach.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What does the Consumer Price Index (CPI) measure?",
+      "answer": "The price changes of a fixed basket of goods and services purchased by consumers.",
+      "wrong_answers": [
+        {
+          "text": "The average income of consumers.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The total production output of the economy.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The unemployment rate in the economy.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 36,
+      "quote": "Consumer price index (CPI) is not as broadly based as the implicit GDP price deflator.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What is the unemployment rate?",
+      "answer": "The number of unemployed divided by the labor force.",
+      "wrong_answers": [
+        {
+          "text": "The total number of unemployed individuals.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The number of jobs available in the economy.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The percentage of people not in the labor force.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 39,
+      "quote": "Unemployment rate = Number unemployed / Labor force.",
+      "file_id": "Measurement"
+    }
+  ]
+}

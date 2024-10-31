@@ -54,7 +54,7 @@ def allowed_file(filename):
 def save_flashcards(flashcards, file_id):
     """Save generated flashcards to a JSON file."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"flashcards_{file_id}_{timestamp}.json"
+    filename = f"{file_id}_{timestamp}.json"
     filepath = os.path.join(app.config["FLASHCARDS_FOLDER"], filename)
 
     with open(filepath, "w", encoding="utf-8") as f:
@@ -355,7 +355,6 @@ def chat():
         return jsonify({"error": str(e)}), 500
 
 
-
 # Supabase Routes
 @app.route("/api/supabase/upload-pdf", methods=["POST"])
 def upload_pdf_supabase():
@@ -385,7 +384,9 @@ def upload_pdf_supabase():
             with open(file_path, "rb") as pdf_file:
                 # Upload to 'pdfs' bucket with a unique path
                 upload_path = f"user_pdfs/{unique_filename}"
-                data = supabase.storage.from_("files_wad2").upload(upload_path, pdf_file)
+                data = supabase.storage.from_("files_wad2").upload(
+                    upload_path, pdf_file
+                )
 
             # Optional: Remove local file after upload
             os.remove(file_path)
@@ -405,97 +406,200 @@ def upload_pdf_supabase():
     except Exception as e:
         print("Error uploading file:", str(e))
         return jsonify({"error": str(e)}), 500
-    
 
 
 @app.route("/api/supabase/generate-flashcards", methods=["POST"])
 def generate_flashcards_supabase():
+    # Validate that the request contains JSON data
+    if not request.is_json:
+        print("Invalid input: JSON data expected.")
+        return jsonify({"error": "Invalid input: JSON data expected."}), 400
+
+    data = request.get_json()
+    file_id = data.get("file_id")
+
+    # Validate that file_id is provided
+    if not file_id:
+        print("No file ID provided.")
+        return jsonify({"error": "No file ID provided."}), 400
+
+    # **1. Fetch the PDF file from Supabase Storage**
     try:
-        file_id = request.json.get("file_id")
-        if not file_id:
-            return jsonify({"error": "No file ID provided"}), 400
+        pdf_path = f"user_pdfs/{file_id}.pdf"
+        destination = os.path.join(UPLOAD_FOLDER, f"{file_id}.pdf")
 
-        # Find the PDF file
-        pdf_files = [f for f in os.listdir(UPLOAD_FOLDER) if f"{file_id}" in f]
-        if not pdf_files:
-            return jsonify({"error": "PDF file not found"}), 404
+        print(f"Attempting to download PDF from Supabase: {pdf_path}")
 
-        pdf_path = os.path.join(UPLOAD_FOLDER, pdf_files[0])
+        # Download the PDF file as bytes
+        pdf_content = supabase.storage.from_("files_wad2").download(pdf_path)
 
-        # Extract text with error handling
-        try:
-            text_by_page = extract_text_from_pdf(pdf_path)
-        except Exception as e:
-            print(f"Error extracting PDF text: {str(e)}")
-            return jsonify({"error": "Failed to extract text from PDF"}), 500
+        if not pdf_content:
+            print(f"PDF file not found in Supabase Storage: {pdf_path}")
+            return jsonify({"error": "PDF file not found in Supabase Storage."}), 404
 
-        # Combine pages with clear separation
+        # Save the PDF content to the local filesystem
+        with open(destination, "wb") as f:
+            f.write(pdf_content)
+
+        print(f"PDF successfully downloaded and saved to: {destination}")
+
+    except Exception as e:
+        print(f"Error fetching PDF from Supabase: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"error": f"Error fetching PDF from Supabase: {str(e)}"}), 500
+
+    # **2. Extract text from the fetched PDF content**
+    try:
+        print(f"Extracting text from PDF: {destination}")
+        text_by_page = extract_text_from_pdf(destination)
+        print("Text extraction successful.")
+    except Exception as e:
+        print(f"Error extracting PDF text: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"error": "Failed to extract text from PDF."}), 500
+
+    # **3. Combine pages with clear separation**
+    try:
         full_text = "\n\nPAGE BREAK\n\n".join(
             [f"[Page {page}]\n{text}" for page, text in text_by_page.items()]
         )
+        print("Pages combined into full_text successfully.")
+    except Exception as e:
+        print(f"Error combining pages: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"error": "Failed to combine PDF pages."}), 500
 
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": """You are a helpful assistant that creates educational flashcards. 
-                    Focus on extracting key information from the provided content.
-                    Always return the response in the exact JSON format specified.""",
-                    },
-                    {
-                        "role": "user",
-                        "content": generate_flashcard_prompt(full_text, file_id),
-                    },
-                ],
-                temperature=0.7,
-                max_tokens=2000,
-            )
+    # **4. Generate flashcards using OpenAI API**
+    try:
+        print("Generating flashcards using OpenAI API.")
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """You are a helpful assistant that creates educational flashcards. 
+Focus on extracting key information from the provided content.
+Always return the response in the exact JSON format specified.""",
+                },
+                {
+                    "role": "user",
+                    "content": generate_flashcard_prompt(full_text, file_id),
+                },
+            ],
+            temperature=0.7,
+            max_tokens=2000,
+        )
 
-            flashcards_text = response.choices[0].message.content.strip()
-
-            try:
-                flashcards_data = json.loads(flashcards_text)
-
-                formatted_flashcards = []
-                for card in flashcards_data.get("flashcards", []):
-                    formatted_card = {
-                        "question": card["question"],
-                        "answer": card["correct_answer"],
-                        "wrong_answers": [
-                            {"text": wrong_answer, "explanation": "Incorrect option"}
-                            for wrong_answer in card["wrong_answers"]
-                        ],
-                        "page": card["page"],
-                        "quote": card.get("quote", ""),
-                        "file_id": file_id,
-                    }
-                    formatted_flashcards.append(formatted_card)
-
-                # Save flashcards to file
-                saved_filename = save_flashcards(
-                    {"flashcards": formatted_flashcards}, file_id
-                )
-
-                return jsonify(
-                    {"flashcards": formatted_flashcards, "saved_file": saved_filename}
-                )
-
-            except json.JSONDecodeError as e:
-                print(f"JSON Parse Error: {str(e)}")
-                print(f"Problematic JSON: {flashcards_text}")
-                return jsonify({"error": "Failed to parse flashcards response"}), 500
-
-        except Exception as e:
-            print(f"OpenAI API Error: {str(e)}")
-            traceback.print_exc()
-            return jsonify({"error": "Failed to generate flashcards"}), 500
+        flashcards_text = response.choices[0].message.content.strip()
+        print("Flashcards generated successfully.")
 
     except Exception as e:
-        print(f"General Error: {str(e)}")
+        print(f"OpenAI API Error: {str(e)}")
         traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Failed to generate flashcards."}), 500
+
+    # **5. Parse and Format Flashcards**
+    try:
+        print("Parsing flashcards JSON response.")
+        flashcards_data = json.loads(flashcards_text)
+
+        formatted_flashcards = []
+        for card in flashcards_data.get("flashcards", []):
+            formatted_card = {
+                "question": card.get("question", "").strip(),
+                "answer": card.get("correct_answer", "").strip(),
+                "wrong_answers": [
+                    {"text": wrong_answer.strip(), "explanation": "Incorrect option"}
+                    for wrong_answer in card.get("wrong_answers", [])
+                ],
+                "page": card.get("page", 0),
+                "quote": card.get("quote", "").strip(),
+                "file_id": file_id,
+            }
+            formatted_flashcards.append(formatted_card)
+
+        print(f"Parsed and formatted {len(formatted_flashcards)} flashcards.")
+
+    except json.JSONDecodeError as e:
+        print(f"JSON Parse Error: {str(e)}")
+        print(f"Problematic JSON: {flashcards_text}")
+        return jsonify({"error": "Failed to parse flashcards response."}), 500
+    except Exception as e:
+        print(f"Unexpected Error during flashcard parsing: {str(e)}")
+        traceback.print_exc()
+        return (
+            jsonify(
+                {"error": "An unexpected error occurred while processing flashcards."}
+            ),
+            500,
+        )
+
+    # **6. Save flashcards to storage or database**
+    try:
+        print("Saving flashcards to storage.")
+        flashcard_filename = save_flashcards(
+            {"flashcards": formatted_flashcards}, file_id
+        )
+
+        flashcard_filepath = os.path.join(FLASHCARDS_FOLDER, flashcard_filename)
+        print(f"Flashcards saved to: {flashcard_filepath}")
+    except Exception as e:
+        print(f"Error saving flashcards: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"error": "Failed to save flashcards."}), 500
+
+    # **7. Upload flashcards to Supabase Storage**
+    try:
+        folder_name = file_id
+        flashcard_filename = os.path.basename(flashcard_filepath)
+        folder_prefix = f"{folder_name}/"
+        upload_path = f"flashcards/{folder_prefix}{flashcard_filename}"
+
+        print(f"Uploading flashcards to Supabase Storage at '{upload_path}'.")
+        with open(flashcard_filepath, "rb") as fc_file:
+            upload_response = supabase.storage.from_("files_wad2").upload(
+                upload_path, fc_file
+            )
+
+        if not upload_response:
+            print("Failed to upload flashcards to Supabase Storage.")
+            return (
+                jsonify({"error": "Failed to upload flashcards to Supabase Storage."}),
+                500,
+            )
+
+        print("Flashcards uploaded to Supabase Storage successfully.")
+
+    except Exception as e:
+        print(f"Error uploading flashcards to Supabase: {str(e)}")
+        traceback.print_exc()
+        return (
+            jsonify({"error": "Failed to upload flashcards to Supabase Storage."}),
+            500,
+        )
+
+    # **8. Remove local files**
+    try:
+        print("Removing local files.")
+        os.remove(destination)
+        os.remove(flashcard_filepath)
+        print("Local files removed successfully.")
+    except Exception as e:
+        # Log the error but don't fail the entire process
+        print(f"Error removing local files: {str(e)}")
+        traceback.print_exc()
+
+    # **9. Return Success Response**
+    return (
+        jsonify(
+            {
+                "message": "Flashcards uploaded successfully to Supabase Storage.",
+                "file_id": flashcard_filepath,
+                "filename": flashcard_filepath,
+            }
+        ),
+        200,
+    )
 
 
 if __name__ == "__main__":

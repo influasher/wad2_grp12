@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What is the study of aggregate behavior of economic agents called?",
+      "answer": "Macroeconomics",
+      "wrong_answers": [
+        {
+          "text": "Microeconomics",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Econometrics",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Statistical Analysis",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 3,
+      "quote": "The study of the aggregate behavior of economic agents.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What does GDP stand for?",
+      "answer": "Gross Domestic Product",
+      "wrong_answers": [
+        {
+          "text": "General Domestic Product",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Gross Development Product",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Gross Domestic Profit",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 4,
+      "quote": "Gross Domestic Product (GDP) is the quantity of goods and services produced within a country’s borders during some specified period of time.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "Which approach is used to measure GDP by calculating total spending on final goods and services?",
+      "answer": "Expenditure approach",
+      "wrong_answers": [
+        {
+          "text": "Income approach",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Product approach",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Supply approach",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 27,
+      "quote": "Total spending on all final goods and services production in the economy.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What is the primary aim of national income accounting?",
+      "answer": "To obtain a measure of the GDP",
+      "wrong_answers": [
+        {
+          "text": "To assess government spending",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "To analyze economic growth",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "To determine tax revenue",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 24,
+      "quote": "The chief aim: To obtain a measure of the GDP.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What does the unemployment rate measure?",
+      "answer": "Number unemployed divided by the labor force",
+      "wrong_answers": [
+        {
+          "text": "Total working age population",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Number of employed individuals",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Total taxes collected",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 39,
+      "quote": "Unemployment rate = Number unemployed / Labor force.",
+      "file_id": "Measurement"
+    }
+  ]
+}

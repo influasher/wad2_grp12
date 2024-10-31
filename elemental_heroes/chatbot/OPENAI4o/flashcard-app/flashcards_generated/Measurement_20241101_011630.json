@@ -1,50 +1,50 @@
 {
   "flashcards": [
     {
-      "question": "What does macroeconomics study?",
-      "answer": "The aggregate behavior of economic agents.",
+      "question": "What is the primary focus of macroeconomics?",
+      "answer": "The study of the aggregate behavior of economic agents.",
       "wrong_answers": [
         {
-          "text": "Individual consumer behavior.",
+          "text": "The behavior of individual consumers.",
           "explanation": "Incorrect option"
         },
         {
-          "text": "Stock market trends.",
+          "text": "The production of a single good.",
           "explanation": "Incorrect option"
         },
         {
-          "text": "The behavior of specific industries.",
+          "text": "The study of historical economic trends.",
           "explanation": "Incorrect option"
         }
       ],
       "page": 3,
       "quote": "The study of the aggregate behavior of economic agents.",
-      "file_id": "b6db193a-e10f-42b0-9d39-418097a2d80b"
+      "file_id": "Measurement"
     },
     {
       "question": "What is Gross Domestic Product (GDP)?",
       "answer": "The quantity of goods and services produced within a country's borders during a specified period.",
       "wrong_answers": [
         {
-          "text": "The total income earned by individuals in a country.",
+          "text": "The total income earned by the population.",
           "explanation": "Incorrect option"
         },
         {
-          "text": "The total value of imports and exports.",
+          "text": "The measure of wealth distribution in a country.",
           "explanation": "Incorrect option"
         },
         {
-          "text": "The total population of a country.",
+          "text": "The total amount of foreign investments in a country.",
           "explanation": "Incorrect option"
         }
       ],
       "page": 4,
       "quote": "Gross Domestic Product (GDP) is the quantity of goods and services produced within a country’s borders during some specified period of time.",
-      "file_id": "b6db193a-e10f-42b0-9d39-418097a2d80b"
+      "file_id": "Measurement"
     },
     {
       "question": "Which approach is NOT one of the three approaches to measure GDP?",
-      "answer": "Consumption approach.",
+      "answer": "Demand approach.",
       "wrong_answers": [
         {
           "text": "Product approach.",
@@ -60,50 +60,50 @@
         }
       ],
       "page": 24,
-      "quote": "Three approaches: 1. Product approach. 2. Expenditure approach. 3. Income approach.",
-      "file_id": "b6db193a-e10f-42b0-9d39-418097a2d80b"
+      "quote": "Three approaches: Product approach, Expenditure approach, Income approach.",
+      "file_id": "Measurement"
     },
     {
-      "question": "What is the formula for calculating the unemployment rate?",
-      "answer": "Number unemployed / Labor force.",
+      "question": "What does the Consumer Price Index (CPI) primarily measure?",
+      "answer": "The cost of a fixed basket of goods and services purchased by consumers.",
       "wrong_answers": [
         {
-          "text": "Number unemployed / Total population.",
+          "text": "The overall economic output of a country.",
           "explanation": "Incorrect option"
         },
         {
-          "text": "Employed / Total working age population.",
+          "text": "The average income of households in a country.",
           "explanation": "Incorrect option"
         },
         {
-          "text": "Labor force / Total working age population.",
-          "explanation": "Incorrect option"
-        }
-      ],
-      "page": 39,
-      "quote": "Unemployment rate = Number unemployed / Labor force.",
-      "file_id": "b6db193a-e10f-42b0-9d39-418097a2d80b"
-    },
-    {
-      "question": "What does the Consumer Price Index (CPI) measure?",
-      "answer": "The price level of a set of goods and services purchased by consumers.",
-      "wrong_answers": [
-        {
-          "text": "Only the prices of imported goods.",
-          "explanation": "Incorrect option"
-        },
-        {
-          "text": "The total production of goods in the economy.",
-          "explanation": "Incorrect option"
-        },
-        {
-          "text": "The average wages of workers in the economy.",
+          "text": "The total exports and imports of a nation.",
           "explanation": "Incorrect option"
         }
       ],
       "page": 36,
       "quote": "Consumer price index (CPI) is not as broadly based as the implicit GDP price deflator.",
-      "file_id": "b6db193a-e10f-42b0-9d39-418097a2d80b"
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What is the unemployment rate?",
+      "answer": "The number unemployed divided by the labor force.",
+      "wrong_answers": [
+        {
+          "text": "The total number of employed individuals.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The percentage of the working-age population that is unemployed.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The total number of people not in the labor force.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 39,
+      "quote": "Unemployment rate = Number unemployed / Labor force.",
+      "file_id": "Measurement"
     }
   ]
 }
