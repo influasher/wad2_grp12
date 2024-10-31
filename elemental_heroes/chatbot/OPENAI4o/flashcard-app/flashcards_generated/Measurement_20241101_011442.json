@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What does macroeconomics study?",
+      "answer": "The aggregate behavior of economic agents.",
+      "wrong_answers": [
+        {
+          "text": "Individual consumer behavior.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The production of a single firm.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The financial market fluctuations.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 3,
+      "quote": "The study of the aggregate behavior of economic agents.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What is Gross Domestic Product (GDP)?",
+      "answer": "The quantity of goods and services produced within a country’s borders during a specified period.",
+      "wrong_answers": [
+        {
+          "text": "The total income earned by all citizens.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The total exports of a country.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The sum of all taxes collected by the government.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 4,
+      "quote": "Gross Domestic Product (GDP) is the quantity of goods and services produced within a country’s borders during some specified period of time.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "Which approach is NOT one of the three methods to measure GDP?",
+      "answer": "Market Approach.",
+      "wrong_answers": [
+        {
+          "text": "Product Approach.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Expenditure Approach.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Income Approach.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 24,
+      "quote": "Three approaches: Product approach, Expenditure approach, Income approach.",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "What does the Expenditure Approach for GDP measure?",
+      "answer": "Total spending on all final goods and services production in the economy.",
+      "wrong_answers": [
+        {
+          "text": "Total income received by economic agents.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Total production costs in the economy.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Total exports minus imports.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 27,
+      "quote": "Total expenditure = C+I+G+(X-M)",
+      "file_id": "Measurement"
+    },
+    {
+      "question": "The Consumer Price Index (CPI) is used to measure what?",
+      "answer": "The inflation rate.",
+      "wrong_answers": [
+        {
+          "text": "The GDP growth rate.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Unemployment rates.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Wage growth across sectors.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 30,
+      "quote": "We use price indices to measure the inflation rate.",
+      "file_id": "Measurement"
+    }
+  ]
+}
