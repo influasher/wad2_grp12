@@ -21,12 +21,13 @@ export class QA extends Phaser.Scene {
         this.load.image('resetButton', 'assets/images/resetButton.png'); // Reset button image
         this.load.image('soundOnButton', 'assets/images/soundOn.png');  // Sound on button image
         this.load.image('soundOffButton', 'assets/images/soundOff.png');  // Sound off button image
+        this.load.image('pouringStream', 'assets/images/pouringBottle.png');
+
 
         // audio load
         this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
         this.load.audio('errorClick', 'assets/audio/errorClick.wav');  // error sound
         this.load.audio('resetClick', 'assets/audio/resetClick.wav');  // reset sound
-        this.load.image('pouringStream', 'assets/images/pouringBottle.png');
 
 
     }

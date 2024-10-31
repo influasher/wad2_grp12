@@ -9,6 +9,7 @@ import PyPDF2
 import uuid
 from werkzeug.utils import secure_filename
 import traceback
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -19,12 +20,14 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 # Get the absolute path of the current directory
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
-# Configure upload folder
+# Configure folders
 UPLOAD_FOLDER = os.path.join(base_dir, 'uploads')
+FLASHCARDS_FOLDER = os.path.join(base_dir, 'flashcards_generated')
 ALLOWED_EXTENSIONS = {'pdf'}
 
 # Create necessary directories
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(FLASHCARDS_FOLDER, exist_ok=True)
 
 # Create Flask app
 app = Flask(__name__,
@@ -33,10 +36,22 @@ app = Flask(__name__,
 CORS(app)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['FLASHCARDS_FOLDER'] = FLASHCARDS_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_flashcards(flashcards, file_id):
+    """Save generated flashcards to a JSON file."""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"flashcards_{file_id}_{timestamp}.json"
+    filepath = os.path.join(app.config['FLASHCARDS_FOLDER'], filename)
+    
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(flashcards, f, ensure_ascii=False, indent=2)
+    
+    return filename
 
 def extract_text_from_pdf(pdf_path):
     """Extract text from PDF and return a dictionary with page numbers."""
@@ -47,6 +62,29 @@ def extract_text_from_pdf(pdf_path):
             page = pdf_reader.pages[page_num]
             text_by_page[page_num + 1] = page.extract_text()
     return text_by_page
+
+def get_document_context(file_id=None):
+    """Get the content of all uploaded PDFs or a specific PDF."""
+    context = []
+    
+    if file_id:
+        # Get specific PDF content
+        pdf_files = [f for f in os.listdir(UPLOAD_FOLDER) if f'{file_id}' in f]
+        if pdf_files:
+            pdf_path = os.path.join(UPLOAD_FOLDER, pdf_files[0])
+            # Uses extract_text_from_pdf here
+            text_by_page = extract_text_from_pdf(pdf_path)
+            context.append("\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()]))
+    else:
+        # Get all PDF contents
+        for pdf_file in os.listdir(UPLOAD_FOLDER):
+            if pdf_file.endswith('.pdf'):
+                pdf_path = os.path.join(UPLOAD_FOLDER, pdf_file)
+                # Uses extract_text_from_pdf here too
+                text_by_page = extract_text_from_pdf(pdf_path)
+                context.append("\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()]))
+    
+    return "\n\nNEW DOCUMENT\n\n".join(context)
 
 def generate_flashcard_prompt(content, file_id):
     return f"""
@@ -81,7 +119,6 @@ def generate_flashcard_prompt(content, file_id):
 @app.route('/api/generate-flashcards', methods=['POST'])
 def generate_flashcards():
     try:
-        # Get and validate file_id
         file_id = request.json.get('file_id')
         if not file_id:
             return jsonify({"error": "No file ID provided"}), 400
@@ -104,28 +141,23 @@ def generate_flashcards():
         full_text = "\n\nPAGE BREAK\n\n".join([f"[Page {page}]\n{text}" for page, text in text_by_page.items()])
 
         try:
-            # Generate flashcards using GPT-4
             response = client.chat.completions.create(
-                model="gpt-4",  # Fixed model name
+                model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant that creates educational flashcards. Always return the response in the exact JSON format specified."},
+                    {"role": "system", "content": """You are a helpful assistant that creates educational flashcards. 
+                    Focus on extracting key information from the provided content.
+                    Always return the response in the exact JSON format specified."""},
                     {"role": "user", "content": generate_flashcard_prompt(full_text, file_id)}
                 ],
                 temperature=0.7,
                 max_tokens=2000
             )
             
-            # Extract and parse the response
             flashcards_text = response.choices[0].message.content.strip()
             
-            # Log the response for debugging
-            print("OpenAI Response:", flashcards_text)
-            
             try:
-                # Parse JSON response
                 flashcards_data = json.loads(flashcards_text)
                 
-                # Transform the data into the expected format
                 formatted_flashcards = []
                 for card in flashcards_data.get('flashcards', []):
                     formatted_card = {
@@ -141,7 +173,13 @@ def generate_flashcards():
                     }
                     formatted_flashcards.append(formatted_card)
                 
-                return jsonify({"flashcards": formatted_flashcards})
+                # Save flashcards to file
+                saved_filename = save_flashcards({"flashcards": formatted_flashcards}, file_id)
+                
+                return jsonify({
+                    "flashcards": formatted_flashcards,
+                    "saved_file": saved_filename
+                })
                 
             except json.JSONDecodeError as e:
                 print(f"JSON Parse Error: {str(e)}")
@@ -221,7 +259,7 @@ def explain_answer():
         
         Provide a brief (1-2 sentences) explanation of why the chosen answer is incorrect.
         Focus on helping the student understand the key difference between their answer
-        and the correct answer. Be encouraging and educational in your explanation.
+        and the correct answer. Be educational in your explanation.
         """
 
         response = client.chat.completions.create(
@@ -246,33 +284,22 @@ def explain_answer():
 def chat():
     try:
         message = request.json.get('message')
-        file_id = request.json.get('file_id')  # Optional: to reference specific PDF
+        file_id = request.json.get('file_id')
         
         if not message:
             return jsonify({"error": "No message provided"}), 400
 
-        # If file_id is provided, include PDF content in the context
-        context = ""
-        if file_id:
-            pdf_files = [f for f in os.listdir(UPLOAD_FOLDER) if f'{file_id}' in f]
-            if pdf_files:
-                pdf_path = os.path.join(UPLOAD_FOLDER, pdf_files[0])
-                text_by_page = extract_text_from_pdf(pdf_path)
-                context = "\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()])
+        # Get document context
+        context = get_document_context(file_id)
 
-        # Prepare messages for the chat
         messages = [
             {"role": "system", "content": """You are a helpful study assistant. 
-            Answer questions clearly and concisely, using examples when appropriate. 
-            If referencing the PDF content, include page numbers in your response."""}
+            Prioritize using information from the provided document content when answering questions.
+            If the answer can be found in the documents, cite the specific page number.
+            If the question cannot be answered using the document content, clearly state that and provide a general response."""},
+            {"role": "user", "content": f"Document content:\n{context}\n\nQuestion: {message}"}
         ]
 
-        if context:
-            messages.append({"role": "user", "content": f"Context from PDF:\n{context}"})
-
-        messages.append({"role": "user", "content": message})
-
-        # Get response from GPT-4
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,

@@ -1,9 +1,9 @@
 <!-- pages/index.vue -->
 <template>
-  <div class="home-page  ">
+  <div class="home-page">
     <!-- Announcements Section -->
     <div class="announcements">
-      <h3 >Announcements</h3>
+      <h3>Announcements</h3>
       <p>
         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Suscipit
         molestias nostrum corporis voluptates quae laborum quos enim, voluptatem
@@ -62,12 +62,11 @@
 </template>
 
 <style lang="css" scoped>
-
 .home-page {
   display: block;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Full viewport height */
+  padding-bottom: 20px; /* Add some bottom padding */
 }
 .announcements {
   display: block;
@@ -99,7 +98,7 @@
 
 .card {
   width: 100%;
-  max-height: 650px;
+  max-height: 70vh; /* Use viewport height instead of fixed pixels */
   display: inline-block;
   position: relative;
   overflow: hidden; /*This will crop off image portions that overflow the container*/
