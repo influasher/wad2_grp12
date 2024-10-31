@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What is the focus of macroeconomics?",
+      "answer": "The study of the aggregate behavior of economic agents.",
+      "wrong_answers": [
+        {
+          "text": "The study of individual consumer behavior.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The analysis of market structures.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The examination of financial institutions.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 3,
+      "quote": "The study of the aggregate behavior of economic agents.",
+      "file_id": "a97671b7-afb0-463f-b405-3e9dbcc3d7c8"
+    },
+    {
+      "question": "What does GDP stand for?",
+      "answer": "Gross Domestic Product.",
+      "wrong_answers": [
+        {
+          "text": "General Domestic Product.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Gross Development Product.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "General Development Price.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 4,
+      "quote": "Gross Domestic Product (GDP) is the quantity of goods and services produced within a country’s borders during some specified period of time.",
+      "file_id": "a97671b7-afb0-463f-b405-3e9dbcc3d7c8"
+    },
+    {
+      "question": "What is the primary aim of national income accounting?",
+      "answer": "To obtain a measure of the GDP.",
+      "wrong_answers": [
+        {
+          "text": "To assess the inflation rate.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "To evaluate government spending.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "To analyze consumer behavior.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 24,
+      "quote": "The chief aim: To obtain a measure of the GDP.",
+      "file_id": "a97671b7-afb0-463f-b405-3e9dbcc3d7c8"
+    },
+    {
+      "question": "Which of the following is a component of aggregate expenditure?",
+      "answer": "Investment expenditure.",
+      "wrong_answers": [
+        {
+          "text": "Tax expenditure.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Savings expenditure.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Debt expenditure.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 27,
+      "quote": "Total expenditure = C+I+G+(X-M) where I denotes investment expenditure.",
+      "file_id": "a97671b7-afb0-463f-b405-3e9dbcc3d7c8"
+    },
+    {
+      "question": "What is the function of a price index?",
+      "answer": "To measure the inflation rate.",
+      "wrong_answers": [
+        {
+          "text": "To evaluate GDP growth.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "To assess employment levels.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "To analyze trade balances.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 30,
+      "quote": "We use price indices to measure the inflation rate, which is the rate of change in the price level.",
+      "file_id": "a97671b7-afb0-463f-b405-3e9dbcc3d7c8"
+    }
+  ]
+}

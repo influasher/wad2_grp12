@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What is a key characteristic of CPS data in terms of its generation?",
+      "answer": "Real-Time Data",
+      "wrong_answers": [
+        {
+          "text": "Historical Data",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Static Data",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Non-streaming Data",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 3,
+      "quote": "CPS data is generated in real-time and overwhelmingly can be communicated also in a very timely manner.",
+      "file_id": "ca47f2f3-9a63-4966-b30d-ab8ec84577a4"
+    },
+    {
+      "question": "Which of the following is NOT a characteristic of big data?",
+      "answer": "Consistency",
+      "wrong_answers": [
+        {
+          "text": "Volume",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Variety",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Velocity",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 5,
+      "quote": "Characteristics of big data include Volume, Variety, Velocity, Veracity, and Value.",
+      "file_id": "ca47f2f3-9a63-4966-b30d-ab8ec84577a4"
+    },
+    {
+      "question": "What process is included in the CPS data lifecycle?",
+      "answer": "Aggregation/Fusion",
+      "wrong_answers": [
+        {
+          "text": "Static Analysis",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Data Visualization",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Data Mining",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 9,
+      "quote": "The following are the key elements in the CPS data lifecycle: Querying, Production, Collection, Aggregation/Fusion, Delivery, Preprocessing, Storage/Update - Archiving, Processing/Analysis.",
+      "file_id": "ca47f2f3-9a63-4966-b30d-ab8ec84577a4"
+    },
+    {
+      "question": "Which type of data is characterized by being collected from the environment in an unobtrusive way?",
+      "answer": "Machine-generated data",
+      "wrong_answers": [
+        {
+          "text": "Crowd-sensed data",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Open data",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Social media data",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 7,
+      "quote": "Machine-generated data: data from environment, collected in the background in an unobtrusive way.",
+      "file_id": "ca47f2f3-9a63-4966-b30d-ab8ec84577a4"
+    },
+    {
+      "question": "What is a major benefit of CPS data management mentioned in the content?",
+      "answer": "Predict asset wear",
+      "wrong_answers": [
+        {
+          "text": "Reduce data volume",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Eliminate data storage",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Increase data redundancy",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 31,
+      "quote": "Benefits of CPS Data Management include understanding users’ needs, predicting asset wear, enabling resource efficiency, and creating effective systems.",
+      "file_id": "ca47f2f3-9a63-4966-b30d-ab8ec84577a4"
+    }
+  ]
+}

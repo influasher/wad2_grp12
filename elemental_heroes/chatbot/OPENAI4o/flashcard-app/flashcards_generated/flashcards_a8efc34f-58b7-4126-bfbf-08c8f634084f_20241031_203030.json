@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What is the primary study focus of macroeconomics?",
+      "answer": "The aggregate behavior of economic agents.",
+      "wrong_answers": [
+        {
+          "text": "The behavior of individual consumers.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The stock market trends.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Government regulations only.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 3,
+      "quote": "The study of the aggregate behavior of economic agents.",
+      "file_id": "a8efc34f-58b7-4126-bfbf-08c8f634084f"
+    },
+    {
+      "question": "What does GDP stand for?",
+      "answer": "Gross Domestic Product.",
+      "wrong_answers": [
+        {
+          "text": "General Development Plan.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Gross Domestic Profit.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Global Development Product.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 4,
+      "quote": "Gross Domestic Product (GDP) is the quantity of goods and services produced within a country’s borders during some specified period of time.",
+      "file_id": "a8efc34f-58b7-4126-bfbf-08c8f634084f"
+    },
+    {
+      "question": "Which approach is NOT one of the three main approaches to measure GDP?",
+      "answer": "Equity approach.",
+      "wrong_answers": [
+        {
+          "text": "Product approach.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Expenditure approach.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Income approach.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 24,
+      "quote": "Three approaches: Product approach, Expenditure approach, Income approach.",
+      "file_id": "a8efc34f-58b7-4126-bfbf-08c8f634084f"
+    },
+    {
+      "question": "What is the formula for Total Expenditure in the Expenditure Approach?",
+      "answer": "C + I + G + (X - M).",
+      "wrong_answers": [
+        {
+          "text": "C + I - G + (X + M).",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "C * I * G * (X - M).",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "C - I + G + (X + M).",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 27,
+      "quote": "Total expenditure = C + I + G + (X - M).",
+      "file_id": "a8efc34f-58b7-4126-bfbf-08c8f634084f"
+    },
+    {
+      "question": "Which of the following is NOT a group defined by the Current Population Survey?",
+      "answer": "Part-time students.",
+      "wrong_answers": [
+        {
+          "text": "Employed.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Unemployed.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Not in the labor force.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 39,
+      "quote": "People are divided into 3 groups: employed (part-time, full-time), unemployed (actively searching), not in the labor force.",
+      "file_id": "a8efc34f-58b7-4126-bfbf-08c8f634084f"
+    }
+  ]
+}

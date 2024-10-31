@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What are the key elements in the CPS data lifecycle?",
+      "answer": "Querying, Production, Collection, Aggregation/Fusion, Delivery, Preprocessing, Storage/Update - Archiving, Processing/Analysis",
+      "wrong_answers": [
+        {
+          "text": "Data Security Issues, Data Management Requirements",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Big Data Characteristics, Data Sources",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Real-Time Data, Cloud Analytics",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 9,
+      "quote": "",
+      "file_id": "916244d6-f865-4ab7-908f-92174647a8ff"
+    },
+    {
+      "question": "Which of the following is NOT a characteristic of big data?",
+      "answer": "Accessibility",
+      "wrong_answers": [
+        {
+          "text": "Volume",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Variety",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Velocity",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 5,
+      "quote": "",
+      "file_id": "916244d6-f865-4ab7-908f-92174647a8ff"
+    },
+    {
+      "question": "What is the primary concern of data provenance/data lineage?",
+      "answer": "Determining where data came from and who accessed it",
+      "wrong_answers": [
+        {
+          "text": "Analyzing real-time data for business strategies",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Controlling user access and permissions",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Protecting data from external threats",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 23,
+      "quote": "",
+      "file_id": "916244d6-f865-4ab7-908f-92174647a8ff"
+    },
+    {
+      "question": "Which framework is known for distributed processing in big data?",
+      "answer": "Hadoop",
+      "wrong_answers": [
+        {
+          "text": "Apache Spark",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Amazon Kinesis",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Apache Flume",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 19,
+      "quote": "",
+      "file_id": "916244d6-f865-4ab7-908f-92174647a8ff"
+    },
+    {
+      "question": "What does CPS stand for?",
+      "answer": "Cyber-Physical Systems",
+      "wrong_answers": [
+        {
+          "text": "Cloud Processing Systems",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Centralized Processing Systems",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Cognitive Processing Systems",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 1,
+      "quote": "",
+      "file_id": "916244d6-f865-4ab7-908f-92174647a8ff"
+    }
+  ]
+}
