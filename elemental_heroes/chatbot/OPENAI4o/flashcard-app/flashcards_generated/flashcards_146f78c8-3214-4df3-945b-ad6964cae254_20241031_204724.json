@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What does the Ricardian equivalence theorem imply about government deficits?",
+      "answer": "The size of the government’s deficit is irrelevant to macroeconomic variables.",
+      "wrong_answers": [
+        {
+          "text": "Government deficits always lead to higher interest rates.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Deficits must be balanced by the government every year.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Government deficits improve consumer welfare.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 2,
+      "quote": "An important implication is that the Ricardian equivalence theorem holds.",
+      "file_id": "146f78c8-3214-4df3-945b-ad6964cae254"
+    },
+    {
+      "question": "According to the Ricardian equivalence theorem, what happens when current taxes change?",
+      "answer": "They are offset by an equal and opposite change in future taxes.",
+      "wrong_answers": [
+        {
+          "text": "They always lead to an increase in consumption.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "They have no effect on government borrowing.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "They reduce the overall tax burden for consumers.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 10,
+      "quote": "A change in current taxes... has no effect on the real interest rate or on the consumption of individual consumers.",
+      "file_id": "146f78c8-3214-4df3-945b-ad6964cae254"
+    },
+    {
+      "question": "What is the government’s current-period budget constraint formula?",
+      "answer": "G = T + B",
+      "wrong_answers": [
+        {
+          "text": "G = T - B",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "G = T * B",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "G + T = B",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 5,
+      "quote": "Letting B denote the quantity of government bonds issued in the current period, the government’s current-period budget constraint is G = T + B.",
+      "file_id": "146f78c8-3214-4df3-945b-ad6964cae254"
+    },
+    {
+      "question": "What must hold in a competitive equilibrium for a two-period economy?",
+      "answer": "The government present-value budget constraint holds.",
+      "wrong_answers": [
+        {
+          "text": "The government must balance its budget each year.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The real interest rate must fluctuate daily.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Consumers must spend all their income.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 7,
+      "quote": "In a competitive equilibrium for this two-period economy, three conditions must hold.",
+      "file_id": "146f78c8-3214-4df3-945b-ad6964cae254"
+    },
+    {
+      "question": "What happens to private saving when current taxes decrease according to the Ricardian equivalence theorem?",
+      "answer": "Current private saving increases as consumers save for future tax increases.",
+      "wrong_answers": [
+        {
+          "text": "Private saving decreases and government saving increases.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Private saving remains unchanged regardless of tax changes.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Private saving increases but only for high-income individuals.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 14,
+      "quote": "Consumers anticipate this, and they increase their savings by the amount of the tax cut to pay the higher taxes they will face in the future.",
+      "file_id": "146f78c8-3214-4df3-945b-ad6964cae254"
+    }
+  ]
+}

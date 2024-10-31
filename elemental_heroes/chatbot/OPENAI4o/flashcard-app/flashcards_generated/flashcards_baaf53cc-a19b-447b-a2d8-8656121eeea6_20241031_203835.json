@@ -1,0 +1,109 @@
+{
+  "flashcards": [
+    {
+      "question": "What is the study of macroeconomics primarily concerned with?",
+      "answer": "The aggregate behavior of economic agents.",
+      "wrong_answers": [
+        {
+          "text": "Individual consumer behavior.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Stock market fluctuations.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "International trade agreements.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 3,
+      "quote": "The study of the aggregate behavior of economic agents.",
+      "file_id": "baaf53cc-a19b-447b-a2d8-8656121eeea6"
+    },
+    {
+      "question": "What does GDP stand for?",
+      "answer": "Gross Domestic Product.",
+      "wrong_answers": [
+        {
+          "text": "Gross Domestic Price.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "General Domestic Product.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Gross Department Profit.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 4,
+      "quote": "Gross Domestic Product (GDP) is the quantity of goods and services produced within a country’s borders.",
+      "file_id": "baaf53cc-a19b-447b-a2d8-8656121eeea6"
+    },
+    {
+      "question": "Which of the following is a component of the expenditure approach to calculating GDP?",
+      "answer": "Consumption.",
+      "wrong_answers": [
+        {
+          "text": "Tax revenue.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Government equity.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Export subsidies.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 27,
+      "quote": "Total expenditure = C+I+G+(X-M) where C denotes consumption.",
+      "file_id": "baaf53cc-a19b-447b-a2d8-8656121eeea6"
+    },
+    {
+      "question": "What does the CPI measure?",
+      "answer": "The rate of change in the price level.",
+      "wrong_answers": [
+        {
+          "text": "The total production of goods.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The unemployment rate.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "The GDP growth rate.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 30,
+      "quote": "We use price indices to measure the inflation rate, which is the rate of change in the price level.",
+      "file_id": "baaf53cc-a19b-447b-a2d8-8656121eeea6"
+    },
+    {
+      "question": "What is the unemployment rate defined as?",
+      "answer": "Number unemployed divided by the labor force.",
+      "wrong_answers": [
+        {
+          "text": "Number unemployed divided by the total population.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Total number of workers in the economy.",
+          "explanation": "Incorrect option"
+        },
+        {
+          "text": "Number of job openings in the market.",
+          "explanation": "Incorrect option"
+        }
+      ],
+      "page": 39,
+      "quote": "Unemployment rate = Number unemployed / Labor force.",
+      "file_id": "baaf53cc-a19b-447b-a2d8-8656121eeea6"
+    }
+  ]
+}
