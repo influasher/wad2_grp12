@@ -146,7 +146,7 @@ const uploadPdf = async () => {
     uploadStatus.value = "Uploading PDF...";
 
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/upload-pdf",
+      "http://127.0.0.1:5000/api/supabase/upload-pdf",
       formData,
       {
         headers: {
