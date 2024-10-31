@@ -5,9 +5,9 @@
       <div
         class="sidebar-header d-flex align-items-center justify-content-between"
       >
-      <a href="/" class="elementalHome">
-        <h3 class="px-4 press-start-2p-regular fs-6">Elemental Heroes</h3>
-      </a>
+        <a href="/" class="elementalHome">
+          <h3 class="px-4 press-start-2p-regular fs-6">Elemental Heroes</h3>
+        </a>
         <button id="sidebarCollapse" @click="toggleSidebar" class="p-4">
           <img
             src="../assets/images/hamburger.svg"
@@ -23,7 +23,9 @@
             src="../assets/images/gamepad-joystick-svgrepo-com.svg"
             width="50"
           />
-          <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular">Games</span>
+          <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular"
+            >Games</span
+          >
         </div>
       </a>
       <a href="/revision" class="sidebarButton">
@@ -31,7 +33,9 @@
           <!-- <button type="button" class="btn btn-block"> -->
 
           <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
-          <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular">Revision</span>
+          <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular"
+            >Revision</span
+          >
           <!-- </button> -->
         </div>
       </a>
@@ -42,7 +46,6 @@
 
     <!-- Main content wrapper - Takes remaining width -->
     <div class="content-wrapper d-flex flex-column w-100">
-      <!-- Your existing Navbar -->
       <Navbar expand="lg" background-color="body-tertiary">
         <Container type="fluid">
           <NavbarBrand>
@@ -87,25 +90,15 @@
       </Navbar>
 
       <!-- Main content area -->
-      <main>
+      <main class="flex-grow-1">
         <slot />
       </main>
-      <footer class="footer">
-      <div class="container">
-        <div class="row">
-          <div class="col text-center">
-            <p>&copy; 2024 Elemental Heroes. All rights reserved.</p>
-            <nav>
-              <a href="/about">About</a> |
-              <a href="/contact">Contact</a> |
-              <a href="/privacy">Privacy Policy</a>
-            </nav>
-          </div>
+      <footer class="footer mt-auto py-3 bg-light">
+        <div class="container-fluid text-center">
+          <p class="mb-0">&copy; 2024 Elemental Heroes. All rights reserved.</p>
         </div>
-      </div>
-    </footer>
+      </footer>
     </div>
-    
   </div>
 </template>
 
@@ -120,14 +113,13 @@ function toggleSidebar() {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
 .press-start-2p-regular {
   font-family: "Press Start 2P", serif;
   font-weight: 400;
   font-style: normal;
 }
-
 
 /* Basic structure styling */
 .wrapper {
@@ -147,11 +139,10 @@ function toggleSidebar() {
   transition: all 0.3s;
   background: #cecae7;
   color: #1e1e1e;
-  /* padding: 0 20px; */
-  /* Remove top/bottom padding */
+
 }
 
-.elementalHome{
+.elementalHome {
   color: inherit;
   text-decoration: none;
 }
@@ -162,15 +153,13 @@ function toggleSidebar() {
   display: block;
   width: 100%;
   font-size: 12.5px;
-  /* margin: 0 -20px;  /* Compensate for sidebar padding */
-  /* padding: 0 20px;  Add padding inside the button instead  */
+
 }
 
 .sidebarButton:hover {
   background-color: #b2a9ec;
   width: 100%;
-  /* padding-left: 20px;
-  padding-right: 20px; */
+
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -178,6 +167,9 @@ function toggleSidebar() {
 .content-wrapper {
   margin-left: 250px;
   transition: all 0.3s;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 #sidebar.active + .content-wrapper {
@@ -223,7 +215,7 @@ function toggleSidebar() {
 #sidebar.active .sidebar-header button#sidebarCollapse {
   display: block;
   margin: 0 auto;
-  left:0
+  left: 0;
 }
 
 #sidebar.active .sidebar-header {
@@ -275,9 +267,7 @@ function toggleSidebar() {
   top: 0;
   z-index: 999;
   height: 72px;
-  /* Fixed height to match with sidebar header */
   padding: 0 20px;
-  /* Adjust horizontal padding */
   display: flex;
   align-items: center;
 }
@@ -289,7 +279,26 @@ function toggleSidebar() {
 }
 
 main {
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 142px); /* 72px header + 70px footer */
+  overflow-y: auto;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+footer {
+  padding: 10px;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color: #f8f9fa;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+footer p {
+  margin: 0;
 }
 
 @media (max-width: 768px) {
