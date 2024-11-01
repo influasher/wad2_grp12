@@ -1,19 +1,11 @@
 <template>
-  <div class="game">gamelists</div>
-
-  <form @submit.prevent="handleSubmit">
-    <div>
-      <label for="score">Score:</label>
-      <input type="number" id="score" v-model="score" />
-    </div>
-    <div>
-      <label for="id">ID:</label>
-      <input type="number" id="id" v-model="id" />
-    </div>
-    <button type="submit">Update Score</button>
-  </form>
-  <div id="game-container" class="screen">
+  <div class="game">
+     <div id="game-container" class="screen">
 </div>
+  </div>
+
+  
+ 
 </template>
 
 <script lang="js" setup>

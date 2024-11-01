@@ -11,11 +11,25 @@
       </div>
 
       <div class="row g-4">
-        <div class="col-md-4" v-for="note in notes" :key="note">
-          <NuxtLink
+        <div class="col-md-3">  
+            <NuxtLink
             to="/flashcard"
             style="text-decoration: none; color: inherit"
           >
+            <div class="card custom-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">+</h5>
+                    <p class="card-text text-muted">
+                        Upload Notes
+                    </p>
+                </div>
+            </div>
+        </NuxtLink>
+        </div>
+        <div class="col-md-3" v-for="note in notes" :key="note">
+            <!-- Add Nuxtlink to notes page which has pdf viewer -->
+            <NuxtLink :to="{ path: '/notes', query: { name: note.name } }"
+            style="text-decoration: none;">
             <div class="card custom-card">
               <div class="card-body">
                 <h5 class="card-title">{{ note.name }}</h5>
@@ -24,7 +38,7 @@
                 </p>
               </div>
             </div>
-          </NuxtLink>
+        </NuxtLink>
         </div>
       </div>
     </div>
@@ -34,7 +48,7 @@
       <h2 class="section-title">Shared Flashcards</h2>
       <div class="row g-4">
         <div
-          class="col-md-4"
+          class="col-md-3"
           v-for="deck in ['OG Chem', 'Thermodynamics']"
           :key="deck"
         >
@@ -112,9 +126,11 @@ onMounted(() => {
 
 .custom-card {
   background-color: #ffffff; /* White background for contrast */
-  border: px solid #e0e0e0; /* Light border */
+  height: 150px;
+  border: 0.5px solid #e4e3e3; /* Light border */
   border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  */
+  /* Subtle shadow for depth */
   transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for hover effect */
 }
 

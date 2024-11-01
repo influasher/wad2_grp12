@@ -19,8 +19,7 @@
       </div>
       <a href="/gamelist" class="sidebarButton">
         <div class="mt-4 p-3">
-          <img
-            src="../assets/images/gamepad-joystick-svgrepo-com.svg"
+          <img src="../assets/images/gamepad-joystick-svgrepo-com.svg"
             width="50"
           />
           <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular"

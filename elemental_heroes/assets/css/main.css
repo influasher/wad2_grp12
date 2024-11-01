@@ -19,15 +19,15 @@ body {
     font-family: var(--primary-font);
 }
 
-/* :root {
+:root {
     --unity-purple: #8B6EF3;
     --unity-dark: #1E1E1E;
     --unity-gray: #F5F5F5;
     --unity-text: #333333;
-    --unity-hover: #B2A9EC
+    --unity-hover: #593FFF;
   }
 
-  body {
+  /* body {
     font-family: 'Inter', sans-serif;
     background-color: var(--unity-gray);
     color: var(--unity-text);
@@ -52,7 +52,7 @@ body {
   }
   
   .btn-primary:hover {
-    background-color: darken(var(--unity-purple), 10%);
+    background-color: var(--unity-hover);
   }
   
   .search-bar {
