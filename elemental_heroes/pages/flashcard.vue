@@ -93,11 +93,14 @@
         <div class="chat-input-container">
           <input
             type="text"
+            style="border:none;
+                    width:95%;
+                    outline:none"
             v-model="chatInput"
             placeholder="Ask a question about the content..."
             @keypress.enter="sendMessage"
           />
-          <button @click="sendMessage">Send</button>
+          <button @click="sendMessage">↑</button>
         </div>
       </div>
     </main>
@@ -517,7 +520,11 @@ const sendMessage = async () => {
 
 .container .chat-input-container {
   display: flex;
+  height: 50px;
   gap: 10px;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  justify-content:space-between
 }
 
 .container #chat-input {
