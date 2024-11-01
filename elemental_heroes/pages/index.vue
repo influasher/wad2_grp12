@@ -14,11 +14,17 @@
 
     <!-- Slideshow of recently played -->
     <div class="slideshow">
+      <div v-if="isLoading" class="skeleton-container">
+        <CarouselSkeleton />
+      </div>
+
       <div
+        v-else
         id="carouselExampleAutoplaying"
         class="carousel slide"
         data-bs-ride="carousel"
       >
+        <!-- Your existing carousel code -->
         <div class="carousel-inner">
           <div
             v-for="(game, index) in games"
@@ -38,6 +44,7 @@
             </div>
           </div>
         </div>
+        <!-- Carousel controls -->
         <button
           class="carousel-control-prev"
           type="button"
@@ -121,13 +128,19 @@
   background-color: #8b6ef3;
   width: 20%;
 }
+
+/* Add styles for skeleton container */
+.skeleton-container {
+  width: 100%;
+  margin: 0 auto;
+}
 </style>
 
 <script setup>
-//for supabase queries
 import { ref, onMounted } from "vue";
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
+import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
 
 const config = useRuntimeConfig();
 const supabase = createClient(
@@ -135,30 +148,38 @@ const supabase = createClient(
   config.public.supabaseKey
 );
 const games = ref([]);
+const isLoading = ref(true);
 
 async function fetchGames() {
-  const { data, error } = await supabase
-    .from("games")
-    .select("id, title, description, thumbnail_url");
-  if (error) {
-    console.error("Error fetching games:", error.message);
-  } else {
+  try {
+    isLoading.value = true;
+
+    // Add small delay to ensure skeleton is visible during development
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const { data, error } = await supabase
+      .from("games")
+      .select("id, title, description, thumbnail_url");
+
+    if (error) throw error;
+
     games.value = data;
-    // console.log(games.value)
-    for (const game of games.value) {
-      fetchThumbnail(game);
-    }
+    await Promise.all(games.value.map(fetchThumbnail));
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    isLoading.value = false;
   }
 }
 
 async function fetchThumbnail(game) {
-  // console.log(game)
   const { data, error } = await supabase.storage
     .from("files_wad2")
     .getPublicUrl(game.thumbnail_url);
-  // console.log(data)
-  game.publicUrl = data.publicUrl;
-  console.log(game.publicUrl);
+
+  if (!error) {
+    game.publicUrl = data.publicUrl;
+  }
 }
 
 onMounted(() => {

@@ -1,4 +1,4 @@
-<!-- pages/index.vue -->
+<!-- pages/revision.vue -->
 <template>
   <div class="home-page">
     <!-- Top Section -->
@@ -10,7 +10,11 @@
         </NuxtLink>
       </div>
 
-      <div class="row g-4">
+      <!-- Show skeleton loader while loading -->
+      <NoteFlashcardSkeleton v-if="isLoading" :count="6" />
+
+      <!-- Show actual content when loaded -->
+      <div v-else class="row g-4">
         <div class="col-md-4" v-for="note in notes" :key="note">
           <NuxtLink
             to="/flashcard"
@@ -32,7 +36,11 @@
     <!-- Shared Flashcards Section -->
     <div class="mb-5">
       <h2 class="section-title">Shared Flashcards</h2>
-      <div class="row g-4">
+      <!-- Show skeleton loader while loading -->
+      <NoteFlashcardSkeleton v-if="isLoading" :count="6" />
+
+      <!-- Show actual content when loaded -->
+      <div v-else class="row g-4">
         <div
           class="col-md-4"
           v-for="deck in ['OG Chem', 'Thermodynamics']"
@@ -55,48 +63,50 @@
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
 import { ref } from "vue";
+import NoteFlashcardSkeleton from "~/components/NoteFlashcardSkeleton.vue";
 const config = useRuntimeConfig();
 const supabase = createClient(
   config.public.supabaseUrl,
   config.public.supabaseKey
 );
 const notes = ref([]);
+const isLoading = ref(true); // Add loading state
 
 // Function to fetch and format notes
 async function getNotes() {
-  const { data, error } = await supabase.storage
-    .from("files_wad2")
-    .list("user_pdfs");
+  try {
+    isLoading.value = true; // Set loading to true before fetching
+    const { data, error } = await supabase.storage
+      .from("files_wad2")
+      .list("user_pdfs");
 
-  if (error) {
-    console.log("Error fetching notes:", error);
-  } else if (data) {
-    console.log("Fetched data:", data);
+    if (error) {
+      console.log("Error fetching notes:", error);
+    } else if (data) {
+      console.log("Fetched data:", data);
 
-    // Process and format each note
-    notes.value = data.map((item) => {
-      // **1. Remove File Extension from Name**
-      const nameWithoutExtension = item.name.replace(/\.[^/.]+$/, "");
+      notes.value = data.map((item) => {
+        const nameWithoutExtension = item.name.replace(/\.[^/.]+$/, "");
+        const formattedDate = new Date(item.created_at).toLocaleDateString(
+          undefined,
+          {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }
+        );
 
-      // **2. Convert Upload Date to Human-Readable Format**
-      // Option 1: Using JavaScript's built-in Date
-      const formattedDate = new Date(item.created_at).toLocaleDateString(
-        undefined,
-        {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }
-      );
-      // Option 2: Using Day.js for more control (optional)
-      // const formattedDate = dayjs(item.created_at).format("MMMM D, YYYY h:mm A");
-
-      return {
-        ...item,
-        name: nameWithoutExtension,
-        formattedDate, // Adding a new field for the formatted date
-      };
-    });
+        return {
+          ...item,
+          name: nameWithoutExtension,
+          formattedDate,
+        };
+      });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    isLoading.value = false; // Set loading to false after fetching
   }
 }
 
