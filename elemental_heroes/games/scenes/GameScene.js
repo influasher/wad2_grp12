@@ -15,7 +15,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('backgroundTile', '/assets/images/background_blue.png');
+        this.load.image('backgroundTile', '/assets/images/floorTile.png');
         this.load.image('player', '/assets/images/ball_red_small.png');
         this.load.image('table', '/assets/images/table.png');
         this.load.image('clipboard','/assets/images/clipboard.png');
@@ -27,6 +27,8 @@ export class GameScene extends Phaser.Scene {
         this.load.image('s','/assets/images/s.png');
         this.load.image('d','/assets/images/d.png');
         this.load.image('i','/assets/images/i.png');
+        this.load.image('backButton', 'assets/images/backButton.png'); // Add your back button image
+
 
         // Fixed the issue with loading spritesheet
         this.load.spritesheet('labIcons', '/assets/images/LabIcons.png', {
@@ -62,6 +64,14 @@ export class GameScene extends Phaser.Scene {
         const padding = 20; // Padding from the screen edges
         const xLeft = padding;
         const yBottom = this.scale.height - padding;
+
+        const backButton = this.add.sprite(this.scale.width * 0.03, this.scale.height * 0.055, 'backButton')
+        .setInteractive()
+        .setScale(0.1)  // Adjust the size of the button
+        .on('pointerdown', () => {
+            this.sound.play('glassClick');
+            this.scene.start('LoadingScene');  // Switch back to LoadingScene when clicked
+        });
 
         // Add WASD keys in a cross formation in the bottom-left corner
         this.add.image(xLeft + 40, yBottom - 80, 'w').setScale(1).setOrigin(0); // W key above

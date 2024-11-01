@@ -68,9 +68,9 @@ function handleSubmit() {
 #game-container, #not-playable {
             width: 60vw;               /* Set the fixed width of the game */
             height: 85vh;              /* Set the fixed height of the game */
-            background-color: palevioletred;  /* Light background color */
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for effect */
-            border-radius: 10px;        /* Rounded corners for a modern look */
+            /* background-color: palevioletred;  Light background color */
+            /* box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); Soft shadow for effect */
+            /* border-radius: 10px;        Rounded corners for a modern look */
             padding: 20px;              /* Add padding inside the container */
             display: flex;
             justify-content: center;    /* Center the game inside the container */

@@ -21,7 +21,7 @@ export class CasualGameScene extends Phaser.Scene {
 
         const buttonScale = this.scale.width * 0.0005;
         
-        // Add a background
+        // background
         this.add.image(this.scale.width / 2, this.scale.height / 2, 'background').setOrigin(0.5).setDisplaySize(this.scale.width, this.scale.height);
         
         const backButton = this.add.sprite(this.scale.width * 0.03, this.scale.height * 0.055, 'backButton')
