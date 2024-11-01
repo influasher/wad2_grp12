@@ -1,0 +1,41 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elemental Heroes Flashcard Generator & Study Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Elemental Heroes Flashcard Generator & Study Assistant</h1>
+        </header>
+
+        <main>
+            <div class="section flashcard-generator">
+                <h2>Generate Flashcards from PDF</h2>
+                <div class="upload-section">
+                    <input type="file" id="pdf-input" accept=".pdf">
+                    <button id="upload-btn">Upload PDF</button>
+                </div>
+                <div id="upload-status"></div>
+                <button id="generate-btn" disabled>Generate Flashcards</button>
+                <div id="flashcards-container"></div>
+            </div>
+
+            <div class="section chat-assistant">
+                <h2>Study Assistant Chat</h2>
+                <div id="chat-history"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="chat-input" placeholder="Ask a question about the content...">
+                    <button id="send-btn">Send</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../static/script.js"></script>
+</body>
+</html>
