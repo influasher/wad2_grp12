@@ -596,7 +596,9 @@ Always return the response in the exact JSON format specified.""",
                 "message": "Flashcards uploaded successfully to Supabase Storage.",
                 "file_id": flashcard_filepath,
                 "filename": flashcard_filepath,
+                "flashcards": formatted_flashcards
             }
+
         ),
         200,
     )

@@ -184,6 +184,7 @@ const generateFlashcards = async () => {
     );
 
     if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
+      //need to modify this to return the flashcards in response.data.flashcards
       flashcards.value = response.data.flashcards;
       currentCardIndex.value = 0;
       prepareCurrentCard();
