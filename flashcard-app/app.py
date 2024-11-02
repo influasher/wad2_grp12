@@ -406,7 +406,7 @@ def chat():
                 "content": """You are a helpful study assistant. 
             Prioritize using information from the provided document content when answering questions.
             If the answer can be found in the documents, cite the specific page number.
-            If the question cannot be answered using the document content, clearly state that and provide a general response.""",
+            If the question cannot be answered using the document content, provide a general educational response.""",
             },
             {
                 "role": "user",

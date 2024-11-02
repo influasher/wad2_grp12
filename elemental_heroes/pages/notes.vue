@@ -20,6 +20,7 @@
       >
       </iframe>
     </div>
+    <FloatingChat :fileId="noteName" />
   </div>
 </template>
 
@@ -27,6 +28,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
+import FloatingChat from '@/components/FloatingChat.vue';
 
 const config = useRuntimeConfig();
 const supabase = createClient(

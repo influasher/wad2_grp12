@@ -1,3 +1,4 @@
+<!-- components/FloatingChat.vue -->
 <template>
     <div class="floating-chat-container">
         <button class="floating-chat-button" @click="toggleChat" :class="{ 'chat-open': isOpen }">
@@ -5,29 +6,18 @@
         </button>
 
         <div v-if="isOpen" class="chat-popup">
-            <div class="chat-popup-header">Study Assistant</div>
+            <div class="chat-popup-header">{{ title }}</div>
             <div class="chat-messages">
-                <div v-for="(message, index) in chatMessages" 
-                    :key="index" 
-                    :class="['chat-message', message.isUser ? 'user-message' : 'bot-message']"
-                >
+                <div v-for="(message, index) in chatMessages" :key="index"
+                    :class="['chat-message', message.isUser ? 'user-message' : 'bot-message']">
                     <div v-if="message.isUser">{{ message.content }}</div>
                     <div v-else class="formatted-content" v-html="formatMessage(message.content)"></div>
                 </div>
             </div>
             <div class="chat-input-container">
                 <div class="input-wrapper">
-                    <input 
-                        type="text" 
-                        v-model="chatInput" 
-                        @keypress.enter="sendMessage" 
-                        placeholder="Ask a question..." 
-                    />
-                    <button 
-                        @click="sendMessage"
-                        class="send-button"
-                        :disabled="!chatInput.trim()"
-                    >
+                    <input type="text" v-model="chatInput" @keypress.enter="sendMessage" :placeholder="placeholder" />
+                    <button @click="sendMessage" class="send-button" :disabled="!chatInput.trim()">
                         ↑
                     </button>
                 </div>
@@ -44,19 +34,33 @@ import { marked } from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
 
-marked.setOptions({
-    highlight: (code, lang) => lang && hljs.getLanguage(lang) 
-        ? hljs.highlight(code, { language: lang }).value 
-        : hljs.highlightAuto(code).value,
-    breaks: true,
-    gfm: true
-});
-
 const props = defineProps({
     fileId: {
         type: String,
         required: true,
     },
+    title: {
+        type: String,
+        default: 'Study Assistant'
+    },
+    placeholder: {
+        type: String,
+        default: 'Ask a question...'
+    },
+    apiEndpoint: {
+        type: String,
+        default: 'http://127.0.0.1:5000/api/chat'
+    }
+});
+
+const emit = defineEmits(['chat-opened', 'chat-closed', 'message-sent', 'message-received', 'error']);
+
+marked.setOptions({
+    highlight: (code, lang) => lang && hljs.getLanguage(lang)
+        ? hljs.highlight(code, { language: lang }).value
+        : hljs.highlightAuto(code).value,
+    breaks: true,
+    gfm: true
 });
 
 const isOpen = ref(false);
@@ -65,34 +69,39 @@ const chatMessages = ref([]);
 
 const formatMessage = (content) => {
     return DOMPurify.sanitize(marked(content), {
-        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'code', 'pre', 'blockquote', 
-                        'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
-                        'a', 'span', 'div'],
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'code', 'pre', 'blockquote',
+            'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'a', 'span', 'div'],
         ALLOWED_ATTR: ['href', 'class', 'target']
     });
 };
 
-const toggleChat = () => isOpen.value = !isOpen.value;
+const toggleChat = () => {
+    isOpen.value = !isOpen.value;
+    emit(isOpen.value ? 'chat-opened' : 'chat-closed');
+};
 
 const sendMessage = async () => {
     const message = chatInput.value.trim();
     if (!message) return;
 
     chatMessages.value.push({ content: message, isUser: true });
+    emit('message-sent', message);
     chatInput.value = "";
 
     try {
-        const response = await axios.post("http://127.0.0.1:5000/api/chat", {
+        const response = await axios.post(props.apiEndpoint, {
             message,
             file_id: props.fileId,
         });
-        chatMessages.value.push({ content: response.data.response, isUser: false });
+        const botResponse = response.data.response;
+        chatMessages.value.push({ content: botResponse, isUser: false });
+        emit('message-received', botResponse);
     } catch (error) {
         console.error("Error sending message:", error);
-        chatMessages.value.push({
-            content: "Sorry, there was an error processing your message.",
-            isUser: false,
-        });
+        const errorMessage = "Sorry, there was an error processing your message.";
+        chatMessages.value.push({ content: errorMessage, isUser: false });
+        emit('error', error);
     }
 };
 </script>

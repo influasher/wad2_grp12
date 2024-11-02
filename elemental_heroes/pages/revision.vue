@@ -132,6 +132,7 @@
         </div>
       </div>
     </div>
+    <FloatingChat />
   </div>
 </template>
 
@@ -142,6 +143,7 @@ import { useRuntimeConfig } from "#app";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import NoteFlashcardSkeleton from "~/components/NoteFlashcardSkeleton.vue";
+import FloatingChat from '@/components/FloatingChat.vue';
 
 const config = useRuntimeConfig();
 const router = useRouter();
