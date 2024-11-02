@@ -47,8 +47,6 @@ async function getPDF() {
 onMounted(() => {
   getPDF();
 });
-=======
-
 </script>
 
 <style scoped>

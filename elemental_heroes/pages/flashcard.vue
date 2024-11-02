@@ -66,7 +66,7 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 
 const route = useRoute();
-const fileName = ref(route.query.fileName || 'Untitled');
+const fileName = ref(route.query.name || 'Untitled');
 const fileId = ref(route.query.fileId);
 const isGenerating = ref(route.query.generating === 'true');
 
@@ -84,7 +84,7 @@ const generateFlashcards = async () => {
   isGenerating.value = true;
   try {
     const response = await axios.post("http://127.0.0.1:5000/api/supabase/generate-flashcards", {
-      file_id: fileId.value,
+      file_id: fileName.value,
     });
 
     if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
@@ -194,9 +194,10 @@ const showNextCard = () => {
 };
 
 onMounted(() => {
-  if (fileId.value && isGenerating.value) {
-    generateFlashcards();
-  }
+  // if (fileId.value && isGenerating.value) {
+  //   generateFlashcards();
+  // }
+  generateFlashcards()
 });
 </script>
 
