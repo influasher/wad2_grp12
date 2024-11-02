@@ -1,12 +1,27 @@
 <template>
-  <div class="game">
-     <div id="game-container" class="screen">
-</div>
-  </div>
+  <div class="game-page">
+    <div class="row justify-content-center">
+      <!-- Game container: Full width on small screens, 10 columns on large screens -->
+      <div id="game-container" class="screen col-lg-12 col-xl-9">
+      </div>
 
-  
- 
+      <!-- Topics section: Full width on small screens, 2 columns on large screens -->
+      <div id="subjects" class="col-lg-12 col-xl-3 d-flex justify-content-center">
+        <div class="card custom-card">
+            <div class="card-body">
+              <h3 class="card-title">Topics Covered</h3>
+              <span class="badge rounded-pill text-bg-primary">Titration</span>
+              <span class="badge rounded-pill text-bg-success">QA</span>
+              <span class="badge rounded-pill text-bg-danger">Metals</span>
+              <span class="badge rounded-pill text-bg-warning">Electrochemistry</span>
+              <span class="badge rounded-pill text-bg-info">Organic</span>
+            </div>
+      </div>
+      </div>
+    </div>
+  </div>
 </template>
+
 
 <script lang="js" setup>
 import { createClient } from '@supabase/supabase-js'
@@ -57,16 +72,35 @@ function handleSubmit() {
 </script>
 
 <style>
+.game-page {
+  padding: 10px;
+}
+
 #game-container, #not-playable {
             width: 60vw;               /* Set the fixed width of the game */
-            height: 85vh;              /* Set the fixed height of the game */
+            height: auto;              /* Set the fixed height of the game */
             /* background-color: palevioletred;  Light background color */
             /* box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); Soft shadow for effect */
             /* border-radius: 10px;        Rounded corners for a modern look */
-            padding: 20px;              /* Add padding inside the container */
+            padding: 10px;              /* Add padding inside the container */
             display: flex;
             justify-content: center;    /* Center the game inside the container */
             align-items: center;        /* Center the game vertically inside */
-            margin-left: 10vw;
         }
+
+#subjects {
+  margin-top: 10px;
+  padding: 20px;
+}
+
+.custom-card {
+  width: 100%;
+  border: 1px solid #e4e3e3;
+}
+
+.badge {
+  font-size: 20px;
+  font-weight: light;
+  margin: 10px;
+}
 </style>
