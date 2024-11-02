@@ -93,11 +93,12 @@
         <div class="chat-input-container">
           <input
             type="text"
+            style="border: none; width: 95%; outline: none"
             v-model="chatInput"
             placeholder="Ask a question about the content..."
             @keypress.enter="sendMessage"
           />
-          <button @click="sendMessage">Send</button>
+          <button @click="sendMessage">↑</button>
         </div>
       </div>
     </main>
@@ -146,7 +147,7 @@ const uploadPdf = async () => {
     uploadStatus.value = "Uploading PDF...";
 
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/upload-pdf",
+      "http://127.0.0.1:5000/api/supabase/upload-pdf",
       formData,
       {
         headers: {
@@ -154,8 +155,9 @@ const uploadPdf = async () => {
         },
       }
     );
-
+    console.log(response);
     currentFileId.value = response.data.file_id;
+    console.log(currentFileId.value);
     uploadStatus.value = `PDF uploaded successfully! ${response.data.num_pages} pages found.`;
   } catch (error) {
     console.error("Error uploading PDF:", error);
@@ -175,15 +177,17 @@ const generateFlashcards = async () => {
   try {
     generating.value = true;
     generateBtnText.value = "Generating...";
+    console.log(currentFileId.value);
 
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/generate-flashcards",
+      "http://127.0.0.1:5000/api/supabase/generate-flashcards",
       {
         file_id: currentFileId.value,
       }
     );
 
     if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
+      //need to modify this to return the flashcards in response.data.flashcards
       flashcards.value = response.data.flashcards;
       currentCardIndex.value = 0;
       prepareCurrentCard();
@@ -516,7 +520,11 @@ const sendMessage = async () => {
 
 .container .chat-input-container {
   display: flex;
+  height: 50px;
   gap: 10px;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  justify-content: space-between;
 }
 
 .container #chat-input {

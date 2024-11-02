@@ -367,14 +367,18 @@ def upload_pdf_supabase():
             return jsonify({"error": "No selected file"}), 400
 
         if file and allowed_file(file.filename):
-            # Generate unique filename
-            file_id = str(uuid.uuid4())
-            filename = secure_filename(file.filename)
-            base_name, extension = os.path.splitext(filename)
-            unique_filename = f"{base_name}_{file_id}{extension}"
+            file_id, _ = os.path.splitext(
+                file.filename
+            )  # Extract filename without extension
+
+            # # Generate unique filename
+            # file_id = str(uuid.uuid4())
+            # filename = secure_filename(file.filename)
+            # base_name, extension = os.path.splitext(filename)
+            # unique_filename = f"{base_name}_{file_id}{extension}"
 
             # Temporary local save (optional, depending on your workflow)
-            file_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
+            file_path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
             file.save(file_path)
 
             # Extract text from PDF
@@ -383,9 +387,11 @@ def upload_pdf_supabase():
             # Upload to Supabase storage
             with open(file_path, "rb") as pdf_file:
                 # Upload to 'pdfs' bucket with a unique path
-                upload_path = f"user_pdfs/{unique_filename}"
-                data = supabase.storage.from_("files_wad2").upload(
-                    upload_path, pdf_file
+                upload_path = f"user_pdfs/{file.filename}"
+                supabase.storage.from_("files_wad2").upload(
+                    file=pdf_file,
+                    path=upload_path,
+                    file_options={"content-type": "application/pdf"},
                 )
 
             # Optional: Remove local file after upload
@@ -395,7 +401,7 @@ def upload_pdf_supabase():
                 {
                     "message": "File uploaded successfully to Supabase storage",
                     "file_id": file_id,
-                    "filename": unique_filename,
+                    # "filename": unique_filename,
                     "upload_path": upload_path,
                     "num_pages": len(text_by_page),
                 }
@@ -596,6 +602,7 @@ Always return the response in the exact JSON format specified.""",
                 "message": "Flashcards uploaded successfully to Supabase Storage.",
                 "file_id": flashcard_filepath,
                 "filename": flashcard_filepath,
+                "flashcards": formatted_flashcards,
             }
         ),
         200,
