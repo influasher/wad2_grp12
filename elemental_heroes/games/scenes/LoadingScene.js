@@ -44,7 +44,7 @@ import Phaser from 'phaser';
         console.log('hi from loading scene')
         this.createMusicToggleButton();
         // Add title text
-        this.add.text(this.scale.width * 0.5, this.scale.height * 0.25 , 'Welcome to Elemental Heroes!', {
+        this.add.text(this.scale.width * 0.5, this.scale.height * 0.25 , 'Welcome to Elemental Odyssey!', {
             fontSize: `${this.scale.width * 0.055}px`,
             color: '#000000',
             // fontStyle: 'strong',

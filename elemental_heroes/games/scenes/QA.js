@@ -22,6 +22,9 @@ export class QA extends Phaser.Scene {
         this.load.image('soundOnButton', 'assets/images/soundOn.png');  // Sound on button image
         this.load.image('soundOffButton', 'assets/images/soundOff.png');  // Sound off button image
         this.load.image('pouringStream', 'assets/images/pouringBottle.png');
+        this.load.image('clipboard','/assets/images/clipboard.png');
+        this.load.image('button', 'assets/images/button.png');
+
 
 
         // audio load
@@ -33,7 +36,6 @@ export class QA extends Phaser.Scene {
     }
 
     create() {
-        // Background setup
         const bg = this.add.image(this.scale.width * 0.5, this.scale.height * 0.5, 'labBackground').setOrigin(0.5);
         const scaleX = this.scale.width / bg.width;
         const scaleY = this.scale.height / bg.height;
@@ -44,10 +46,21 @@ export class QA extends Phaser.Scene {
             this.game.backgroundMusic.stop();  // Stop the music
             this.game.backgroundMusic = null;  // Clear the reference to allow music to restart later
         }
+        this.showInstructions();
+        
+    }
 
-        const exitButton = this.add.sprite(this.scale.width * 0.83, this.scale.height * 0.05, 'exitButton')
+    initializeGameElements(){
+        // Background setup
+
+
+
+    
+   
+
+        const exitButton = this.add.sprite(this.scale.width * 0.9, this.scale.height * 0.05, 'exitButton')
             .setInteractive()
-            .setScale(0.16)
+            .setScale(0.1)
             .on('pointerdown', () => {
                 this.sound.play('glassClick');
                 this.scene.start('GameScene')})
@@ -250,5 +263,70 @@ export class QA extends Phaser.Scene {
             }
         });
     }
+
+    showInstructions() {
+        console.log('show instructions called')
+        // Create a semi-transparent background for the popup
+        const overlay = this.add.graphics();
+        overlay.fillStyle(0x000000, 0.65);
+        overlay.fillRect(0, 0, this.scale.width, this.scale.height);
+
+    
+        // Add a background box for the instructions
+        const instructionBox = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
+            .setOrigin(0.5)
+            .setScale(0.75,0.5);
+
+    
+        // Add instruction text
+        const instructionText = this.add.text(this.cameras.main.centerX,
+            this.cameras.main.centerY - instructionBox.displayHeight / 4, 
+            'Welcome to Lab Skills Training [QA]!\n\nHow to Play:\n1. Drag and drop NaOH and NH3 bottles \nonto test tubes.\n2. Observe the reactions and note the \nprecipitate formed.\n3. Use the reset button to clear a \ntest tube.\n\nPress the Start button when ready!', 
+            {
+                fontSize: `${this.scale.width * 0.018}px`,
+                color: '#000',
+                align: 'center',
+                wordWrap: { width: instructionBox.width - 40 }
+            }
+        ).setOrigin(0.5, 0);
+
+    
+        let buttonScale = 0.15;
+        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 25;
+        // Add start button image
+        const startButtonImage = this.add.image(this.cameras.main.centerX, buttonY, 'button')
+        .setInteractive()
+        .setScale(buttonScale); // Adjust scale as needed
+
+        // Add text over the start button
+        const startButtonText = this.add.text(this.cameras.main.centerX,
+            buttonY, 'Start Game', {
+            fontSize: `${this.scale.width * 0.025}px`,
+            color: '#000',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        startButtonImage.on('pointerover', () => {
+            startButtonImage.setScale(buttonScale + 0.05); // Scale up on hover
+        });
+        startButtonImage.on('pointerout', () => {
+            startButtonImage.setScale(buttonScale); // Scale back down on hover out
+        });
+
+        // Add interactivity to the start button image
+        startButtonImage.on('pointerdown', () => {
+            overlay.destroy(); // Remove the overlay
+            instructionBox.destroy(); // Remove the instruction box
+            instructionText.destroy(); // Remove the instruction text
+            startButtonImage.destroy(); // Remove the start button image
+            startButtonText.destroy(); // Remove the start button text
+            this.sound.play('glassClick'); // Optional sound effect
+    
+            // Call the function to initialize game elements
+            this.initializeGameElements();
+        });
+        
+    }
+    
 
 }
