@@ -102,6 +102,7 @@ import axios from "axios";
 import NoteFlashcardSkeleton from "~/components/NoteFlashcardSkeleton.vue";
 
 const config = useRuntimeConfig();
+const router = useRouter();
 const supabase = createClient(
   config.public.supabaseUrl,
   config.public.supabaseKey

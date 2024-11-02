@@ -21,6 +21,7 @@
 
 <script setup>
 import { useRoute } from "vue-router";
+
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
 
@@ -46,6 +47,8 @@ async function getPDF() {
 onMounted(() => {
   getPDF();
 });
+=======
+
 </script>
 
 <style scoped>
