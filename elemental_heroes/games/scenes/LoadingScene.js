@@ -133,7 +133,7 @@ import Phaser from 'phaser';
             texture = 'soundOffButton';
         }
 
-        let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.05, texture).setInteractive().setScale(0.13);
+        let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.06, texture).setInteractive().setScale(0.13);
 
         
         // Add click handler for toggling the music on/off

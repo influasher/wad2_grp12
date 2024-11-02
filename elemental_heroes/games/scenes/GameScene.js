@@ -6,9 +6,9 @@ export class GameScene extends Phaser.Scene {
         super({ key: 'GameScene' });
         this.checklists = {
             QA: ["NaOH (aq)", "NH3 (aq)", "Test Tube"],
-            Titration: ["Thermometer", "Graduated Cylinder"],
-            Electrochemistry: ["Scale", "Measuring Spoon"],
-            Metals: ["Dropper", "Glass Stirring Rod"]
+            Titration: ["Thermometer", "Graduated \nCylinder"],
+            Electrochemistry: ["Scale", "Measuring \nSpoon"],
+            Metals: ["Dropper", "Glass \nStirring \nRod"]
         };
         this.currentTable = null; // Track the current table for showing popup
         this.inventory = []; // Inventory items the player currently has
@@ -61,7 +61,7 @@ export class GameScene extends Phaser.Scene {
         this.tables = this.physics.add.staticGroup();
         this.createMusicToggleButton();
         // Add the teacher's table at the top of the screen
-        let teacherTable = this.tables.create(this.scale.width / 2, 70, 'table').setScale(2,1).refreshBody();
+        let teacherTable = this.tables.create(this.scale.width / 2, 50, 'table').setScale(2,1).refreshBody();
         teacherTable.name = "teacherTable"; // Set the teacher's table name
         this.add.text(teacherTable.x, teacherTable.y, "Teacher's Table", { fontSize: '16px', color: '#000' }).setOrigin(0.5);
 
@@ -82,29 +82,29 @@ export class GameScene extends Phaser.Scene {
         });
 
         // Add WASD keys in a cross formation in the bottom-left corner
-        this.add.image(xLeft + 40, yBottom - 80, 'w').setScale(1).setOrigin(0); // W key above
-        this.add.image(xLeft, yBottom - 40, 'a').setScale(1).setOrigin(0); // A key to the left
-        this.add.image(xLeft + 40, yBottom - 40, 's').setScale(1).setOrigin(0); // S key in the center
-        this.add.image(xLeft + 80, yBottom - 40, 'd').setScale(1).setOrigin(0); // D key to the right
-        this.add.text(xLeft + 120, yBottom - 40, 'Move Around', {
-            fontSize: '20px',
+        this.add.image(xLeft + 40, yBottom - 60, 'w').setScale(1).setOrigin(0); // W key above
+        this.add.image(xLeft + 5, yBottom - 20, 'a').setScale(1).setOrigin(0); // A key to the left
+        this.add.image(xLeft + 40, yBottom - 20, 's').setScale(1).setOrigin(0); // S key in the center
+        this.add.image(xLeft + 75, yBottom - 20, 'd').setScale(1).setOrigin(0); // D key to the right
+        this.add.text(xLeft + 120, yBottom - 20, 'Move Around', {
+            fontSize: '15px',
             fontWeight: 'Bold',
-            fill: '#000',
+            fill: '#fff',
             padding: { x: 10, y: 5 }
         }).setOrigin(0);
 
         // Add the I key for inventory, positioned slightly above the WASD keys
-        this.add.image(xLeft + 300, yBottom - 40, 'i').setScale(1).setOrigin(0); // I key for inventory
-        this.add.text(xLeft + 340, yBottom - 40, 'Open Inventory', {
-            fontSize: '20px',
+        this.add.image(xLeft + 300, yBottom - 20, 'i').setScale(1).setOrigin(0); // I key for inventory
+        this.add.text(xLeft + 340, yBottom - 20, 'Open Inventory', {
+            fontSize: '15px',
             fontWeight: 'Bold',
-            fill: '#000',
+            fill: '#fff',
             padding: { x: 10, y: 5 }
         }).setOrigin(0);
 
         // Use a percentage of the canvas size for table dimensions
-        const tableWidth = this.scale.width * 0.3;  // 30% of canvas width
-        const tableHeight = this.scale.height * 0.15; // 15% of canvas height
+        // const tableWidth = this.scale.width * 0.3;  
+        // const tableHeight = this.scale.height * 0.05; 
 
         const positions = [
             { x: this.scale.width * 0.25, y: this.scale.height * 0.35 },
@@ -115,18 +115,18 @@ export class GameScene extends Phaser.Scene {
         // Define table names
         const tableNames = ["QA", "Titration", "Electrochemistry", "Metals"];
 
-        let i = 0;
+        // let i = 0;
 
         tableNames.forEach((tableName, index) => {
             console.log(tableName)
-            const { x, y } = positions[i];
+            const { x, y } = positions[index];
 
-            let table = this.tables.create(x, y, 'table').setScale(1.5).refreshBody();
+            let table = this.tables.create(x, y, 'table').setScale(1).refreshBody();
             console.log(table);
             table.body.setSize(table.displayWidth, table.displayHeight);
             table.name = tableName
             this.add.text(x, y, tableName, { fontSize: `${this.scale.width * 0.02}px`, color: '#000' }).setOrigin(0.5);
-            i ++
+            // i ++
         });
 
         // console.log('this tables')
@@ -217,7 +217,7 @@ export class GameScene extends Phaser.Scene {
 
         // Create a semi-transparent overlay (gray-out effect)
         let overlay = this.add.graphics();
-        overlay.fillStyle(0x000000, 0.65); // Black with 65% opacity
+        overlay.fillStyle(0x000000, 0.70); // Black with 65% opacity
         overlay.fillRect(0, 0, this.scale.width, this.scale.height); // Cover the whole screen
 
         // Add inventory sprite to the center
@@ -285,14 +285,14 @@ export class GameScene extends Phaser.Scene {
             });
     
             // Instruction text telling the user how to close the inventory
-            let instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + inventorySlots.displayHeight / 2 + 50, 'Press ESC to close', {
-                fontSize: '20px',
+            let instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + inventorySlots.displayHeight / 2 + 25, 'Press ESC to close', {
+                fontSize: '15px',
                 color: '#ffffff',
                 padding: { x: 10, y: 10 }
             }).setOrigin(0.5);
 
-            let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth + 50, this.cameras.main.centerY , 'Click on the items \nyou need to add them \nto your inventory', {
-                fontSize: '20px',
+            let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth - 15, this.cameras.main.centerY , 'Click on the items \nyou need to add them \nto your inventory', {
+                fontSize: '15px',
                 color: '#ffffff',  // White text color
                 padding: { x: 10, y: 10 }
             }).setOrigin(0.5);
@@ -316,7 +316,7 @@ export class GameScene extends Phaser.Scene {
     
             // Create a semi-transparent overlay (gray-out effect)
             let overlay = this.add.graphics();
-            overlay.fillStyle(0x000000, 0.65); // Black with 65% opacity
+            overlay.fillStyle(0x000000, 0.70); // Black with 65% opacity
             overlay.fillRect(0, 0, this.scale.width, this.scale.height); // Cover the whole screen
     
             // Add inventory sprite to the center
@@ -383,14 +383,14 @@ export class GameScene extends Phaser.Scene {
                 });
         
                 // Instruction text telling the user how to close the inventory
-                let instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + inventorySlots.displayHeight / 2 + 50, 'Press ESC to close', {
-                    fontSize: '20px',
+                let instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + inventorySlots.displayHeight / 2 + 25, 'Press ESC to close', {
+                    fontSize: '15px',
                     color: '#ffffff',
                     padding: { x: 10, y: 10 }
                 }).setOrigin(0.5);
     
-                let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth + 100, this.cameras.main.centerY , 'Click on the items to \nremove them from your inventory', {
-                    fontSize: '20px',
+                let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth - 15, this.cameras.main.centerY , 'Click on the items \nto remove them from \nyour inventory', {
+                    fontSize: '15px',
                     color: '#ffffff',  // White text color
                     padding: { x: 10, y: 10 }
                 }).setOrigin(0.5);
@@ -459,26 +459,26 @@ export class GameScene extends Phaser.Scene {
     
             // Create a semi-transparent overlay (gray-out effect)
             let overlay = this.add.graphics();
-            overlay.fillStyle(0x000000, 0.65);  // Black with 65% opacity
+            overlay.fillStyle(0x000000, 0.70);  // Black with 65% opacity
             overlay.fillRect(0, 0, this.scale.width, this.scale.height);  // Cover the whole screen
         
             // Create the clipboard image in the center of the screen
             let clipboard = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
                 .setOrigin(0.5)
-                .setScale(0.75,0.5);  // Adjust the scale of the clipboard as necessary
+                .setScale(0.50,0.50);  // Adjust the scale of the clipboard as necessary
         
             // Position variables for checklist items on the clipboard
-            let startX = this.cameras.main.centerX - clipboard.displayWidth / 2 + 120;  // Starting X position for the index and item text
-            let startY = this.cameras.main.centerY - clipboard.displayHeight / 2 + 70; // Starting Y position for the first item
+            let startX = this.cameras.main.centerX - clipboard.displayWidth/4;  // Starting X position for the index and item text
+            let startY = this.cameras.main.centerY - clipboard.displayHeight/4; // Starting Y position for the first item
             let spacingY = 40;  // Vertical space between each item
-            let iconX = this.cameras.main.centerX + clipboard.displayWidth / 2 - 120; // X position for the tick/cross, aligned to the right
+            let iconX = this.cameras.main.centerX + clipboard.displayWidth/4; // X position for the tick/cross, aligned to the right
     
             let checklistItems = [];
     
             items.forEach((item, index) => {
                 // Create the index and item text
                 let itemText = this.add.text(startX, startY + (index * spacingY), `${index + 1}. ${item}`, {
-                    fontSize: '20px',
+                    fontSize: '13px',
                     color: '#000',
                     align: 'left',
                     padding: { x: 5, y: 5 }
@@ -503,14 +503,14 @@ export class GameScene extends Phaser.Scene {
     
             // Instruction text telling the user how to close the popup
             let instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + clipboard.displayHeight / 2 + 50, 'Press ESC to close', {
-                fontSize: '20px',
+                fontSize: '15px',
                 color: '#ffffff',  // White text color
                 // backgroundColor: '#000000',  // Optional: black background for text
                 padding: { x: 10, y: 10 }
             }).setOrigin(0.5);
 
             let hint = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + clipboard.displayHeight / 2 + 20, 'Hint: You can get missing items from the teacher\'s table', {
-                fontSize: '20px',
+                fontSize: '15px',
                 color: '#ffffff',  // White text color
                 // backgroundColor: '#000000',  // Optional: black background for text
                 padding: { x: 10, y: 10 }
@@ -550,8 +550,8 @@ export class GameScene extends Phaser.Scene {
         // Function to display the play button
         showPlayButton() {
             console.log('Game button');
-            const buttonScale = 0.2 // Adjust scale as needed
-            const legitLabButton = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY + 130, 'button')
+            const buttonScale = 0.1 // Adjust scale as needed
+            const legitLabButton = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY + 100, 'button')
                 .setInteractive().setScale(buttonScale)
                 .on('pointerdown', () => {
                     this.sound.play('glassClick')
@@ -565,7 +565,7 @@ export class GameScene extends Phaser.Scene {
                 });
 
             const buttonText = this.add.text(legitLabButton.x, legitLabButton.y, 'Start Game', { 
-                fontSize: '15px', 
+                fontSize: '10px', 
                 color: '#000000',
             }).setOrigin(0.5);
 
@@ -581,7 +581,7 @@ export class GameScene extends Phaser.Scene {
         }
 
         bloomButton(button, buttonScale) {
-            button.setScale(buttonScale + 0.05); // Scale up the button
+            button.setScale(buttonScale + 0.02); // Scale up the button
             button.setTint(0xdddddd); // Change color for effect (optional)
         }
     
@@ -599,7 +599,7 @@ export class GameScene extends Phaser.Scene {
                 texture = 'soundOffButton';
             }
     
-            let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.05, texture).setInteractive().setScale(0.13);
+            let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.06, texture).setInteractive().setScale(0.13);
     
             button.on('pointerdown', () => {
                 if (isMusicOn) {
