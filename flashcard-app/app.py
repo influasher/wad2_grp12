@@ -11,6 +11,8 @@ from werkzeug.utils import secure_filename
 import traceback
 from datetime import datetime
 from supabase import create_client, Client
+from io import BytesIO
+
 
 # Load environment variables
 load_dotenv()
@@ -102,6 +104,78 @@ def get_document_context(file_id=None):
                         [f"[Page {page}] {text}" for page, text in text_by_page.items()]
                     )
                 )
+
+    return "\n\nNEW DOCUMENT\n\n".join(context)
+
+
+# adapted for supabase
+# might need to remove the second condition, assume all chat calls come with the file_id, provide the file_id as context for each message
+# this is so that the api is only calling Supabase to download one file, not all files.
+# this means that the context is only the current file_id
+
+
+# steps
+# 1. download file into uploads folder
+# 2. send filepath of uploads folder into the extract_text_from_pdf
+# 3. after getting document context, delete file from local directory
+def get_document_context_supabase(file_id=None):
+    """Get the content of all uploaded PDFs or a specific PDF from Supabase storage."""
+    context = []
+
+    BUCKET_NAME = "files_wad2"  # Replace with your bucket name
+    FOLDER_NAME = "user_pdfs"  # Replace with your folder name inside the bucket
+
+    if file_id:
+        # Get specific PDF content
+        # List files in the Supabase storage bucket folder
+        response = supabase.storage.from_(BUCKET_NAME).list(
+            path=FOLDER_NAME, options={"search": file_id}
+        )
+        print(response)
+        pdf_files = [file["name"] for file in response if file_id in file["name"]]
+        print(pdf_files)
+        if pdf_files:
+            pdf_file_name = pdf_files[0]
+
+            # Download the file
+            res = supabase.storage.from_(BUCKET_NAME).download(
+                f"{FOLDER_NAME}/{pdf_file_name}"
+            )
+            pdf_bytes = res
+
+            # Read the PDF from bytes
+            pdf_file = BytesIO(pdf_bytes)
+
+            # Uses extract_text_from_pdf here
+            text_by_page = extract_text_from_pdf(pdf_file)
+            context.append(
+                "\n".join(
+                    [f"[Page {page}] {text}" for page, text in text_by_page.items()]
+                )
+            )
+    else:
+        # Get all PDF contents
+        response = supabase.storage.from_(BUCKET_NAME).list(path=FOLDER_NAME)
+        pdf_files = [
+            file["name"] for file in response.data if file["name"].endswith(".pdf")
+        ]
+        for pdf_file_name in pdf_files:
+            # Download the file
+            res = supabase.storage.from_(BUCKET_NAME).download(
+                f"{FOLDER_NAME}/{pdf_file_name}"
+            )
+            pdf_bytes = res
+
+            # Read the PDF from bytes
+            pdf_file = BytesIO(pdf_bytes)
+
+            # Uses extract_text_from_pdf here
+            text_by_page = extract_text_from_pdf(pdf_file)
+            context.append(
+                "\n".join(
+                    [f"[Page {page}] {text}" for page, text in text_by_page.items()]
+                )
+            )
 
     return "\n\nNEW DOCUMENT\n\n".join(context)
 
@@ -328,7 +402,7 @@ def chat():
             return jsonify({"error": "No message provided"}), 400
 
         # Get document context
-        context = get_document_context(file_id)
+        context = get_document_context_supabase(file_id)
 
         messages = [
             {
