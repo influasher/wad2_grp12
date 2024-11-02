@@ -3,23 +3,32 @@ import Phaser from 'phaser';
  export class LoadingScene extends Phaser.Scene {
     constructor() {
         super({ key: 'LoadingScene' });
+
     }
 
     preload() {
         // Load assets for start screen if needed (e.g., background images, button sprites)
         this.load.image('startBackground', '/assets/images/start_background.jpg');
         this.load.image('button', '/assets/images/button.png');
-        this.load.audio('backgroundMusic', '/assets/audio/loadingMusic.wav')
         this.load.image('soundOnButton', '/assets/images/soundOn.png');  // Sound on button image
         this.load.image('soundOffButton', '/assets/images/soundOff.png');  // Sound off button image
         this.load.audio('glassClick', '/assets/audio/glassClick.wav');  // click sound
+        if (!this.game.backgroundMusic) {
+            this.load.audio('backgroundMusic', 'assets/audio/loadingMusic.wav')
+            }
 
     }
     
 
     create() {
-            let backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
-            backgroundMusic.play();
+
+        if (!this.game.backgroundMusic) {
+            this.game.backgroundMusic = this.sound.add('backgroundMusic', {
+                loop: true,
+                volume: 0.5
+            });
+            this.game.backgroundMusic.play();
+        }
 
         const buttonScale = this.scale.width * 0.00045;
         console.log(this.scale.width)
@@ -35,7 +44,7 @@ import Phaser from 'phaser';
         console.log('hi from loading scene')
         this.createMusicToggleButton();
         // Add title text
-        this.add.text(this.scale.width * 0.5, this.scale.height * 0.25 , 'Welcome to Elemental Heroes!', {
+        this.add.text(this.scale.width * 0.5, this.scale.height * 0.25 , 'Welcome to Elemental Odyssey!', {
             fontSize: `${this.scale.width * 0.055}px`,
             color: '#000000',
             // fontStyle: 'strong',
@@ -103,7 +112,7 @@ import Phaser from 'phaser';
 
     }
 
-    
+
     bloomButton(button, buttonScale) {
         button.setScale(buttonScale * 1.1); // Scale up the button
         button.setTint(0xdddddd); // Change color for effect (optional)
@@ -116,18 +125,26 @@ import Phaser from 'phaser';
 
     createMusicToggleButton() {
         // Initially show the "sound on" button
-        let isMusicOn = true;
-        let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.05, 'soundOnButton').setInteractive().setScale(0.13);
+        let isMusicOn = this.game.backgroundMusic.isPlaying;
+        let texture = '';
+        if(this.game.backgroundMusic.isPlaying){
+            texture = 'soundOnButton';
+        } else{
+            texture = 'soundOffButton';
+        }
 
+        let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.06, texture).setInteractive().setScale(0.13);
+
+        
         // Add click handler for toggling the music on/off
         button.on('pointerdown', () => {
             if (isMusicOn) {
-                backgroundMusic.pause();  // Pause the music
+                this.game.backgroundMusic?.pause();  // Pause the music
                 console.log('music paused')
                 isMusicOn = false;
                 button.setTexture('soundOffButton');  // Switch to "sound off" button image
             } else {
-                backgroundMusic.resume();  // Resume the music
+                this.game.backgroundMusic?.resume();  // Resume the music
                 isMusicOn = true;
                 button.setTexture('soundOnButton');  // Switch back to "sound on" button image
             }
