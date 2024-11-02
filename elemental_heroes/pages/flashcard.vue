@@ -1,46 +1,32 @@
 <template>
   <div class="container">
     <header>
-      <h1>Elemental Heroes Flashcard Generator & Study Assistant</h1>
+      <h1>Flashcards: {{ fileName }}</h1>
     </header>
 
     <main>
-      <div class="section flashcard-generator">
-        <h2>Generate Flashcards from PDF</h2>
-        <div class="upload-section">
-          <input type="file" ref="pdfInput" accept=".pdf" />
-          <button @click="uploadPdf" :disabled="uploading">
-            {{ uploadBtnText }}
-          </button>
+      <!-- Loading Screen -->
+      <div v-if="isGenerating" class="loading-screen">
+        <div class="loading-content">
+          <h2>Generating Flashcards</h2>
+          <p>Get ready to revise!</p>
+          <div class="spinner"></div>
         </div>
-        <div>{{ uploadStatus }}</div>
-        <button
-          @click="generateFlashcards"
-          :disabled="!currentFileId || generating"
-        >
-          {{ generateBtnText }}
-        </button>
+      </div>
+
+      <!-- Flashcard Content -->
+      <div v-else class="section flashcard-content">
         <div v-if="flashcards.length">
           <div class="flashcard-navigation">
-            <button
-              @click="showPreviousCard"
-              :disabled="currentCardIndex === 0"
-            >
+            <button @click="showPreviousCard" :disabled="currentCardIndex === 0">
               Previous
             </button>
-            <span
-              >Card {{ currentCardIndex + 1 }} of {{ flashcards.length }}</span
-            >
-            <button
-              @click="showNextCard"
-              :disabled="
-                !currentCardAnswered ||
-                currentCardIndex === flashcards.length - 1
-              "
-            >
+            <span>Card {{ currentCardIndex + 1 }} of {{ flashcards.length }}</span>
+            <button @click="showNextCard" :disabled="!currentCardAnswered || currentCardIndex === flashcards.length - 1">
               Next
             </button>
           </div>
+
           <div class="flashcard">
             <div class="question">{{ currentCard.question }}</div>
             <div class="answer-choices">
@@ -54,140 +40,54 @@
                 {{ answer.text }}
               </button>
             </div>
+
             <div class="feedback" v-if="feedbackMessage">
               <p v-html="feedbackMessage"></p>
-              <button
-                v-if="!answers[selectedAnswerIndex].correct"
-                @click="retryQuestion"
-                class="retry-button"
-              >
+              <button v-if="!answers[selectedAnswerIndex].correct" @click="retryQuestion" class="retry-button">
                 Retry Question
               </button>
             </div>
+
             <div class="source" v-if="showSource">
               <p class="quote">{{ currentCard.quote || "" }}</p>
               <p class="reference">Page {{ currentCard.page }}</p>
             </div>
           </div>
         </div>
-        <div v-else-if="generating" class="loading">
-          Generating flashcards...
-        </div>
         <div v-else class="info-message">No flashcards available.</div>
-      </div>
-
-      <div class="section chat-assistant">
-        <h2>Study Assistant Chat</h2>
-        <div id="chat-history">
-          <div
-            v-for="(message, index) in chatMessages"
-            :key="index"
-            :class="[
-              'chat-message',
-              message.isUser ? 'user-message' : 'bot-message',
-            ]"
-          >
-            {{ message.content }}
-          </div>
-        </div>
-        <div class="chat-input-container">
-          <input
-            type="text"
-            style="border: none; width: 95%; outline: none"
-            v-model="chatInput"
-            placeholder="Ask a question about the content..."
-            @keypress.enter="sendMessage"
-          />
-          <button @click="sendMessage">↑</button>
-        </div>
       </div>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import axios from "axios";
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from 'axios';
 
-const pdfInput = ref(null);
-const uploadStatus = ref("");
-const uploadBtnText = ref("Upload PDF");
-const uploading = ref(false);
-const generateBtnText = ref("Generate Flashcards");
-const generating = ref(false);
+const route = useRoute();
+const fileName = ref(route.query.fileName || 'Untitled');
+const fileId = ref(route.query.fileId);
+const isGenerating = ref(route.query.generating === 'true');
 
-const currentFileId = ref(null);
 const flashcards = ref([]);
 const currentCardIndex = ref(0);
 const currentCardAnswered = ref(false);
 const selectedAnswerIndex = ref(null);
 const feedbackMessage = ref("");
 const showSource = ref(false);
-
 const answers = ref([]);
-
-const chatInput = ref("");
-const chatMessages = ref([]);
 
 const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
 
-const uploadPdf = async () => {
-  const file = pdfInput.value.files[0];
-  if (!file) {
-    alert("Please select a PDF file first.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("file", file);
-
-  try {
-    uploading.value = true;
-    uploadBtnText.value = "Uploading...";
-    uploadStatus.value = "Uploading PDF...";
-
-    const response = await axios.post(
-      "http://127.0.0.1:5000/api/supabase/upload-pdf",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    console.log(response);
-    currentFileId.value = response.data.file_id;
-    console.log(currentFileId.value);
-    uploadStatus.value = `PDF uploaded successfully! ${response.data.num_pages} pages found.`;
-  } catch (error) {
-    console.error("Error uploading PDF:", error);
-    uploadStatus.value = "Error uploading PDF. Please try again.";
-  } finally {
-    uploading.value = false;
-    uploadBtnText.value = "Upload PDF";
-  }
-};
-
 const generateFlashcards = async () => {
-  if (!currentFileId.value) {
-    alert("Please upload a PDF first.");
-    return;
-  }
-
+  isGenerating.value = true;
   try {
-    generating.value = true;
-    generateBtnText.value = "Generating...";
-    console.log(currentFileId.value);
-
-    const response = await axios.post(
-      "http://127.0.0.1:5000/api/supabase/generate-flashcards",
-      {
-        file_id: currentFileId.value,
-      }
-    );
+    const response = await axios.post("http://127.0.0.1:5000/api/supabase/generate-flashcards", {
+      file_id: fileId.value,
+    });
 
     if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
-      //need to modify this to return the flashcards in response.data.flashcards
       flashcards.value = response.data.flashcards;
       currentCardIndex.value = 0;
       prepareCurrentCard();
@@ -196,12 +96,9 @@ const generateFlashcards = async () => {
     }
   } catch (error) {
     console.error("Error generating flashcards:", error);
-    uploadStatus.value = `Error generating flashcards: ${
-      error.response?.data?.error || error.message
-    }`;
+    alert("Error generating flashcards. Please try again.");
   } finally {
-    generating.value = false;
-    generateBtnText.value = "Generate Flashcards";
+    isGenerating.value = false;
   }
 };
 
@@ -238,23 +135,20 @@ const handleAnswerChoice = async (index) => {
     feedbackMessage.value = '<p class="correct">Correct! Well done!</p>';
   } else {
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/api/explain-answer",
-        {
-          question: currentCard.value.question,
-          correct_answer: answers.value.find((a) => a.correct).text,
-          wrong_answer: answer.text,
-        }
-      );
+      const response = await axios.post("http://127.0.0.1:5000/api/explain-answer", {
+        question: currentCard.value.question,
+        correct_answer: answers.value.find((a) => a.correct).text,
+        wrong_answer: answer.text,
+      });
       feedbackMessage.value = `
-            <p class="incorrect">Incorrect.</p>
-            <p>${response.data.explanation}</p>
-          `;
+        <p class="incorrect">Incorrect.</p>
+        <p>${response.data.explanation}</p>
+      `;
     } catch (error) {
       console.error("Error getting explanation:", error);
       feedbackMessage.value = `
-            <p class="incorrect">Incorrect. Please try again.</p>
-          `;
+        <p class="incorrect">Incorrect. Please try again.</p>
+      `;
     }
   }
 };
@@ -269,7 +163,13 @@ const shuffleArray = (array) => {
 
 const getAnswerClass = (index) => {
   if (selectedAnswerIndex.value === null) return "";
-  return answers.value[index].correct ? "correct" : "incorrect";
+  const answer = answers.value[index];
+  
+  if (selectedAnswerIndex.value !== null && index === selectedAnswerIndex.value) {
+    return answers.value[index].correct ? "correct" : "incorrect";
+  }
+  
+  return "";
 };
 
 const retryQuestion = () => {
@@ -287,48 +187,27 @@ const showPreviousCard = () => {
 };
 
 const showNextCard = () => {
-  if (
-    currentCardIndex.value < flashcards.value.length - 1 &&
-    currentCardAnswered.value
-  ) {
+  if (currentCardIndex.value < flashcards.value.length - 1 && currentCardAnswered.value) {
     currentCardIndex.value++;
     prepareCurrentCard();
   }
 };
 
-const sendMessage = async () => {
-  const message = chatInput.value.trim();
-  if (!message) return;
-
-  chatMessages.value.push({ content: message, isUser: true });
-  chatInput.value = "";
-
-  try {
-    const response = await axios.post("http://127.0.0.1:5000/api/chat", {
-      message,
-      file_id: currentFileId.value,
-    });
-    chatMessages.value.push({ content: response.data.response, isUser: false });
-  } catch (error) {
-    console.error("Error sending message:", error);
-    chatMessages.value.push({
-      content: "Sorry, there was an error processing your message.",
-      isUser: false,
-    });
+onMounted(() => {
+  if (fileId.value && isGenerating.value) {
+    generateFlashcards();
   }
-};
+});
 </script>
 
 <style scoped>
-/* Define component-specific variables */
 .container {
-  --primary-color: #6c5dd3;
+  --primary-color: rgb(139, 110, 243);
   --secondary-color: #f5f5f5;
   --text-color: #333;
   --border-radius: 8px;
 }
 
-/* Apply styles only within this component */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -363,19 +242,35 @@ const sendMessage = async () => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.container textarea {
-  width: 100%;
-  height: 200px;
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
-  border-radius: var(--border-radius);
-  resize: vertical;
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loading-content h2 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .container button {
   background-color: var(--primary-color);
-  color: blue;
+  color: white;
   border: none;
   padding: 10px 20px;
   border-radius: var(--border-radius);
@@ -384,7 +279,7 @@ const sendMessage = async () => {
 }
 
 .container button:hover {
-  background-color: #357abd;
+  background-color: #5a4caf;
 }
 
 .container .flashcard {
@@ -489,49 +384,6 @@ const sendMessage = async () => {
   margin: 10px 0;
   text-align: center;
   color: #31708f;
-}
-
-.container .chat-container {
-  height: 400px;
-  overflow-y: auto;
-  padding: 20px;
-  background: var(--secondary-color);
-  border-radius: var(--border-radius);
-  margin-bottom: 20px;
-}
-
-.container .chat-message {
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: var(--border-radius);
-}
-
-.container .user-message {
-  background: var(--primary-color);
-  color: white;
-  margin-left: 20%;
-}
-
-.container .bot-message {
-  background: white;
-  border: 1px solid #ddd;
-  margin-right: 20%;
-}
-
-.container .chat-input-container {
-  display: flex;
-  height: 50px;
-  gap: 10px;
-  border: 1px solid #ddd;
-  border-radius: var(--border-radius);
-  justify-content: space-between;
-}
-
-.container #chat-input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: var(--border-radius);
 }
 
 .container .loading {
