@@ -18,11 +18,22 @@
       <div v-else class="section flashcard-content">
         <div v-if="flashcards.length">
           <div class="flashcard-navigation">
-            <button @click="showPreviousCard" :disabled="currentCardIndex === 0">
+            <button
+              @click="showPreviousCard"
+              :disabled="currentCardIndex === 0"
+            >
               Previous
             </button>
-            <span>Card {{ currentCardIndex + 1 }} of {{ flashcards.length }}</span>
-            <button @click="showNextCard" :disabled="!currentCardAnswered || currentCardIndex === flashcards.length - 1">
+            <span
+              >Card {{ currentCardIndex + 1 }} of {{ flashcards.length }}</span
+            >
+            <button
+              @click="showNextCard"
+              :disabled="
+                !currentCardAnswered ||
+                currentCardIndex === flashcards.length - 1
+              "
+            >
               Next
             </button>
           </div>
@@ -43,7 +54,11 @@
 
             <div class="feedback" v-if="feedbackMessage">
               <p v-html="feedbackMessage"></p>
-              <button v-if="!answers[selectedAnswerIndex].correct" @click="retryQuestion" class="retry-button">
+              <button
+                v-if="!answers[selectedAnswerIndex].correct"
+                @click="retryQuestion"
+                class="retry-button"
+              >
                 Retry Question
               </button>
             </div>
@@ -61,14 +76,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import axios from 'axios';
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
 
 const route = useRoute();
-const fileName = ref(route.query.name || 'Untitled');
+const fileName = ref(route.query.name || "Untitled");
 const fileId = ref(route.query.fileId);
-const isGenerating = ref(route.query.generating === 'true');
+const isGenerating = ref(route.query.generating === "true");
 
 const flashcards = ref([]);
 const currentCardIndex = ref(0);
@@ -83,9 +98,12 @@ const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
 const generateFlashcards = async () => {
   isGenerating.value = true;
   try {
-    const response = await axios.post("http://127.0.0.1:5000/api/supabase/generate-flashcards", {
-      file_id: fileName.value,
-    });
+    const response = await axios.post(
+      "http://127.0.0.1:5000/api/supabase/generate-flashcards",
+      {
+        file_id: fileName.value,
+      }
+    );
 
     if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
       flashcards.value = response.data.flashcards;
@@ -135,11 +153,14 @@ const handleAnswerChoice = async (index) => {
     feedbackMessage.value = '<p class="correct">Correct! Well done!</p>';
   } else {
     try {
-      const response = await axios.post("http://127.0.0.1:5000/api/explain-answer", {
-        question: currentCard.value.question,
-        correct_answer: answers.value.find((a) => a.correct).text,
-        wrong_answer: answer.text,
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:5000/api/explain-answer",
+        {
+          question: currentCard.value.question,
+          correct_answer: answers.value.find((a) => a.correct).text,
+          wrong_answer: answer.text,
+        }
+      );
       feedbackMessage.value = `
         <p class="incorrect">Incorrect.</p>
         <p>${response.data.explanation}</p>
@@ -164,11 +185,14 @@ const shuffleArray = (array) => {
 const getAnswerClass = (index) => {
   if (selectedAnswerIndex.value === null) return "";
   const answer = answers.value[index];
-  
-  if (selectedAnswerIndex.value !== null && index === selectedAnswerIndex.value) {
+
+  if (
+    selectedAnswerIndex.value !== null &&
+    index === selectedAnswerIndex.value
+  ) {
     return answers.value[index].correct ? "correct" : "incorrect";
   }
-  
+
   return "";
 };
 
@@ -187,7 +211,10 @@ const showPreviousCard = () => {
 };
 
 const showNextCard = () => {
-  if (currentCardIndex.value < flashcards.value.length - 1 && currentCardAnswered.value) {
+  if (
+    currentCardIndex.value < flashcards.value.length - 1 &&
+    currentCardAnswered.value
+  ) {
     currentCardIndex.value++;
     prepareCurrentCard();
   }
@@ -197,7 +224,7 @@ onMounted(() => {
   // if (fileId.value && isGenerating.value) {
   //   generateFlashcards();
   // }
-  generateFlashcards()
+  generateFlashcards();
 });
 </script>
 
@@ -265,8 +292,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .container button {
