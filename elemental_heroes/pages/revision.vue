@@ -39,7 +39,7 @@
         </div>
 
         <!-- Skeleton Loaders -->
-        <template v-if="isLoading">
+        <template v-if="isLoadingNotes">
           <div class="col-md-3" v-for="n in 3" :key="'skeleton-' + n">
             <NoteFlashcardSkeleton />
           </div>
@@ -62,13 +62,14 @@
         </div>
       </div>
     </div>
+
     <!-- Shared Flashcards Section -->
     <div class="mb-5">
-      <h2 class="section-title">Shared Flashcards</h2>
+      <h2 class="section-title">My Flashcards</h2>
 
       <div class="row g-4">
         <!-- Skeleton Loaders -->
-        <template v-if="isLoading">
+        <template v-if="isLoadingFlashcards">
           <div class="col-md-3" v-for="n in 3" :key="'skeleton-' + n">
             <NoteFlashcardSkeleton />
           </div>
@@ -78,15 +79,55 @@
         <div v-else class="row g-4">
           <div
             class="col-md-3"
-            v-for="deck in ['OG Chem', 'Thermodynamics']"
-            :key="deck"
+            v-for="folder in flashcardFolders"
+            :key="folder.name"
           >
-            <div class="card custom-card">
+            <div class="card custom-card position-relative card-container">
+              <!-- Card content wrapped in NuxtLink -->
+              <!-- <NuxtLink
+                :to="{ path: '/flashcards', query: { folder: folder.name } }"
+                style="text-decoration: none; color: inherit"
+              > -->
               <div class="card-body">
-                <h5 class="card-title">{{ deck }}</h5>
-                <p class="card-text text-muted">32 cards</p>
+                <h5 class="card-title">{{ folder.name }}</h5>
+                <p class="card-text text-muted">
+                  {{ folder.totalCards }} cards
+                </p>
               </div>
+              <!-- </NuxtLink> -->
+
+              <!-- Delete button -->
+              <button
+                class="delete-btn"
+                @click.prevent="confirmDelete(folder.name)"
+                title="Delete folder"
+              >
+                ×
+              </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div v-if="showDeleteModal" class="modal-overlay">
+        <div class="modal-content">
+          <h3>Confirm Delete</h3>
+          <p>
+            Are you sure you want to delete "{{ folderToDelete }}" and all its
+            flashcards?
+          </p>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" @click="showDeleteModal = false">
+              Cancel
+            </button>
+            <button
+              class="btn btn-danger"
+              @click="deleteFolder"
+              :disabled="isDeleting"
+            >
+              {{ isDeleting ? "Deleting..." : "Delete" }}
+            </button>
           </div>
         </div>
       </div>
@@ -110,7 +151,8 @@ const supabase = createClient(
 
 // Existing refs
 const notes = ref([]);
-const isLoading = ref(true);
+const isLoadingNotes = ref(true);
+const isLoadingFlashcards = ref(true);
 
 // New refs for file upload
 const pdfInput = ref(null);
@@ -118,6 +160,64 @@ const selectedFile = ref(null);
 const uploadStatus = ref("");
 const uploadBtnText = ref("Upload PDF");
 const uploading = ref(false);
+
+// Add new ref for flashcard folders
+const flashcardFolders = ref([]);
+
+// Add new refs for delete functionality
+const showDeleteModal = ref(false);
+const folderToDelete = ref("");
+const isDeleting = ref(false);
+
+// Function to show delete confirmation modal
+const confirmDelete = (folderName) => {
+  folderToDelete.value = folderName;
+  showDeleteModal.value = true;
+};
+
+// Function to delete folder and its contents
+const deleteFolder = async () => {
+  try {
+    isDeleting.value = true;
+
+    // First, list all files in the folder
+    const { data: files, error: listError } = await supabase.storage
+      .from("files_wad2")
+      .list(`flashcards/${folderToDelete.value}`);
+
+    if (listError) throw listError;
+
+    // Delete all files in the folder
+    for (const file of files) {
+      const { error: deleteError } = await supabase.storage
+        .from("files_wad2")
+        .remove([`flashcards/${folderToDelete.value}/${file.name}`]);
+
+      if (deleteError) throw deleteError;
+    }
+
+    // Delete the empty folder (if your storage supports it)
+    const { error: folderError } = await supabase.storage
+      .from("files_wad2")
+      .remove([`flashcards/${folderToDelete.value}/.emptyFolderPlaceholder`]);
+
+    if (folderError && !folderError.message.includes("Object not found")) {
+      throw folderError;
+    }
+
+    // Refresh the flashcards list
+    await getFlashcards();
+
+    // Close the modal and show success message
+    showDeleteModal.value = false;
+    alert("Folder deleted successfully");
+  } catch (error) {
+    console.error("Error deleting folder:", error);
+    alert("Error deleting folder. Please try again.");
+  } finally {
+    isDeleting.value = false;
+  }
+};
 
 // Function to trigger file input
 const triggerFileInput = () => {
@@ -181,10 +281,9 @@ const uploadPdf = async (event) => {
   }
 };
 
-// Existing getNotes function
 async function getNotes() {
   try {
-    isLoading.value = true;
+    isLoadingNotes.value = true;
     const { data, error } = await supabase.storage
       .from("files_wad2")
       .list("user_pdfs");
@@ -214,12 +313,67 @@ async function getNotes() {
   } catch (error) {
     console.error("Error:", error);
   } finally {
-    isLoading.value = false;
+    isLoadingNotes.value = false;
+  }
+}
+
+async function getFlashcards() {
+  try {
+    isLoadingFlashcards.value = true;
+
+    // First, list all folders in the flashcards directory
+    const { data: folders, error: foldersError } = await supabase.storage
+      .from("files_wad2")
+      .list("flashcards");
+
+    if (foldersError) {
+      throw foldersError;
+    }
+
+    // Process each folder
+    const folderPromises = folders.map(async (folder) => {
+      if (folder.name === ".emptyFolderPlaceholder") return null;
+
+      // List files in each folder
+      const { data: files, error: filesError } = await supabase.storage
+        .from("files_wad2")
+        .list(`flashcards/${folder.name}`);
+
+      if (filesError) {
+        console.error(`Error listing files in ${folder.name}:`, filesError);
+        return null;
+      }
+
+      // Calculate total flashcards (5 cards per file)
+      const fileCount = files.filter(
+        (file) => !file.name.startsWith(".")
+      ).length;
+      const totalCards = fileCount * 5;
+
+      return {
+        name: folder.name,
+        totalCards: totalCards,
+        fileCount: fileCount,
+      };
+    });
+
+    // Wait for all folder processing to complete
+    const processedFolders = await Promise.all(folderPromises);
+
+    // Filter out null values and update the ref
+    flashcardFolders.value = processedFolders.filter(
+      (folder) => folder !== null
+    );
+  } catch (error) {
+    console.error("Error fetching flashcard folders:", error);
+  } finally {
+    isLoadingFlashcards.value = false;
   }
 }
 
 onMounted(() => {
   getNotes();
+  getFlashcards();
 });
 </script>
 
@@ -255,5 +409,74 @@ onMounted(() => {
 
 .card-text {
   color: #666; /* Slightly lighter text color for secondary information */
+}
+
+/* Updated card container style */
+.card-container {
+  position: relative;
+  overflow: visible; /* Allow delete button to be visible outside card boundaries if needed */
+}
+
+/* Modified delete button styles for bottom right positioning */
+.delete-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  z-index: 2;
+  padding: 0 5px;
+  line-height: 1;
+  transition: all 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Show delete button on card hover */
+.card-container:hover .delete-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.delete-btn:hover {
+  color: #dc3545;
+  transform: scale(1.1);
+}
+
+/* Adjust card-body padding to prevent text overlap with delete button */
+.card-body {
+  padding-bottom: 2.5rem; /* Add extra padding at bottom to accommodate delete button */
+}
+
+/* Modal styles remain the same */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 </style>
