@@ -11,25 +11,33 @@
       </div>
 
       <div class="row g-4">
-        <div class="col-md-3">  
-            <NuxtLink
+        <div class="col-md-3">
+          <NuxtLink
             to="/flashcard"
             style="text-decoration: none; color: inherit"
           >
             <div class="card custom-card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">+</h5>
-                    <p class="card-text text-muted">
-                        Upload Notes
-                    </p>
-                </div>
+              <div class="card-body text-center">
+                <h5 class="card-title">+</h5>
+                <p class="card-text text-muted">Upload Notes</p>
+              </div>
             </div>
-        </NuxtLink>
+          </NuxtLink>
         </div>
+
+        <!-- Skeleton Loaders -->
+        <template v-if="isLoading">
+          <div class="col-md-3" v-for="n in 3" :key="'skeleton-' + n">
+            <NoteFlashcardSkeleton />
+          </div>
+        </template>
+
         <div class="col-md-3" v-for="note in notes" :key="note">
-            <!-- Add Nuxtlink to notes page which has pdf viewer -->
-            <NuxtLink :to="{ path: '/notes', query: { name: note.name } }"
-            style="text-decoration: none;">
+          <!-- Add Nuxtlink to notes page which has pdf viewer -->
+          <NuxtLink
+            :to="{ path: '/notes', query: { name: note.name } }"
+            style="text-decoration: none"
+          >
             <div class="card custom-card">
               <div class="card-body">
                 <h5 class="card-title">{{ note.name }}</h5>
@@ -38,7 +46,7 @@
                 </p>
               </div>
             </div>
-        </NuxtLink>
+          </NuxtLink>
         </div>
       </div>
     </div>
@@ -46,20 +54,27 @@
     <!-- Shared Flashcards Section -->
     <div class="mb-5">
       <h2 class="section-title">Shared Flashcards</h2>
-      <!-- Show skeleton loader while loading -->
-      <NoteFlashcardSkeleton v-if="isLoading" :count="6" />
 
-      <!-- Show actual content when loaded -->
-      <div v-else class="row g-4">
-        <div
-          class="col-md-3"
-          v-for="deck in ['OG Chem', 'Thermodynamics']"
-          :key="deck"
-        >
-          <div class="card custom-card">
-            <div class="card-body">
-              <h5 class="card-title">{{ deck }}</h5>
-              <p class="card-text text-muted">32 cards</p>
+      <div class="row g-4">
+        <!-- Skeleton Loaders -->
+        <template v-if="isLoading">
+          <div class="col-md-3" v-for="n in 3" :key="'skeleton-' + n">
+            <NoteFlashcardSkeleton />
+          </div>
+        </template>
+
+        <!-- Show actual content when loaded -->
+        <div v-else class="row g-4">
+          <div
+            class="col-md-3"
+            v-for="deck in ['OG Chem', 'Thermodynamics']"
+            :key="deck"
+          >
+            <div class="card custom-card">
+              <div class="card-body">
+                <h5 class="card-title">{{ deck }}</h5>
+                <p class="card-text text-muted">32 cards</p>
+              </div>
             </div>
           </div>
         </div>
@@ -138,6 +153,11 @@ onMounted(() => {
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  */
   /* Subtle shadow for depth */
   transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for hover effect */
+  overflow: auto;
+}
+
+.custom-card::-webkit-scrollbar {
+  display: none;
 }
 
 .custom-card:hover {

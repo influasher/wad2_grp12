@@ -154,8 +154,7 @@ async function fetchGames() {
   try {
     isLoading.value = true;
 
-    // Add small delay to ensure skeleton is visible during development
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const { data, error } = await supabase
       .from("games")

@@ -93,9 +93,7 @@
         <div class="chat-input-container">
           <input
             type="text"
-            style="border:none;
-                    width:95%;
-                    outline:none"
+            style="border: none; width: 95%; outline: none"
             v-model="chatInput"
             placeholder="Ask a question about the content..."
             @keypress.enter="sendMessage"
@@ -149,7 +147,7 @@ const uploadPdf = async () => {
     uploadStatus.value = "Uploading PDF...";
 
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/upload-pdf",
+      "http://127.0.0.1:5000/api/supabase/upload-pdf",
       formData,
       {
         headers: {
@@ -157,8 +155,9 @@ const uploadPdf = async () => {
         },
       }
     );
-
+    console.log(response);
     currentFileId.value = response.data.file_id;
+    console.log(currentFileId.value);
     uploadStatus.value = `PDF uploaded successfully! ${response.data.num_pages} pages found.`;
   } catch (error) {
     console.error("Error uploading PDF:", error);
@@ -178,9 +177,10 @@ const generateFlashcards = async () => {
   try {
     generating.value = true;
     generateBtnText.value = "Generating...";
+    console.log(currentFileId.value);
 
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/generate-flashcards",
+      "http://127.0.0.1:5000/api/supabase/generate-flashcards",
       {
         file_id: currentFileId.value,
       }
@@ -524,7 +524,7 @@ const sendMessage = async () => {
   gap: 10px;
   border: 1px solid #ddd;
   border-radius: var(--border-radius);
-  justify-content:space-between
+  justify-content: space-between;
 }
 
 .container #chat-input {
