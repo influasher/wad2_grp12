@@ -61,14 +61,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import axios from 'axios';
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
 
 const route = useRoute();
-const fileName = ref(route.query.fileName || 'Untitled');
+const fileName = ref(route.query.name || "Untitled");
 const fileId = ref(route.query.fileId);
-const isGenerating = ref(route.query.generating === 'true');
+const isGenerating = ref(route.query.generating === "true");
 
 const flashcards = ref([]);
 const currentCardIndex = ref(0);
@@ -83,9 +83,12 @@ const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
 const generateFlashcards = async () => {
   isGenerating.value = true;
   try {
-    const response = await axios.post("http://127.0.0.1:5000/api/supabase/generate-flashcards", {
-      file_id: fileId.value,
-    });
+    const response = await axios.post(
+      "http://127.0.0.1:5000/api/supabase/generate-flashcards",
+      {
+        file_id: fileName.value,
+      }
+    );
 
     if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
       flashcards.value = response.data.flashcards;
@@ -164,11 +167,14 @@ const shuffleArray = (array) => {
 const getAnswerClass = (index) => {
   if (selectedAnswerIndex.value === null) return "";
   const answer = answers.value[index];
-  
-  if (selectedAnswerIndex.value !== null && index === selectedAnswerIndex.value) {
+
+  if (
+    selectedAnswerIndex.value !== null &&
+    index === selectedAnswerIndex.value
+  ) {
     return answers.value[index].correct ? "correct" : "incorrect";
   }
-  
+
   return "";
 };
 
@@ -194,9 +200,10 @@ const showNextCard = () => {
 };
 
 onMounted(() => {
-  if (fileId.value && isGenerating.value) {
-    generateFlashcards();
-  }
+  // if (fileId.value && isGenerating.value) {
+  //   generateFlashcards();
+  // }
+  generateFlashcards();
 });
 </script>
 
@@ -264,8 +271,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .container button {
