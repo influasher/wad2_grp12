@@ -26,10 +26,11 @@ export class ChemicalMatchingScene extends Phaser.Scene {
     }
 
     create() {
-        // if (backgroundMusic) {
-        //     backgroundMusic.stop();  // Stop the music
-        //     backgroundMusic = null;  // Clear the reference to allow music to restart later
-        // }
+
+        if (this.game.backgroundMusic) {
+            this.game.backgroundMusic.stop();  // Stop the music
+            this.game.backgroundMusic = null;  // Clear the reference to allow music to restart later
+        }
 
         const bg = this.add.image(this.scale.width * 0.5, this.scale.height * 0.5, 'woodenBackground').setOrigin(0.5);
         // Determine the scale factor for the background to cover the full screen while preserving aspect ratio
@@ -84,7 +85,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
         // Randomly select 5 elements from the full list
         const shuffledElements = Phaser.Utils.Array.Shuffle(allElementProperties);
-        const elementProperties = shuffledElements.slice(0, 4); // Get 5 random elements
+        const elementProperties = shuffledElements.slice(0, 4); // Get 4 random elements
 
         // Set up the draggable elements based on the randomly selected ones
         const elements = elementProperties.map((prop, index) => {
@@ -95,7 +96,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
         elements.forEach((elementData) => {
             const element = this.add.image(elementData.x, elementData.y, elementData.name)
-                .setScale(0.8)
+                .setScale(0.55)
                 .setInteractive();
             this.input.setDraggable(element);
 
@@ -132,7 +133,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         
             // Add card background
             const card = this.add.image(pos.x, pos.y, 'card')
-                .setDisplaySize(250, 150)
+                .setDisplaySize(170, 102)
                 .setOrigin(0.5)
                 .setInteractive();
         

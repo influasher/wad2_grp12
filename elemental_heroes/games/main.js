@@ -42,7 +42,8 @@ export function initializeGame() {
     };
 
     game = new Phaser.Game(config); // Initialize the game only once
-
+    
+    game.backgroundMusic = null;
     // Handle resizing
     game.scale.on('resize', (gameSize) => {
         const width = gameSize.width;

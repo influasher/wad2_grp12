@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 
+
 export class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
@@ -47,8 +48,11 @@ export class GameScene extends Phaser.Scene {
 
     create() {
         // Add the background
-            let backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
-            backgroundMusic.play();
+        if (!this.game.backgroundMusic) {
+            // Create the background music if it doesn't already exist
+            this.game.backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
+            this.game.backgroundMusic.play();
+        } 
         
         this.background = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'backgroundTile').setOrigin(0, 0);
         this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'player');
@@ -57,15 +61,19 @@ export class GameScene extends Phaser.Scene {
         this.tables = this.physics.add.staticGroup();
         this.createMusicToggleButton();
         // Add the teacher's table at the top of the screen
-        let teacherTable = this.tables.create(this.scale.width / 2, 70, 'table').setScale(3,1.5).refreshBody();
+        let teacherTable = this.tables.create(this.scale.width / 2, 70, 'table').setScale(2,1).refreshBody();
         teacherTable.name = "teacherTable"; // Set the teacher's table name
         this.add.text(teacherTable.x, teacherTable.y, "Teacher's Table", { fontSize: '16px', color: '#000' }).setOrigin(0.5);
 
-        const padding = 20; // Padding from the screen edges
+        const padding = this.scale.width / 30 ; // Padding from the screen edges
+        console.log('width')
+        console.log(this.scale.width)
+        console.log('height')
+        console.log(this.scale.height)
         const xLeft = padding;
         const yBottom = this.scale.height - padding;
 
-        const backButton = this.add.sprite(this.scale.width * 0.03, this.scale.height * 0.055, 'backButton')
+        const backButton = this.add.sprite(this.scale.width * 0.04, this.scale.height * 0.06, 'backButton')
         .setInteractive()
         .setScale(0.1)  // Adjust the size of the button
         .on('pointerdown', () => {
@@ -94,34 +102,37 @@ export class GameScene extends Phaser.Scene {
             padding: { x: 10, y: 5 }
         }).setOrigin(0);
 
-        // Add other tables (as before)
-        const rows = 2;
-        const cols = 2;
-        const tableWidth = 100;  // Approximate width of a table
-        const tableHeight = 1; // Approximate height of a table
-        const horizontalSpacing = (this.scale.width - (cols * tableWidth)) / (cols + 1);
-        const verticalSpacing = (this.scale.height - (rows * tableHeight)) / (rows + 1);
+        // Use a percentage of the canvas size for table dimensions
+        const tableWidth = this.scale.width * 0.3;  // 30% of canvas width
+        const tableHeight = this.scale.height * 0.15; // 15% of canvas height
 
+        const positions = [
+            { x: this.scale.width * 0.25, y: this.scale.height * 0.35 },
+            { x: this.scale.width * 0.75, y: this.scale.height * 0.35},
+            { x: this.scale.width * 0.25, y:  this.scale.height * 0.65 },
+            { x: this.scale.width * 0.75, y: this.scale.height * 0.65 }
+        ];
         // Define table names
-        const tableNames = [ "QA", "Titration", "Electrochemistry", "Metals"];
+        const tableNames = ["QA", "Titration", "Electrochemistry", "Metals"];
 
-        let index = 0;
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
-                // Calculate positions for the tables
-                let x = horizontalSpacing + (col * (tableWidth + horizontalSpacing)) + tableWidth / 2;
-                let y = verticalSpacing + (row * (tableHeight + verticalSpacing)) + tableHeight;
+        let i = 0;
 
-                // Create the table and set its name
-                let table = this.tables.create(x, y, 'table').setScale(1.5).refreshBody();
-                table.body.setSize(table.displayWidth, table.displayHeight);
-                table.name = tableNames[index];
-                index++;
+        tableNames.forEach((tableName, index) => {
+            console.log(tableName)
+            const { x, y } = positions[i];
 
-                // Add text label for the table
-                this.add.text(x, y, table.name, { fontSize: '16px', color: '#000' }).setOrigin(0.5);
-            }
-        }
+            let table = this.tables.create(x, y, 'table').setScale(1.5).refreshBody();
+            console.log(table);
+            table.body.setSize(table.displayWidth, table.displayHeight);
+            table.name = tableName
+            this.add.text(x, y, tableName, { fontSize: `${this.scale.width * 0.02}px`, color: '#000' }).setOrigin(0.5);
+            i ++
+        });
+
+        // console.log('this tables')
+        // console.log(this.tables)
+        let groupLength = this.tables.getLength();
+        console.log('Number of items in the group:', groupLength);
 
         // Enable WASD keys
         this.keys = this.input.keyboard.addKeys({
@@ -141,6 +152,7 @@ export class GameScene extends Phaser.Scene {
 
         // Add collider to detect when the player collides with a table
         this.physics.add.collider(this.player, this.tables, (player, table) => {
+            console.log(`table ${table}`)
             this.currentTable = table; // Store reference to the current table
             this.interactText.setVisible(true); // Show the popup when near a table
         });
@@ -152,12 +164,14 @@ export class GameScene extends Phaser.Scene {
                 this.showTeacherInventory();
             }
             else{
+                console.log('currenttablename')
                 console.log(this.currentTable.name);
+                console.log(this.checklists[this.currentTable.name])
                 this.showChecklist(this.checklists[this.currentTable.name]); // Show checklist for the current table
             }
         });
 
-        this.input.keyboard.on('keydown-I', () => {
+        this.input.keyboard.on('keydown-I', () => { 
             this.sound.play('glassClick');
                 this.showPlayerInventory();
             });
@@ -451,7 +465,7 @@ export class GameScene extends Phaser.Scene {
             // Create the clipboard image in the center of the screen
             let clipboard = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
                 .setOrigin(0.5)
-                .setScale(1,0.75);  // Adjust the scale of the clipboard as necessary
+                .setScale(0.75,0.5);  // Adjust the scale of the clipboard as necessary
         
             // Position variables for checklist items on the clipboard
             let startX = this.cameras.main.centerX - clipboard.displayWidth / 2 + 120;  // Starting X position for the index and item text
@@ -577,24 +591,29 @@ export class GameScene extends Phaser.Scene {
         }
 
         createMusicToggleButton() {
-            // Initially show the "sound on" button
-            let isMusicOn = true;
-            let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.05, 'soundOnButton').setInteractive().setScale(0.13);
+            let isMusicOn = this.game.backgroundMusic.isPlaying;
+            let texture = '';
+            if(this.game.backgroundMusic.isPlaying){
+                texture = 'soundOnButton';
+            } else{
+                texture = 'soundOffButton';
+            }
     
-            // Add click handler for toggling the music on/off
+            let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.05, texture).setInteractive().setScale(0.13);
+    
             button.on('pointerdown', () => {
                 if (isMusicOn) {
-                    backgroundMusic.pause();  // Pause the music
-                    console.log('music paused')
+                    this.game.backgroundMusic.pause(); // Pause the existing music
                     isMusicOn = false;
-                    button.setTexture('soundOffButton');  // Switch to "sound off" button image
+                    button.setTexture('soundOffButton');
                 } else {
-                    backgroundMusic.resume();  // Resume the music
+                    this.game.backgroundMusic.resume(); // Resume the existing music
                     isMusicOn = true;
-                    button.setTexture('soundOnButton');  // Switch back to "sound on" button image
+                    button.setTexture('soundOnButton');
                 }
             });
         }
+        
 
         
     }

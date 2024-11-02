@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 
+
 export class CasualGameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'CasualGameScene' });
@@ -12,12 +13,15 @@ export class CasualGameScene extends Phaser.Scene {
         this.load.image('button', 'assets/images/button.png');
         this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
 
+
     }
 
     create() {
-        console.log('hi from casual game scene');
-            let backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
-            backgroundMusic.play();
+        if (!this.game.backgroundMusic) {
+            // Create the background music if it doesn't already exist
+            this.game.backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
+            this.game.backgroundMusic.play();
+        } 
 
         const buttonScale = this.scale.width * 0.0005;
         
@@ -32,6 +36,7 @@ export class CasualGameScene extends Phaser.Scene {
             this.scene.start('LoadingScene');  // Switch back to LoadingScene when clicked
         });
 
+        this.createMusicToggleButton();
         // Title text
         this.add.text(this.scale.width / 2, 50, 'Curiosity Corner', {
             fontSize: '50px',
@@ -46,10 +51,6 @@ export class CasualGameScene extends Phaser.Scene {
             { title: 'Environmental Cleanup\n[Coming Soon]', scene: 'EnvironmentalCleanupScene' },
             { title: 'Catalyst Clash\n[Coming Soon]', scene: 'FourthScene' }
         ];
-
-        const cardWidth = this.scale.width * 0.4;
-        const cardHeight = this.scale.height * 0.15;
-        const cornerRadius = 20; // Radius for rounded corners
 
         // Manually set each card’s position based on your specifications
         const positions = [
@@ -93,5 +94,30 @@ export class CasualGameScene extends Phaser.Scene {
             }).setOrigin(0.5);
         });
  
+    }
+
+    createMusicToggleButton() {
+        let isMusicOn = this.game.backgroundMusic.isPlaying; // Track if the music is on
+        console.log(isMusicOn)
+        let texture = '';
+        if(this.game.backgroundMusic.isPlaying){
+            texture = 'soundOnButton';
+        } else{
+            texture = 'soundOffButton';
+        }
+
+        let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.05, texture).setInteractive().setScale(0.13);
+    
+        button.on('pointerdown', () => {
+            if (isMusicOn) {
+                this.game.backgroundMusic.pause(); // Pause the existing music
+                isMusicOn = false;
+                button.setTexture('soundOffButton');
+            } else {
+                this.game.backgroundMusic.resume(); // Resume the existing music
+                isMusicOn = true;
+                button.setTexture('soundOnButton');
+            }
+        });
     }
 }

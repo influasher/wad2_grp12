@@ -40,7 +40,10 @@ export class QA extends Phaser.Scene {
         const scale = Math.max(scaleX, scaleY);
         bg.setScale(scale);
 
-        this.createMusicToggleButton();
+        if (this.game.backgroundMusic) {
+            this.game.backgroundMusic.stop();  // Stop the music
+            this.game.backgroundMusic = null;  // Clear the reference to allow music to restart later
+        }
 
         const exitButton = this.add.sprite(this.scale.width * 0.83, this.scale.height * 0.05, 'exitButton')
             .setInteractive()
@@ -247,26 +250,5 @@ export class QA extends Phaser.Scene {
             }
         });
     }
-    
 
-    createMusicToggleButton() {
-        // Initially show the "sound on" button
-        let isMusicOn = true;
-        let button = this.add.sprite(this.scale.width * 0.96, this.scale.height * 0.05, 'soundOnButton').setInteractive().setScale(0.13);
-
-        // Add click handler for toggling the music on/off
-        button.on('pointerdown', () => {
-            if (isMusicOn) {
-                backgroundMusic.pause();  // Pause the music
-                console.log('music paused')
-                isMusicOn = false;
-                button.setTexture('soundOffButton');  // Switch to "sound off" button image
-            } else {
-                backgroundMusic.resume();  // Resume the music
-                isMusicOn = true;
-                button.setTexture('soundOnButton');  // Switch back to "sound on" button image
-            }
-        }).on('pointerover', () => button.setTint(0xAAAAAA))
-        .on('pointerout', () => button.clearTint());;
-    }
 }
