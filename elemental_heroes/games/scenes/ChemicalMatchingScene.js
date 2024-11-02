@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { updateScores } from '../updateGame.js';
 
 export class ChemicalMatchingScene extends Phaser.Scene {
     constructor() {
@@ -21,12 +22,12 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         this.load.image('restartButton', 'assets/images/restartButton.png'); // Add your back button image
         this.load.image('exitButton', 'assets/images/exitButton.png'); // Add your back button image
         this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
-
+        this.load.image('clipboard','/assets/images/clipboard.png');
+        this.load.image('button', 'assets/images/button.png');
         
     }
 
     create() {
-
         if (this.game.backgroundMusic) {
             this.game.backgroundMusic.stop();  // Stop the music
             this.game.backgroundMusic = null;  // Clear the reference to allow music to restart later
@@ -39,6 +40,12 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         const scale = Math.max(scaleX, scaleY); // Use the larger scale factor to ensure it covers the entire canvas
 
         bg.setScale(scale);
+
+        this.showInstructions();
+
+    }
+
+    initializeGameElements(){
 
         const backButton = this.add.sprite(this.scale.width * 0.03, this.scale.height * 0.055, 'backButton')
         .setInteractive()
@@ -108,7 +115,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
             });
 
             element.on('pointerup', () => {
-                element.setScale(1); // Reset scale
+                element.setScale(0.55); // Reset scale
             });
         });
 
@@ -168,7 +175,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
             // Check if the match is correct
             if (dropZone.getData('element') === gameObject.texture.key) {
                 // Correct match: position at bottom-right of the card
-                gameObject.setPosition(dropZone.x + 70, dropZone.y + 30).setScale(0.35);
+                gameObject.setPosition(dropZone.x + 60, dropZone.y + 25).setScale(0.25);
                 gameObject.setDepth(1); // Ensure it appears on top`
                 gameObject.disableInteractive(); // Disable dragging for correct match
                 this.correctMatches++;
@@ -228,22 +235,40 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         }
     }
 
-    endGame() {
+    async endGame() {
+        const overlay = this.add.graphics().setDepth(1);
+        overlay.fillStyle(0x000000, 0.7);
+        overlay.fillRect(0, 0, this.scale.width, this.scale.height);
         this.timerEvent.remove(); // Stop the timer
         // Display game over message and final score
-        this.add.text(this.scale.width / 2, this.scale.height / 2, `Game Over\nFinal Score: ${this.score}`, {
+        this.add.text(this.scale.width / 2, this.scale.height / 2 - 70, `Game Over\nGreat Job!\nFinal Score: ${this.score}`, {
             fontSize: '32px',
             color: '#000',
             fontFamily: 'Georgia, serif',
             align: 'center',
             backgroundColor: '#ffffff',
+            padding: {
+                x: 5,
+                y: 5,
+            }
         }).setOrigin(0.5).setDepth(10);
         
         this.gameOver = true; // Set game over flag
 
+        const additionalScore = this.score; // Replace with your score calculation logic
+
+        const success = await updateScores(additionalScore);
+        if (success) {
+          console.log('Score updated successfully');
+        } else {
+          console.error('Failed to update the score');
+        }
+    
+
         const exitButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.65, 'exitButton')
         .setInteractive()
-        .setScale(0.15)  // Adjust the size of the button
+        .setDepth(10)
+        .setScale(0.1)  // Adjust the size of the button
         .on('pointerdown', () => {
             this.sound.play('glassClick');
             this.scene.start('CasualGameScene');  // Switch back to CasualGameScene when clicked
@@ -254,7 +279,8 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
         const restartButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.75, 'restartButton')
         .setInteractive()
-        .setScale(0.15)  // Adjust the size of the button
+        .setDepth(10)
+        .setScale(0.1)  // Adjust the size of the button
         .on('pointerdown', () => {
             this.gameOver = false; // Reset the game over flag
             this.scene.restart();  // Restart the game scene
@@ -262,5 +288,69 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
         restartButton.on('pointerover', () => restartButton.setTint(0xAAAAAA));  // Change color on hover
         restartButton.on('pointerout', () => restartButton.clearTint());  // Reset color on hover out
+    }
+
+    showInstructions() {
+        console.log('show instructions called')
+        // Create a semi-transparent background for the popup
+        const overlay = this.add.graphics();
+        overlay.fillStyle(0x000000, 0.65);
+        overlay.fillRect(0, 0, this.scale.width, this.scale.height);
+
+    
+        // Add a background box for the instructions
+        const instructionBox = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
+            .setOrigin(0.5)
+            .setScale(0.75,0.6);
+
+    
+        // Add instruction text
+        const instructionText = this.add.text(this.cameras.main.centerX,
+            this.cameras.main.centerY - instructionBox.displayHeight / 4, 
+            'Welcome to Chemical Matching!\n\nHow to Play:\n1. You have 60 seconds to match all \nthe elements to the card that best \ndescribes the element!\n2. For every correct match, you will \nbe awarded with 10 points.\n3. For every wrong match, you will be \ndeducted 5 points.\n\nPress the Start button when ready!', 
+            {
+                fontSize: `${this.scale.width * 0.018}px`,
+                color: '#000',
+                align: 'center',
+                wordWrap: { width: instructionBox.width - 40 }
+            }
+        ).setOrigin(0.5, 0);
+
+    
+        let buttonScale = 0.15;
+        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 50;
+        // Add start button image
+        const startButtonImage = this.add.image(this.cameras.main.centerX, buttonY, 'button')
+        .setInteractive()
+        .setScale(buttonScale); // Adjust scale as needed
+
+        // Add text over the start button
+        const startButtonText = this.add.text(this.cameras.main.centerX,
+            buttonY, 'Start Game', {
+            fontSize: `${this.scale.width * 0.025}px`,
+            color: '#000',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        startButtonImage.on('pointerover', () => {
+            startButtonImage.setScale(buttonScale + 0.05); // Scale up on hover
+        });
+        startButtonImage.on('pointerout', () => {
+            startButtonImage.setScale(buttonScale); // Scale back down on hover out
+        });
+
+        // Add interactivity to the start button image
+        startButtonImage.on('pointerdown', () => {
+            overlay.destroy(); // Remove the overlay
+            instructionBox.destroy(); // Remove the instruction box
+            instructionText.destroy(); // Remove the instruction text
+            startButtonImage.destroy(); // Remove the start button image
+            startButtonText.destroy(); // Remove the start button text
+            this.sound.play('glassClick'); // Optional sound effect
+    
+            // Call the function to initialize game elements
+            this.initializeGameElements();
+        });
+        
     }
 }
