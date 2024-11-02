@@ -118,64 +118,60 @@ def get_document_context(file_id=None):
 # 1. download file into uploads folder
 # 2. send filepath of uploads folder into the extract_text_from_pdf
 # 3. after getting document context, delete file from local directory
-def get_document_context_supabase(file_id=None):
+def get_document_context_supabase(file_id):
     """Get the content of all uploaded PDFs or a specific PDF from Supabase storage."""
     context = []
 
     BUCKET_NAME = "files_wad2"  # Replace with your bucket name
     FOLDER_NAME = "user_pdfs"  # Replace with your folder name inside the bucket
 
-    if file_id:
-        # Get specific PDF content
-        # List files in the Supabase storage bucket folder
-        response = supabase.storage.from_(BUCKET_NAME).list(
-            path=FOLDER_NAME, options={"search": file_id}
+    # **1. Fetch the PDF file from Supabase Storage**
+    try:
+        pdf_path = f"user_pdfs/{file_id}.pdf"
+        destination = os.path.join(UPLOAD_FOLDER, f"{file_id}.pdf")
+
+        print(f"Attempting to download PDF from Supabase: {pdf_path}")
+
+        # Download the PDF file as bytes
+        pdf_content = supabase.storage.from_("files_wad2").download(pdf_path)
+
+        if not pdf_content:
+            print(f"PDF file not found in Supabase Storage: {pdf_path}")
+            return jsonify({"error": "PDF file not found in Supabase Storage."}), 404
+
+        # Save the PDF content to the local filesystem
+        with open(destination, "wb") as f:
+            f.write(pdf_content)
+
+        print(f"PDF successfully downloaded and saved to: {destination}")
+
+    except Exception as e:
+        print(f"Error fetching PDF from Supabase: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"error": f"Error fetching PDF from Supabase: {str(e)}"}), 500
+
+        # **2. Extract text from the fetched PDF content**
+    try:
+        print(f"Extracting text from PDF: {destination}")
+        text_by_page = extract_text_from_pdf(destination)
+        print("Text extraction successful.")
+        context.append(
+            "\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()])
         )
-        print(response)
-        pdf_files = [file["name"] for file in response if file_id in file["name"]]
-        print(pdf_files)
-        if pdf_files:
-            pdf_file_name = pdf_files[0]
+    except Exception as e:
+        print(f"Error extracting PDF text: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"error": "Failed to extract text from PDF."}), 500
 
-            # Download the file
-            res = supabase.storage.from_(BUCKET_NAME).download(
-                f"{FOLDER_NAME}/{pdf_file_name}"
-            )
-            pdf_bytes = res
-
-            # Read the PDF from bytes
-            pdf_file = BytesIO(pdf_bytes)
-
-            # Uses extract_text_from_pdf here
-            text_by_page = extract_text_from_pdf(pdf_file)
-            context.append(
-                "\n".join(
-                    [f"[Page {page}] {text}" for page, text in text_by_page.items()]
-                )
-            )
-    else:
-        # Get all PDF contents
-        response = supabase.storage.from_(BUCKET_NAME).list(path=FOLDER_NAME)
-        pdf_files = [
-            file["name"] for file in response.data if file["name"].endswith(".pdf")
-        ]
-        for pdf_file_name in pdf_files:
-            # Download the file
-            res = supabase.storage.from_(BUCKET_NAME).download(
-                f"{FOLDER_NAME}/{pdf_file_name}"
-            )
-            pdf_bytes = res
-
-            # Read the PDF from bytes
-            pdf_file = BytesIO(pdf_bytes)
-
-            # Uses extract_text_from_pdf here
-            text_by_page = extract_text_from_pdf(pdf_file)
-            context.append(
-                "\n".join(
-                    [f"[Page {page}] {text}" for page, text in text_by_page.items()]
-                )
-            )
+    # **4. Remove local files**
+    try:
+        print("Removing local files.")
+        os.remove(destination)
+        print("Local files removed successfully.")
+    except Exception as e:
+        # Log the error but don't fail the entire process
+        print(f"Error removing local files: {str(e)}")
+        traceback.print_exc()
 
     return "\n\nNEW DOCUMENT\n\n".join(context)
 
