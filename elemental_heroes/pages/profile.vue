@@ -91,6 +91,51 @@ async function getBackground() {
   }
   }
 
+async function updateFirstName(firstName) {
+  //hardcoded to id=1 for now
+  const { data, error } = await supabase.from("profiles").update({first_name: firstName}).eq("id", 1);
+
+  if (data) {
+    console.log(data)
+
+  } else {
+    console.log(error)
+  }
+}
+
+async function updateLastName(lastName) {
+  //hardcoded to id=1 for now
+  const { data, error } = await supabase.from("profiles").update({last_name: lastName}).eq("id", 1);
+
+  if (data) {
+    console.log(data)
+
+  } else {
+    console.log(error)
+  }
+}
+
+async function updateBio(bio) {
+  //hardcoded to id=1 for now
+  const { data, error } = await supabase.from("profiles").update({bio: bio}).eq("id", 1);
+
+  if (data) {
+    console.log(data)
+
+  } else {
+    console.log(error)
+  }
+}
+
+async function updateAvatar() {
+  const avatarFile = event.target.files[0]
+
+  //get url of 
+  const {data, error} = await supabase.storage.from("files_wad2").update()
+}
+
+
+
 onMounted(() => {
   getProfile()
   getAvatar()
