@@ -18,11 +18,22 @@
       <div v-else class="section flashcard-content">
         <div v-if="flashcards.length">
           <div class="flashcard-navigation">
-            <button @click="showPreviousCard" :disabled="currentCardIndex === 0">
+            <button
+              @click="showPreviousCard"
+              :disabled="currentCardIndex === 0"
+            >
               Previous
             </button>
-            <span>Card {{ currentCardIndex + 1 }} of {{ flashcards.length }}</span>
-            <button @click="showNextCard" :disabled="!currentCardAnswered || currentCardIndex === flashcards.length - 1">
+            <span
+              >Card {{ currentCardIndex + 1 }} of {{ flashcards.length }}</span
+            >
+            <button
+              @click="showNextCard"
+              :disabled="
+                !currentCardAnswered ||
+                currentCardIndex === flashcards.length - 1
+              "
+            >
               Next
             </button>
           </div>
@@ -43,7 +54,11 @@
 
             <div class="feedback" v-if="feedbackMessage">
               <p v-html="feedbackMessage"></p>
-              <button v-if="!answers[selectedAnswerIndex].correct" @click="retryQuestion" class="retry-button">
+              <button
+                v-if="!answers[selectedAnswerIndex].correct"
+                @click="retryQuestion"
+                class="retry-button"
+              >
                 Retry Question
               </button>
             </div>
@@ -64,7 +79,13 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import { createClient } from "@supabase/supabase-js";
 
+const config = useRuntimeConfig();
+const supabase = createClient(
+  config.public.supabaseUrl,
+  config.public.supabaseKey
+);
 const route = useRoute();
 const fileName = ref(route.query.name || "Untitled");
 const fileId = ref(route.query.fileId);
@@ -79,6 +100,61 @@ const showSource = ref(false);
 const answers = ref([]);
 
 const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
+
+async function retrieveExistingFlashcards() {
+  // Define the path to the flashcards folder
+  const flashcardPath = "flashcards/" + fileName.value;
+  console.log(`Retrieving flashcards from: ${flashcardPath}`);
+
+  // List all files under the specified folder
+  const { data: fileList, error } = await supabase.storage
+    .from("files_wad2")
+    .list(flashcardPath);
+
+  if (error) {
+    console.error("Error listing flashcard files:", error);
+    return;
+  }
+
+  if (!fileList || fileList.length === 0) {
+    console.log("No flashcards found.");
+    return;
+  }
+
+  // Array to hold promises for downloading and parsing each file
+  const downloadPromises = fileList.map(async (file) => {
+    // Download each flashcard file
+    const { data: fileData, error: downloadError } = await supabase.storage
+      .from("files_wad2")
+      .download(`${flashcardPath}/${file.name}`);
+
+    if (downloadError) {
+      console.error(`Error downloading ${file.name}:`, downloadError);
+      return [];
+    }
+
+    // Read the file data as text
+    const text = await fileData.text();
+
+    // Parse the JSON content
+    const flashcardsInFile = JSON.parse(text).flashcards;
+
+    // Return the array of flashcards from this file
+    return flashcardsInFile;
+  });
+
+  // Wait for all download and parse operations to complete
+  const flashcardsArrays = await Promise.all(downloadPromises);
+
+  // Combine all flashcards into one array
+  const combinedFlashcards = flashcardsArrays.flat();
+
+  // Assign the combined flashcards to the reactive variable
+  flashcards.value = combinedFlashcards;
+  currentCardIndex.value = 0;
+  prepareCurrentCard();
+  console.log("Combined flashcards:", flashcards.value);
+}
 
 const generateFlashcards = async () => {
   isGenerating.value = true;
@@ -138,11 +214,14 @@ const handleAnswerChoice = async (index) => {
     feedbackMessage.value = '<p class="correct">Correct! Well done!</p>';
   } else {
     try {
-      const response = await axios.post("http://127.0.0.1:5000/api/explain-answer", {
-        question: currentCard.value.question,
-        correct_answer: answers.value.find((a) => a.correct).text,
-        wrong_answer: answer.text,
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:5000/api/explain-answer",
+        {
+          question: currentCard.value.question,
+          correct_answer: answers.value.find((a) => a.correct).text,
+          wrong_answer: answer.text,
+        }
+      );
       feedbackMessage.value = `
         <p class="incorrect">Incorrect.</p>
         <p>${response.data.explanation}</p>
@@ -193,17 +272,23 @@ const showPreviousCard = () => {
 };
 
 const showNextCard = () => {
-  if (currentCardIndex.value < flashcards.value.length - 1 && currentCardAnswered.value) {
+  if (
+    currentCardIndex.value < flashcards.value.length - 1 &&
+    currentCardAnswered.value
+  ) {
     currentCardIndex.value++;
     prepareCurrentCard();
   }
 };
+
+//if flashcard.vue is loaded for existing flashcards
 
 onMounted(() => {
   // if (fileId.value && isGenerating.value) {
   //   generateFlashcards();
   // }
   generateFlashcards();
+  // retrieveExistingFlashcards();
 });
 </script>
 
