@@ -8,7 +8,7 @@ export class CasualGameScene extends Phaser.Scene {
 
     preload() {
         // Load any necessary assets, such as background images
-        this.load.image('background', 'assets/images/start_background.jpg'); // Background for the scene
+        this.load.image('background', 'assets/images/startBackground.jpg'); // Background for the scene
         this.load.image('backButton', 'assets/images/backButton.png'); // Add your back button image
         this.load.image('button', 'assets/images/button.png');
         this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound

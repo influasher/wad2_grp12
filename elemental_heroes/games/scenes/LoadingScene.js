@@ -8,7 +8,7 @@ import Phaser from 'phaser';
 
     preload() {
         // Load assets for start screen if needed (e.g., background images, button sprites)
-        this.load.image('startBackground', '/assets/images/start_background.jpg');
+        this.load.image('startBackground', '/assets/images/startBackground.jpg');
         this.load.image('button', '/assets/images/button.png');
         this.load.image('soundOnButton', '/assets/images/soundOn.png');  // Sound on button image
         this.load.image('soundOffButton', '/assets/images/soundOff.png');  // Sound off button image
