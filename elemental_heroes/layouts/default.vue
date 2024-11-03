@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper d-flex">
     <!-- Sidebar - Fixed on the left -->
-    <nav id="sidebar" :class="{ active: isSidebarActive }">
+    <nav id="sidebar" :class="{ notActive: isSidebarNotActive }">
       <div
         class="sidebar-header d-flex align-items-center justify-content-between"
       >
@@ -22,7 +22,7 @@
           <img src="../assets/images/gamepad-joystick-svgrepo-com.svg"
             width="50"
           />
-          <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular"
+          <span v-if="!isSidebarNotActive" class="ms-2 press-start-2p-regular"
             >Games</span
           >
         </div>
@@ -32,7 +32,7 @@
           <!-- <button type="button" class="btn btn-block"> -->
 
           <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
-          <span v-if="!isSidebarActive" class="ms-2 press-start-2p-regular"
+          <span v-if="!isSidebarNotActive" class="ms-2 press-start-2p-regular"
             >Revision</span
           >
           <!-- </button> -->
@@ -104,11 +104,12 @@
 <script setup>
 import { ref } from "vue";
 
-const isSidebarActive = ref(false);
+const isSidebarNotActive = ref(false);
 
 function toggleSidebar() {
-  isSidebarActive.value = !isSidebarActive.value;
+  isSidebarNotActive.value = !isSidebarNotActive.value;
 }
+
 </script>
 
 <style scoped>
@@ -144,6 +145,7 @@ function toggleSidebar() {
 .elementalHome {
   color: inherit;
   text-decoration: none;
+  transition: ease 0.3s
 }
 
 .sidebarButton {
@@ -152,13 +154,11 @@ function toggleSidebar() {
   display: block;
   width: 100%;
   font-size: 12.5px;
-
 }
 
 .sidebarButton:hover {
   background-color: #b2a9ec;
   width: 100%;
-
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -171,11 +171,11 @@ function toggleSidebar() {
   flex-direction: column;
 }
 
-#sidebar.active + .content-wrapper {
+#sidebar.notActive + .content-wrapper {
   margin-left: 80px;
 }
 
-#sidebar.active {
+#sidebar.notActive {
   min-width: 80px;
   max-width: 80px;
   text-align: center;
@@ -198,6 +198,7 @@ function toggleSidebar() {
   /* Fine-tune vertical position */
   margin: 0;
   padding-top: 10px;
+  transition-delay: 0.3s
   /* Adjust this value to move the text down */
 }
 
@@ -210,14 +211,14 @@ function toggleSidebar() {
   background: none;
 }
 
-/* Update the button styles for active state */
-#sidebar.active .sidebar-header button#sidebarCollapse {
+/* Update the button styles for notActive state */
+#sidebar.notActive .sidebar-header button#sidebarCollapse {
   display: block;
   margin: 0 auto;
   left: 0;
 }
 
-#sidebar.active .sidebar-header {
+#sidebar.notActive .sidebar-header {
   padding: 0;
   display: flex;
   justify-content: center;
@@ -225,11 +226,11 @@ function toggleSidebar() {
   position: relative;
 }
 
-#sidebar.active .sidebar-header h3 {
+#sidebar.notActive .sidebar-header h3 {
   display: none;
 }
 
-#sidebar.active .sidebar-header strong {
+#sidebar.notActive .sidebar-header strong {
   display: block;
 }
 
@@ -237,24 +238,24 @@ function toggleSidebar() {
   text-align: left;
 }
 
-#sidebar.active ul li a {
+#sidebar.notActive ul li a {
   padding: 20px 10px;
   text-align: center;
   font-size: 0.85em;
 }
 
-#sidebar.active ul li a i {
+#sidebar.notActive ul li a i {
   margin-right: 0;
   display: block;
   font-size: 1.8em;
   margin-bottom: 5px;
 }
 
-#sidebar.active ul ul a {
+#sidebar.notActive ul ul a {
   padding: 10px !important;
 }
 
-#sidebar.active .dropdown-toggle::after {
+#sidebar.notActive .dropdown-toggle::after {
   top: auto;
   bottom: 10px;
   right: 50%;
@@ -305,7 +306,7 @@ footer p {
     margin-left: -250px;
   }
 
-  #sidebar.active {
+  #sidebar.notActive {
     margin-left: 0;
     min-width: 80px;
     max-width: 80px;
@@ -315,7 +316,7 @@ footer p {
     margin-left: 0;
   }
 
-  #sidebar.active + .content-wrapper {
+  #sidebar.notActive + .content-wrapper {
     margin-left: 80px;
   }
 
@@ -323,27 +324,27 @@ footer p {
     display: none;
   }
 
-  #sidebar.active .sidebar-header h3 {
+  #sidebar.notActive .sidebar-header h3 {
     display: none;
   }
 
-  #sidebar.active .sidebar-header strong {
+  #sidebar.notActive .sidebar-header strong {
     display: block;
   }
 
-  #sidebar.active ul li a {
+  #sidebar.notActive ul li a {
     padding: 20px 10px;
     font-size: 0.85em;
   }
 
-  #sidebar.active ul li a i {
+  #sidebar.notActive ul li a i {
     margin-right: 0;
     display: block;
     font-size: 1.8em;
     margin-bottom: 5px;
   }
 
-  #sidebar.active ul ul a {
+  #sidebar.notActive ul ul a {
     padding: 10px !important;
   }
 
