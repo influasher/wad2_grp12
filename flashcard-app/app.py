@@ -365,7 +365,7 @@ def explain_answer():
         
         Provide a brief (1-2 sentences) explanation of why the chosen answer is incorrect.
         Focus on helping the student understand the key difference between their answer
-        and the correct answer. Be educational in your explanation.
+        and the correct answer, without revealing the correct answer. Be educational in your explanation.
         """
 
         response = client.chat.completions.create(

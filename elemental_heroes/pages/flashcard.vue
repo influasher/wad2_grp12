@@ -6,12 +6,10 @@
 
     <main>
       <!-- Loading Screen -->
-      <div v-if="isGenerating" class="loading-screen">
-        <div class="loading-content">
+      <div v-if="isGenerating" class="loading-content">
           <h2>Generating Flashcards</h2>
           <p>Get ready to revise!</p>
           <div class="spinner"></div>
-        </div>
       </div>
 
       <!-- Flashcard Content -->
@@ -47,16 +45,16 @@
                 Retry Question
               </button>
             </div>
-
-            <div class="source" v-if="showSource">
-              <p class="quote">{{ currentCard.quote || "" }}</p>
-              <p class="reference">Page {{ currentCard.page }}</p>
-            </div>
           </div>
         </div>
         <div v-else class="info-message">No flashcards available.</div>
       </div>
     </main>
+    <FloatingChat :file-id="fileName"/>
+    <CompletionPopup 
+      :show="showCompletionPopup"
+      :onGenerateMore="handleGenerateMore"
+    />
   </div>
 </template>
 
@@ -64,10 +62,12 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import FloatingChat from '@/components/FloatingChat.vue';
+import CompletionPopup from '@/components/CompletionPopup.vue';
 
 const route = useRoute();
 const fileName = ref(route.query.name || "Untitled");
-const fileId = ref(route.query.fileId);
+const fileId = ref(route.query.fileId || "");
 const isGenerating = ref(route.query.generating === "true");
 
 const flashcards = ref([]);
@@ -77,6 +77,7 @@ const selectedAnswerIndex = ref(null);
 const feedbackMessage = ref("");
 const showSource = ref(false);
 const answers = ref([]);
+const showCompletionPopup = ref(false);
 
 const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
 
@@ -100,6 +101,31 @@ const generateFlashcards = async () => {
   } catch (error) {
     console.error("Error generating flashcards:", error);
     alert("Error generating flashcards. Please try again.");
+  } finally {
+    isGenerating.value = false;
+  }
+};
+
+const handleGenerateMore = async () => {
+  showCompletionPopup.value = false;
+  isGenerating.value = true;
+  try {
+    const response = await axios.post(
+      "http://127.0.0.1:5000/api/supabase/generate-flashcards",
+      {
+        file_id: fileName.value,
+        count: 5
+      }
+    );
+
+    if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
+      flashcards.value = response.data.flashcards;
+      currentCardIndex.value = 0;
+      prepareCurrentCard();
+    }
+  } catch (error) {
+    console.error("Error generating more flashcards:", error);
+    alert("Error generating more flashcards. Please try again.");
   } finally {
     isGenerating.value = false;
   }
@@ -130,12 +156,19 @@ const generateAnswerChoices = (card) => {
 const handleAnswerChoice = async (index) => {
   if (selectedAnswerIndex.value !== null) return;
   selectedAnswerIndex.value = index;
-  currentCardAnswered.value = true;
   showSource.value = true;
 
   const answer = answers.value[index];
   if (answer.correct) {
-    feedbackMessage.value = '<p class="correct">Correct! Well done!</p>';
+    currentCardAnswered.value = true;
+    feedbackMessage.value = `
+      <p class="correct">Correct! Well done!</p>
+      <p class="correct">${currentCard.value.quote || ""}<br/>Page ${currentCard.value.page}</p>
+    `;
+
+    if (currentCardIndex.value === flashcards.value.length - 1) {
+      showCompletionPopup.value = true;
+    }
   } else {
     try {
       const response = await axios.post("http://127.0.0.1:5000/api/explain-answer", {
@@ -208,44 +241,38 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.container {
-  --primary-color: rgb(139, 110, 243);
-  --secondary-color: #f5f5f5;
-  --text-color: #333;
-  --border-radius: 8px;
+* {
+    --primary-color: #CECAE7;
+    --secondary-color: #B2A9EC;
+    --button-color: #7662F2;
+    --button-hover: #593FFF;
+    --text-color: #333;
+    --border-radius: 12px;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 30px;
   line-height: 1.6;
   color: var(--text-color);
   background-color: #f0f2f5;
 }
 
-.container * {
-  margin: 0;
-  padding: 5px;
-  box-sizing: border-box;
-}
-
 .container header {
   text-align: center;
-  margin-bottom: 40px;
 }
 
 .container h1 {
-  color: var(--primary-color);
-  margin-bottom: 20px;
+  color: var(--button-color);
+  margin-bottom: 30px;
 }
 
 .container .section {
   background: white;
   padding: 20px;
-  border-radius: var(--border-radius);
   margin-bottom: 30px;
+  border-radius: var(--border-radius);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -257,7 +284,7 @@ onMounted(() => {
 }
 
 .loading-content h2 {
-  color: var(--primary-color);
+  color: var(--button-color);
   margin-bottom: 0.5rem;
 }
 
@@ -280,7 +307,7 @@ onMounted(() => {
 }
 
 .container button {
-  background-color: var(--primary-color);
+  background-color: var(--button-color);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -290,13 +317,13 @@ onMounted(() => {
 }
 
 .container button:hover {
-  background-color: #5a4caf;
+  background-color: var(--button-hover);
 }
 
 .container .flashcard {
   background: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
@@ -324,11 +351,11 @@ onMounted(() => {
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #333;
+  color: var(--text-color);
 }
 
-.container .answer-choice:hover:not([disabled]) {
-  background: #f5f5f5;
+.container .answer-choice:hover {
+  background: var(--primary-color);
 }
 
 .container .answer-choice.correct {
@@ -336,7 +363,17 @@ onMounted(() => {
   color: white;
 }
 
+.container .answer-choice.correct:hover {
+  background-color: #4caf50;
+  color: white;
+}
+
 .container .answer-choice.incorrect {
+  background-color: #f44336;
+  color: white;
+}
+
+.container .answer-choice.incorrect:hover {
   background-color: #f44336;
   color: white;
 }
@@ -355,16 +392,15 @@ onMounted(() => {
 
 .container .retry-button {
   padding: 8px 16px;
-  background-color: var(--primary-color);
+  background-color: var(--button-color);
   color: white;
-  border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
   margin-top: 10px;
 }
 
 .container .retry-button:hover {
-  background-color: #5a4caf;
+  background-color: var(--button-hover);
 }
 
 .container .source {
@@ -395,11 +431,5 @@ onMounted(() => {
   margin: 10px 0;
   text-align: center;
   color: #31708f;
-}
-
-.container .loading {
-  text-align: center;
-  padding: 20px;
-  color: #666;
 }
 </style>

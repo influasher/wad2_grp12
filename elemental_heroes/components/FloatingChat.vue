@@ -41,7 +41,7 @@ const props = defineProps({
     },
     title: {
         type: String,
-        default: 'Study Assistant'
+        default: 'Odyssey'
     },
     placeholder: {
         type: String,
@@ -107,6 +107,14 @@ const sendMessage = async () => {
 </script>
 
 <style scoped>
+* {
+    --primary-color: #CECAE7;
+    --secondary-color: #B2A9EC;
+    --button-color: #7662F2;
+    --button-hover: #593FFF;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
 .floating-chat-container {
     position: fixed;
     bottom: 20px;
@@ -118,7 +126,7 @@ const sendMessage = async () => {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: rgb(139, 110, 243);
+    background-color: var(--button-color);
     color: white;
     border: none;
     cursor: pointer;
@@ -131,11 +139,12 @@ const sendMessage = async () => {
 }
 
 .floating-chat-button:hover {
+    background-color: var(--button-hover);
     transform: scale(1.1);
 }
 
 .floating-chat-button.chat-open {
-    background-color: #5a4caf;
+    background-color: var(--button-hover);
 }
 
 .chat-popup {
@@ -144,7 +153,7 @@ const sendMessage = async () => {
     right: 0;
     width: min(400px, calc(100vw - 40px));
     height: min(500px, calc(100vh - 120px));
-    background: white;
+    background: var(--primary-color);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
@@ -161,9 +170,8 @@ const sendMessage = async () => {
 
 .chat-popup-header {
     padding: 15px;
-    background-color: rgb(139, 110, 243);
+    background-color: var(--button-color);
     color: white;
-    font-weight: bold;
     text-align: center;
 }
 
@@ -184,13 +192,13 @@ const sendMessage = async () => {
 }
 
 .user-message {
-    background-color: rgb(139, 110, 243);
+    background-color: var(--secondary-color);
     color: white;
     align-self: flex-end;
 }
 
 .bot-message {
-    background-color: #f0f2f5;
+    background-color: #eee;
     color: #333;
     align-self: flex-start;
 }
@@ -237,7 +245,7 @@ const sendMessage = async () => {
 }
 
 .formatted-content :deep(a) {
-    color: rgb(139, 110, 243);
+    color: var(--secondary-color);
     text-decoration: none;
 }
 
@@ -269,13 +277,13 @@ const sendMessage = async () => {
 }
 
 .input-wrapper input:focus {
-    border-color: rgb(139, 110, 243);
+    border-color: var(--secondary-color);
 }
 
 .send-button {
     position: absolute;
     right: 8px;
-    background: rgb(139, 110, 243);
+    background: var(--button-color);
     color: white;
     border: none;
     width: 28px;
@@ -291,7 +299,7 @@ const sendMessage = async () => {
 }
 
 .send-button:hover {
-    background-color: #5a4caf;
+    background-color: var(--button-hover);
     transform: rotate(90deg) scale(1.1);
 }
 
