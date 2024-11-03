@@ -6,7 +6,27 @@
         <NuxtLink :to="{ path: '/flashcard', query: { name: noteName } }">
           <button class="btn btn-primary">Generate Flashcards</button>
         </NuxtLink>
-        <button @click="handleDelete" class="btn btn-danger">Delete</button>
+        <button
+          class="delete-btn"
+          @click.prevent="handleDelete"
+          title="Delete folder"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 6h18" />
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+          </svg>
+        </button>
       </div>
     </div>
     <div class="d-flex justify-content-center mb-4">
@@ -28,7 +48,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
-import FloatingChat from '@/components/FloatingChat.vue';
+import FloatingChat from "@/components/FloatingChat.vue";
 
 const config = useRuntimeConfig();
 const supabase = createClient(
@@ -87,5 +107,31 @@ onMounted(() => {
 
 .gap-2 {
   gap: 0.5rem;
+}
+
+.delete-btn {
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  cursor: pointer;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.delete-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  color: #ff4444;
+}
+
+.delete-btn:hover svg {
+  transform: scale(1.2);
 }
 </style>

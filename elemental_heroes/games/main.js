@@ -12,8 +12,8 @@ export function initializeGame() {
     const config = {
         type: Phaser.AUTO,
         parent: 'game-container',
-        width: '600px',
-        height: '400px',
+        width: '1000px',
+        height: '600px',
         scale: {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,

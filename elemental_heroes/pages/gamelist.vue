@@ -8,13 +8,16 @@
       <!-- Topics section: Full width on small screens, 2 columns on large screens -->
       <div id="subjects" class="col-lg-12 col-xl-3 d-flex justify-content-center">
         <div class="card custom-card">
-            <div class="card-body">
+            <div class="card-body p-4">
               <h3 class="card-title">Topics Covered</h3>
-              <span class="badge rounded-pill text-bg-primary">Titration</span>
-              <span class="badge rounded-pill text-bg-success">QA</span>
-              <span class="badge rounded-pill text-bg-danger">Metals</span>
-              <span class="badge rounded-pill text-bg-warning">Electrochemistry</span>
-              <span class="badge rounded-pill text-bg-info">Organic</span>
+              <div class="row">
+                <div class="col-6 mb-2" v-for="(tag, index) in tags" :key="index">
+                  <button class="btn btn-light border my-1 w-100 d-flex align-items-center justify-content-start">
+                    <i :class="tag.icon" class="me-2" :style="{ color: tag.color }"></i>
+                    <span>{{ tag.label }}</span>
+                  </button>
+                </div>
+              </div>
             </div>
       </div>
       </div>
@@ -68,6 +71,17 @@ function handleSubmit() {
   updateScores();
 }
 
+const tags = ref([
+  { label: 'Titration'},
+  { label: 'Organic'},
+  { label: 'Metals'},
+  { label: 'Science'},
+  { label: 'QA'},
+  { label: 'Chemicals'},
+  { label: 'Science'},
+
+]);
+
 
 </script>
 
@@ -95,12 +109,24 @@ function handleSubmit() {
 
 .custom-card {
   width: 100%;
-  border: 1px solid #e4e3e3;
+  border: 1px solid #1e1e1e
+}
+
+.custom-card:hover {
+  action: none;
+}
+
+.btn-light {
+  background-color: #f9f9f9;
+  border-radius: 15px;
+  height: 40px;
 }
 
 .badge {
   font-size: 20px;
   font-weight: light;
-  margin: 10px;
+  margin: 5px;
+  border-radius: 10px;
+  width: 40%
 }
 </style>
