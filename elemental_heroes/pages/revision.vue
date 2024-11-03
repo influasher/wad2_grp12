@@ -46,19 +46,42 @@
         </template>
 
         <div class="col-md-3" v-for="note in notes" :key="note">
-          <NuxtLink
-            :to="{ path: '/notes', query: { name: note.name } }"
-            style="text-decoration: none"
-          >
-            <div class="card custom-card">
+          <div class="card custom-card position-relative card-container">
+            <NuxtLink
+              :to="{ path: '/notes', query: { name: note.name } }"
+              style="text-decoration: none"
+            >
               <div class="card-body">
                 <h5 class="card-title">{{ note.name }}</h5>
                 <p class="card-text text-muted">
                   Uploaded: {{ note.formattedDate }}
                 </p>
               </div>
-            </div>
-          </NuxtLink>
+            </NuxtLink>
+
+            <!-- Add delete button -->
+            <button
+              class="delete-btn"
+              @click.prevent="handleNoteDelete(note.name)"
+              title="Delete note"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -99,40 +122,30 @@
               <!-- Delete button -->
               <button
                 class="delete-btn"
-                @click.prevent="confirmDelete(folder.name)"
+                @click.prevent="handleFlashcardDelete(folder.name)"
                 title="Delete folder"
               >
-                ×
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
               </button>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Delete Confirmation Modal -->
-      <div v-if="showDeleteModal" class="modal-overlay">
-        <div class="modal-content">
-          <h3>Confirm Delete</h3>
-          <p>
-            Are you sure you want to delete "{{ folderToDelete }}" and all its
-            flashcards?
-          </p>
-          <div class="modal-actions">
-            <button class="btn btn-secondary" @click="showDeleteModal = false">
-              Cancel
-            </button>
-            <button
-              class="btn btn-danger"
-              @click="deleteFolder"
-              :disabled="isDeleting"
-            >
-              {{ isDeleting ? "Deleting..." : "Delete" }}
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
-    <FloatingChat />
   </div>
 </template>
 
@@ -143,7 +156,7 @@ import { useRuntimeConfig } from "#app";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import NoteFlashcardSkeleton from "~/components/NoteFlashcardSkeleton.vue";
-import FloatingChat from '@/components/FloatingChat.vue';
+import FloatingChat from "@/components/FloatingChat.vue";
 
 const config = useRuntimeConfig();
 const router = useRouter();
@@ -151,42 +164,30 @@ const supabase = createClient(
   config.public.supabaseUrl,
   config.public.supabaseKey
 );
-
-// Existing refs
 const notes = ref([]);
 const isLoadingNotes = ref(true);
 const isLoadingFlashcards = ref(true);
-
-// New refs for file upload
 const pdfInput = ref(null);
 const selectedFile = ref(null);
 const uploadStatus = ref("");
 const uploadBtnText = ref("Upload PDF");
 const uploading = ref(false);
-
-// Add new ref for flashcard folders
 const flashcardFolders = ref([]);
-
-// Add new refs for delete functionality
-const showDeleteModal = ref(false);
-const folderToDelete = ref("");
 const isDeleting = ref(false);
 
-// Function to show delete confirmation modal
-const confirmDelete = (folderName) => {
-  folderToDelete.value = folderName;
-  showDeleteModal.value = true;
-};
+const handleFlashcardDelete = async (folderName) => {
+  const confirmed = confirm(
+    `Are you sure you want to delete "${folderName}" and all its flashcards?`
+  );
+  if (!confirmed) return;
 
-// Function to delete folder and its contents
-const deleteFolder = async () => {
   try {
     isDeleting.value = true;
 
     // First, list all files in the folder
     const { data: files, error: listError } = await supabase.storage
       .from("files_wad2")
-      .list(`flashcards/${folderToDelete.value}`);
+      .list(`flashcards/${folderName}`);
 
     if (listError) throw listError;
 
@@ -194,7 +195,7 @@ const deleteFolder = async () => {
     for (const file of files) {
       const { error: deleteError } = await supabase.storage
         .from("files_wad2")
-        .remove([`flashcards/${folderToDelete.value}/${file.name}`]);
+        .remove([`flashcards/${folderName}/${file.name}`]);
 
       if (deleteError) throw deleteError;
     }
@@ -202,7 +203,7 @@ const deleteFolder = async () => {
     // Delete the empty folder (if your storage supports it)
     const { error: folderError } = await supabase.storage
       .from("files_wad2")
-      .remove([`flashcards/${folderToDelete.value}/.emptyFolderPlaceholder`]);
+      .remove([`flashcards/${folderName}/.emptyFolderPlaceholder`]);
 
     if (folderError && !folderError.message.includes("Object not found")) {
       throw folderError;
@@ -210,13 +211,35 @@ const deleteFolder = async () => {
 
     // Refresh the flashcards list
     await getFlashcards();
-
-    // Close the modal and show success message
-    showDeleteModal.value = false;
-    alert("Folder deleted successfully");
+    alert("Flashcards deleted successfully");
   } catch (error) {
     console.error("Error deleting folder:", error);
     alert("Error deleting folder. Please try again.");
+  } finally {
+    isDeleting.value = false;
+  }
+};
+
+const handleNoteDelete = async (noteName) => {
+  const confirmed = confirm(`Are you sure you want to delete "${noteName}"?`);
+  if (!confirmed) return;
+
+  try {
+    isDeleting.value = true;
+
+    // Delete the PDF file
+    const { error: deleteError } = await supabase.storage
+      .from("files_wad2")
+      .remove([`user_pdfs/${noteName}.pdf`]);
+
+    if (deleteError) throw deleteError;
+
+    // Refresh the notes list
+    await getNotes();
+    alert("Note deleted successfully");
+  } catch (error) {
+    console.error("Error deleting note:", error);
+    alert("Error deleting note. Please try again.");
   } finally {
     isDeleting.value = false;
   }
@@ -267,14 +290,18 @@ const uploadPdf = async (event) => {
       }
     );
 
-    uploadStatus.value = `PDF uploaded successfully! ${response.data.num_pages} pages found.`;
+    uploadStatus.value = ``;
+    alert(`PDF uploaded successfully! ${response.data.num_pages} pages found.`);
 
     // Reset file selection and refresh notes list
-    setTimeout(() => {
-      selectedFile.value = null;
-      uploadStatus.value = "";
-      getNotes();
-    }, 2000);
+    // setTimeout(() => {
+    //   selectedFile.value = null;
+    //   uploadStatus.value = "";
+    //   getNotes();
+    // }, 1000);
+    selectedFile.value = null;
+    uploadStatus.value = "";
+    getNotes();
   } catch (error) {
     console.error("Error uploading PDF:", error);
     uploadStatus.value = "Error uploading PDF. Please try again.";
@@ -420,22 +447,23 @@ onMounted(() => {
   overflow: visible; /* Allow delete button to be visible outside card boundaries if needed */
 }
 
-/* Modified delete button styles for bottom right positioning */
+/* Updated delete button styles */
 .delete-btn {
   position: absolute;
   bottom: 8px;
   right: 12px;
   background: none;
   border: none;
-  font-size: 20px;
-  color: #666;
   cursor: pointer;
   z-index: 2;
-  padding: 0 5px;
-  line-height: 1;
+  padding: 5px;
   transition: all 0.2s ease;
   opacity: 0;
   pointer-events: none;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Show delete button on card hover */
@@ -452,34 +480,5 @@ onMounted(() => {
 /* Adjust card-body padding to prevent text overlap with delete button */
 .card-body {
   padding-bottom: 2.5rem; /* Add extra padding at bottom to accommodate delete button */
-}
-
-/* Modal styles remain the same */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
 }
 </style>
