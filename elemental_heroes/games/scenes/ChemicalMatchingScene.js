@@ -24,6 +24,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         this.load.audio('glassClick', 'assets/audio/glassClick.wav');  // click sound
         this.load.image('clipboard','/assets/images/clipboard.png');
         this.load.image('button', 'assets/images/button.png');
+        this.load.image('catMascot', 'assets/images/catMascot.png');
         
     }
 
@@ -62,7 +63,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         // Initialize score and timer
     
         this.score = 0;
-        this.timeRemaining = 60; // 60 seconds for the game
+        this.timeRemaining = 30; // 30 seconds for the game
 
         // Display score text
         this.scoreText = this.add.text(this.scale.width * 0.065, this.scale.height * 0.03, 'Score: 0', {
@@ -80,14 +81,14 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
                 // Set up a full list of element properties with additional elements
         const allElementProperties = [
-            { element: 'potassium', property: 'K', type: 'Chemical Formula' },
-            { element: 'neon', property: 'Noble Gas', type: 'Chemical Property' },
-            { element: 'gold', property: 'Au', type: 'Chemical Formula' },
-            { element: 'chlorine', property: 'Greenish-yellow\ngas', type: 'Chemical Property' },
-            { element: 'iron', property: 'Metallic', type: 'Physical Property' },
-            { element: 'copper', property: 'Red brown\nsolid', type: 'Physical Property' },
-            { element: 'astatine', property: 'Radioactive', type: 'Physical Property' },
-            { element: 'bromine', property: 'Group 17\nelement', type: 'Chemical Property' },
+            { element: 'potassium', property: 'K', type: 'Chemical Formula:' },
+            { element: 'neon', property: 'Noble Gas', type: 'Chemical Property:' },
+            { element: 'gold', property: 'Au', type: 'Chemical Formula:' },
+            { element: 'chlorine', property: 'Greenish-yellow\ngas', type: 'Chemical Property:' },
+            { element: 'iron', property: 'Metallic', type: 'Physical Property:' },
+            { element: 'copper', property: 'Red brown\nsolid', type: 'Physical Property:' },
+            { element: 'astatine', property: 'Radioactive', type: 'Physical Property:' },
+            { element: 'bromine', property: 'Group 17\nelement', type: 'Chemical Property:' },
         ];
 
         // Randomly select 5 elements from the full list
@@ -140,7 +141,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         
             // Add card background
             const card = this.add.image(pos.x, pos.y, 'card')
-                .setDisplaySize(170, 102)
+                .setDisplaySize(250, 150)
                 .setOrigin(0.5)
                 .setInteractive();
         
@@ -175,7 +176,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
             // Check if the match is correct
             if (dropZone.getData('element') === gameObject.texture.key) {
                 // Correct match: position at bottom-right of the card
-                gameObject.setPosition(dropZone.x + 60, dropZone.y + 25).setScale(0.25);
+                gameObject.setPosition(dropZone.x + 95, dropZone.y + 45).setScale(0.25);
                 gameObject.setDepth(1); // Ensure it appears on top`
                 gameObject.disableInteractive(); // Disable dragging for correct match
                 this.correctMatches++;
@@ -297,17 +298,18 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         overlay.fillStyle(0x000000, 0.65);
         overlay.fillRect(0, 0, this.scale.width, this.scale.height);
 
-    
+
         // Add a background box for the instructions
+
         const instructionBox = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
             .setOrigin(0.5)
-            .setScale(0.75,0.6);
+            .setScale(1.5,0.8);
 
     
         // Add instruction text
         const instructionText = this.add.text(this.cameras.main.centerX,
-            this.cameras.main.centerY - instructionBox.displayHeight / 4, 
-            'Welcome to Chemical Matching!\n\nHow to Play:\n1. You have 60 seconds to match all \nthe elements to the card that best \ndescribes the element!\n2. For every correct match, you will \nbe awarded with 10 points.\n3. For every wrong match, you will be \ndeducted 5 points.\n\nPress the Start button when ready!', 
+            this.cameras.main.centerY - instructionBox.displayHeight * 0.3, 
+            "Welcome to Chemical Matching!\n\nI am Felix Chemicus, and here's how to play my game:\n1. You have 30 seconds to match all \nthe elements to the card that best \ndescribes the element!\n2. For every correct match, you will \nbe awarded with 10 points.\n3. For every wrong match, you will be \ndeducted 5 points.\n\nPress the Start button when ready!", 
             {
                 fontSize: `${this.scale.width * 0.018}px`,
                 color: '#000',
@@ -316,9 +318,11 @@ export class ChemicalMatchingScene extends Phaser.Scene {
             }
         ).setOrigin(0.5, 0);
 
+
+
     
-        let buttonScale = 0.15;
-        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 50;
+        let buttonScale = 0.25;
+        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 60;
         // Add start button image
         const startButtonImage = this.add.image(this.cameras.main.centerX, buttonY, 'button')
         .setInteractive()
@@ -343,6 +347,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         startButtonImage.on('pointerdown', () => {
             overlay.destroy(); // Remove the overlay
             instructionBox.destroy(); // Remove the instruction box
+            mascot.destroy(); // Remove the mascot image
             instructionText.destroy(); // Remove the instruction text
             startButtonImage.destroy(); // Remove the start button image
             startButtonText.destroy(); // Remove the start button text
@@ -351,6 +356,11 @@ export class ChemicalMatchingScene extends Phaser.Scene {
             // Call the function to initialize game elements
             this.initializeGameElements();
         });
+
+        const mascot = this.add.image(this.scale.width * 0.85, this.scale.height * 0.7, 'catMascot')
+        .setOrigin(0.5)
+        .setDepth(1)
+        .setScale(1);  
         
     }
 }

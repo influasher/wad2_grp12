@@ -17,7 +17,17 @@ export class GameScene extends Phaser.Scene {
 
     preload() {
         this.load.image('backgroundTile', '/assets/images/floorTile.png');
-        this.load.image('player', '/assets/images/ball_red_small.png');
+        // this.load.image('player', '/assets/images/ball_red_small.png');
+        this.load.spritesheet('playerIdle', '/assets/images/playerIdle.png', {
+            frameWidth: 16,  // Width of each frame
+            frameHeight: 32  // Height of each frame (assuming 16x16 for each individual frame)
+        });
+        
+        this.load.spritesheet('playerRun', '/assets/images/playerRun.png', {
+            frameWidth: 16, // Set frame width as needed (adjust if different)
+            frameHeight: 32 // Set frame height as needed (adjust if different)
+        });
+
         this.load.image('table', '/assets/images/table.png');
         this.load.image('clipboard','/assets/images/clipboard.png');
         this.load.image('tick', '/assets/images/tick.png');
@@ -30,8 +40,6 @@ export class GameScene extends Phaser.Scene {
         this.load.image('i','/assets/images/i.png');
         this.load.image('backButton', 'assets/images/backButton.png'); // Add your back button image
 
-
-        // Fixed the issue with loading spritesheet
         this.load.spritesheet('labIcons', '/assets/images/LabIcons.png', {
             frameWidth: 16, // Width of one inventory block
             frameHeight: 16
@@ -55,7 +63,108 @@ export class GameScene extends Phaser.Scene {
         } 
         
         this.background = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'backgroundTile').setOrigin(0, 0);
-        this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'player');
+        // this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'player');
+        // Idle facing right
+        this.anims.create({
+            key: 'idle_right',
+            frames: this.anims.generateFrameNumbers('playerIdle', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        // Idle facing forward
+        this.anims.create({
+            key: 'idle_forward',
+            frames: this.anims.generateFrameNumbers('playerIdle', { start: 6, end: 11 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        // Idle facing left
+        this.anims.create({
+            key: 'idle_left',
+            frames: this.anims.generateFrameNumbers('playerIdle', { start: 12, end: 17 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        // Idle facing backward
+        this.anims.create({
+            key: 'idle_backward',
+            frames: this.anims.generateFrameNumbers('playerIdle', { start: 18, end: 23 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'run_right',
+            frames: this.anims.generateFrameNumbers('playerRun', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
+    
+        // Running facing forward
+        this.anims.create({
+            key: 'run_backward',
+            frames: this.anims.generateFrameNumbers('playerRun', { start: 6, end: 11 }),
+            frameRate: 10,
+            repeat: -1
+        });
+    
+        // Running facing left
+        this.anims.create({
+            key: 'run_left',
+            frames: this.anims.generateFrameNumbers('playerRun', { start: 12, end: 17 }),
+            frameRate: 10,
+            repeat: -1
+        });
+    
+        // Running facing backward
+        this.anims.create({
+            key: 'run_forward',
+            frames: this.anims.generateFrameNumbers('playerRun', { start: 18, end: 23 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'playerIdle');
+        this.player.setScale(2);
+
+        // Set the initial animation to "idle_forward" to start facing front
+        this.player.play('idle_forward');
+
+        // Update loop for handling key input
+        this.input.keyboard.on('keydown', (event) => {
+            if (this.keys.d.isDown) {
+                this.player.play('run_right', true);
+                this.player.setVelocityX(200);
+            } else if (this.keys.a.isDown) {
+                this.player.play('run_left', true);
+                this.player.setVelocityX(-200);
+            } else if (this.keys.w.isDown) {
+                this.player.play('run_backward', true);
+                this.player.setVelocityY(-200);
+            } else if (this.keys.s.isDown) {
+                this.player.play('run_forward', true);
+                this.player.setVelocityY(200);
+            }
+        });
+
+        // Handle stopping and idle animation when keys are released
+        this.input.keyboard.on('keyup', (event) => {
+            this.player.setVelocity(0);
+
+            if (!this.keys.d.isDown && event.code === 'KeyD') {
+                this.player.play('idle_right');
+            } else if (!this.keys.a.isDown && event.code === 'KeyA') {
+                this.player.play('idle_left');
+            } else if (!this.keys.s.isDown && event.code === 'KeyS') {
+                this.player.play('idle_backward');
+            } else if (!this.keys.w.isDown && event.code === 'KeyW') {
+                this.player.play('idle_forward');
+            }
+        });
+
         // Initialize the flag to allow movement
         this.canMove = true;
         this.tables = this.physics.add.staticGroup();
@@ -66,10 +175,6 @@ export class GameScene extends Phaser.Scene {
         this.add.text(teacherTable.x, teacherTable.y, "Teacher's Table", { fontSize: '16px', color: '#000' }).setOrigin(0.5);
 
         const padding = this.scale.width / 30 ; // Padding from the screen edges
-        console.log('width')
-        console.log(this.scale.width)
-        console.log('height')
-        console.log(this.scale.height)
         const xLeft = padding;
         const yBottom = this.scale.height - padding;
 
@@ -102,10 +207,6 @@ export class GameScene extends Phaser.Scene {
             padding: { x: 10, y: 5 }
         }).setOrigin(0);
 
-        // Use a percentage of the canvas size for table dimensions
-        // const tableWidth = this.scale.width * 0.3;  
-        // const tableHeight = this.scale.height * 0.05; 
-
         const positions = [
             { x: this.scale.width * 0.25, y: this.scale.height * 0.35 },
             { x: this.scale.width * 0.75, y: this.scale.height * 0.35},
@@ -121,7 +222,7 @@ export class GameScene extends Phaser.Scene {
             console.log(tableName)
             const { x, y } = positions[index];
 
-            let table = this.tables.create(x, y, 'table').setScale(1).refreshBody();
+            let table = this.tables.create(x, y, 'table').setScale(1.75).refreshBody();
             console.log(table);
             table.body.setSize(table.displayWidth, table.displayHeight);
             table.name = tableName
@@ -129,8 +230,6 @@ export class GameScene extends Phaser.Scene {
             // i ++
         });
 
-        // console.log('this tables')
-        // console.log(this.tables)
         let groupLength = this.tables.getLength();
         console.log('Number of items in the group:', groupLength);
 

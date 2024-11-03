@@ -24,6 +24,8 @@ export class QA extends Phaser.Scene {
         this.load.image('pouringStream', 'assets/images/pouringBottle.png');
         this.load.image('clipboard','/assets/images/clipboard.png');
         this.load.image('button', 'assets/images/button.png');
+        this.load.image('catMascot', 'assets/images/catMascot.png');
+
 
 
 
@@ -51,14 +53,7 @@ export class QA extends Phaser.Scene {
     }
 
     initializeGameElements(){
-        // Background setup
-
-
-
-    
-   
-
-        const exitButton = this.add.sprite(this.scale.width * 0.9, this.scale.height * 0.05, 'exitButton')
+        const exitButton = this.add.sprite(this.scale.width * 0.95, this.scale.height * 0.05, 'exitButton')
             .setInteractive()
             .setScale(0.1)
             .on('pointerdown', () => {
@@ -275,13 +270,13 @@ export class QA extends Phaser.Scene {
         // Add a background box for the instructions
         const instructionBox = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
             .setOrigin(0.5)
-            .setScale(0.75,0.5);
+            .setScale(1.5, 0.8);
 
     
         // Add instruction text
         const instructionText = this.add.text(this.cameras.main.centerX,
             this.cameras.main.centerY - instructionBox.displayHeight / 4, 
-            'Welcome to Lab Skills Training [QA]!\n\nHow to Play:\n1. Drag and drop NaOH and NH3 bottles \nonto test tubes.\n2. Observe the reactions and note the \nprecipitate formed.\n3. Use the reset button to clear a \ntest tube.\n\nPress the Start button when ready!', 
+            "Welcome to Lab Skills Training [QA]!\n\nI am Felix Chemicus, and here's how to play my game:\n1. Drag and drop NaOH and NH3 bottles \nonto test tubes.\n2. Observe the reactions and note the \nprecipitate formed.\n3. Use the reset button to clear a \ntest tube.\n\nPress the Start button when ready!", 
             {
                 fontSize: `${this.scale.width * 0.018}px`,
                 color: '#000',
@@ -291,8 +286,8 @@ export class QA extends Phaser.Scene {
         ).setOrigin(0.5, 0);
 
     
-        let buttonScale = 0.15;
-        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 25;
+        let buttonScale = 0.25;
+        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 60;
         // Add start button image
         const startButtonImage = this.add.image(this.cameras.main.centerX, buttonY, 'button')
         .setInteractive()
@@ -317,6 +312,7 @@ export class QA extends Phaser.Scene {
         startButtonImage.on('pointerdown', () => {
             overlay.destroy(); // Remove the overlay
             instructionBox.destroy(); // Remove the instruction box
+            mascot.destroy();
             instructionText.destroy(); // Remove the instruction text
             startButtonImage.destroy(); // Remove the start button image
             startButtonText.destroy(); // Remove the start button text
@@ -325,6 +321,11 @@ export class QA extends Phaser.Scene {
             // Call the function to initialize game elements
             this.initializeGameElements();
         });
+
+        const mascot = this.add.image(this.scale.width * 0.85, this.scale.height * 0.7, 'catMascot')
+        .setOrigin(0.5)
+        .setDepth(1)
+        .setScale(1);  
         
     }
     

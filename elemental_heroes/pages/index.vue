@@ -37,9 +37,14 @@
               <div
                 class="card-img-overlay d-flex flex-column justify-content-end"
               >
-                <h3 class="card-title">{{ game.title }}</h3>
+                <h3 class="card-title">{{ game.title }}<span v-if="!isGamePlayable(game.id)" class="ms-2">[Coming Soon]</span></h3>
                 <p class="card-text">{{ game.description }}</p>
+                <!-- <button type="button" class="btn btn-primary"   :disabled="!isGamePlayable(game.id)"
+                >Play</button> -->
+                <router-link v-if="isGamePlayable(game.id)" to="/gamelist">
                 <button type="button" class="btn btn-primary">Play</button>
+                </router-link>
+                <button v-else type="button" class="btn btn-primary" disabled>Play</button>
               </div>
             </div>
           </div>
@@ -64,6 +69,22 @@
           <span class="visually-hidden">Next</span>
         </button>
       </div>
+
+    </div>
+
+    <div class="leaderboard mt-4">
+      <h3 class="text-center">Leaderboard</h3>
+      <ul class="list-group">
+        <li
+          v-for="(profile, index) in leaderboard"
+          :key="profile.id"
+          class="list-group-item d-flex justify-content-between align-items-center"
+        >
+          <span>{{ index + 1 }}. {{ profile.first_name }} {{ profile.last_name }}</span>
+          <span class="badge bg-primary rounded-pill">{{ profile.score }}</span>
+          <span class="badge bg-primary rounded-pill">{{ profile.games_played }}</span>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -127,12 +148,24 @@
 .btn {
   background-color: #8b6ef3;
   width: 20%;
+  white-space: nowrap; /* Prevents text from wrapping */
+
 }
 
 /* Add styles for skeleton container */
 .skeleton-container {
   width: 100%;
   margin: 0 auto;
+}
+
+.leaderboard {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.list-group-item {
+  background-color: #f9f9f9;
 }
 </style>
 
@@ -149,6 +182,7 @@ const supabase = createClient(
 );
 const games = ref([]);
 const isLoading = ref(true);
+const leaderboard = ref([]); // Initialize leaderboard as a ref
 
 async function fetchGames() {
   try {
@@ -160,6 +194,8 @@ async function fetchGames() {
       .from("games")
       .select("id, title, description, thumbnail_url");
 
+      console.log(data)
+
     if (error) throw error;
 
     games.value = data;
@@ -169,6 +205,28 @@ async function fetchGames() {
   } finally {
     isLoading.value = false;
   }
+}
+
+async function fetchLeaderboard() {
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name, score, games_played")
+      .order("score", { ascending: false });
+      console.log(data)
+
+    if (error) throw error;
+
+    leaderboard.value = data;
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error.message);
+  }
+}
+
+const playableGameId = ref(1); // Assuming game with ID 1 is the only playable one
+
+function isGamePlayable(gameId) {
+  return gameId === playableGameId.value;
 }
 
 async function fetchThumbnail(game) {
@@ -183,5 +241,6 @@ async function fetchThumbnail(game) {
 
 onMounted(() => {
   fetchGames();
+  fetchLeaderboard();
 });
 </script>
