@@ -1,3 +1,4 @@
+<!-- pages/flashcard.vue -->
 <template>
   <div class="container">
     <header>
@@ -69,6 +70,8 @@
     <CompletionPopup 
       :show="showCompletionPopup"
       :onGenerateMore="handleGenerateMore"
+      :mode="mode"
+      @restart="handleRestart"
     />
   </div>
 </template>
@@ -88,8 +91,8 @@ const supabase = createClient(
 );
 const route = useRoute();
 const fileName = ref(route.query.name || "Untitled");
-const fileId = ref(route.query.fileId || "");
 const isGenerating = ref(route.query.generating === "true");
+const mode = ref(route.query.mode || "generate");
 
 const flashcards = ref([]);
 const currentCardIndex = ref(0);
@@ -103,58 +106,81 @@ const showCompletionPopup = ref(false);
 const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
 
 async function retrieveExistingFlashcards() {
-  // Define the path to the flashcards folder
-  const flashcardPath = "flashcards/" + fileName.value;
-  console.log(`Retrieving flashcards from: ${flashcardPath}`);
+  try {
+    const flashcardPath = "flashcards/" + fileName.value;
+    console.log(`Retrieving flashcards from: ${flashcardPath}`);
 
-  // List all files under the specified folder
-  const { data: fileList, error } = await supabase.storage
-    .from("files_wad2")
-    .list(flashcardPath);
-
-  if (error) {
-    console.error("Error listing flashcard files:", error);
-    return;
-  }
-
-  if (!fileList || fileList.length === 0) {
-    console.log("No flashcards found.");
-    return;
-  }
-
-  // Array to hold promises for downloading and parsing each file
-  const downloadPromises = fileList.map(async (file) => {
-    // Download each flashcard file
-    const { data: fileData, error: downloadError } = await supabase.storage
+    // List all files under the specified folder
+    const { data: fileList, error } = await supabase.storage
       .from("files_wad2")
-      .download(`${flashcardPath}/${file.name}`);
+      .list(flashcardPath);
 
-    if (downloadError) {
-      console.error(`Error downloading ${file.name}:`, downloadError);
-      return [];
+    if (error) {
+      console.error("Error listing flashcard files:", error);
+      return;
     }
 
-    // Read the file data as text
-    const text = await fileData.text();
+    if (!fileList || fileList.length === 0) {
+      console.log("No flashcards found.");
+      flashcards.value = [];
+      return;
+    }
 
-    // Parse the JSON content
-    const flashcardsInFile = JSON.parse(text).flashcards;
+    // Array to hold promises for downloading and parsing each file
+    const downloadPromises = fileList.map(async (file) => {
+      try {
+        // Download each flashcard file
+        const { data: fileData, error: downloadError } = await supabase.storage
+          .from("files_wad2")
+          .download(`${flashcardPath}/${file.name}`);
 
-    // Return the array of flashcards from this file
-    return flashcardsInFile;
-  });
+        if (downloadError) {
+          console.error(`Error downloading ${file.name}:`, downloadError);
+          return [];
+        }
 
-  // Wait for all download and parse operations to complete
-  const flashcardsArrays = await Promise.all(downloadPromises);
+        // Read the file data as text
+        const text = await fileData.text();
 
-  // Combine all flashcards into one array
-  const combinedFlashcards = flashcardsArrays.flat();
+        try {
+          // Parse the JSON content
+          const parsedData = JSON.parse(text);
+          
+          // Validate the data structure
+          if (!parsedData.flashcards || !Array.isArray(parsedData.flashcards)) {
+            console.error(`Invalid flashcard data structure in ${file.name}`);
+            return [];
+          }
 
-  // Assign the combined flashcards to the reactive variable
-  flashcards.value = combinedFlashcards;
-  currentCardIndex.value = 0;
-  prepareCurrentCard();
-  console.log("Combined flashcards:", flashcards.value);
+          return parsedData.flashcards;
+        } catch (parseError) {
+          console.error(`Error parsing JSON from ${file.name}:`, parseError);
+          return [];
+        }
+      } catch (error) {
+        console.error(`Error processing file ${file.name}:`, error);
+        return [];
+      }
+    });
+
+    // Wait for all download and parse operations to complete
+    const flashcardsArrays = await Promise.all(downloadPromises);
+
+    // Combine all flashcards into one array
+    const combinedFlashcards = flashcardsArrays.flat();
+
+    // Assign the combined flashcards to the reactive variable
+    console.log("Retrieved flashcards:", combinedFlashcards);
+    flashcards.value = combinedFlashcards;
+
+    if (combinedFlashcards.length > 0) {
+      currentCardIndex.value = 0;
+      prepareCurrentCard();
+    }
+  } catch (error) {
+    console.error("Error in retrieveExistingFlashcards:", error);
+    flashcards.value = [];
+  }
 }
 
 const generateFlashcards = async () => {
@@ -205,6 +231,18 @@ const handleGenerateMore = async () => {
   } finally {
     isGenerating.value = false;
   }
+};
+
+const handleRestart = () => {
+  showCompletionPopup.value = false;
+  currentCardIndex.value = 0;
+  currentCardAnswered.value = false;
+  selectedAnswerIndex.value = null;
+  feedbackMessage.value = "";
+  
+  flashcards.value = shuffleArray([...flashcards.value]);
+  
+  prepareCurrentCard();
 };
 
 const prepareCurrentCard = () => {
@@ -317,11 +355,15 @@ const showNextCard = () => {
 //if flashcard.vue is loaded for existing flashcards
 
 onMounted(() => {
-  // if (fileId.value && isGenerating.value) {
-  //   generateFlashcards();
-  // }
-  generateFlashcards();
-  // retrieveExistingFlashcards();
+  console.log('Mounted with mode:', mode.value);
+  console.log('File name:', fileName.value);
+  if (mode.value === 'review'){
+    console.log('Initiating flashcard retrieval');
+    retrieveExistingFlashcards();
+  } else if (isGenerating.value){
+    console.log('Initiating flashcard generation');
+    generateFlashcards();
+  }
 });
 </script>
 

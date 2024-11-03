@@ -8,8 +8,19 @@
                 <button class="return-button" @click="handleReturn">
                     Return Home
                 </button>
-                <button class="generate-button" @click="onGenerateMore">
+                <button 
+                    v-if="mode === 'generate'" 
+                    class="generate-button" 
+                    @click="onGenerateMore"
+                >
                     Generate 5 More Cards
+                </button>
+                <button 
+                    v-else-if="mode === 'review'" 
+                    class="review-button" 
+                    @click="handleRestart"
+                >
+                    Review Again
                 </button>
             </div>
         </div>
@@ -28,12 +39,23 @@ defineProps({
     },
     onGenerateMore: {
         type: Function,
-        required: true
+        required: false
+    },
+    mode: {
+        type: String,
+        required: true,
+        validator: (value) => ['generate', 'review'].includes(value)
     }
 });
 
+const emit = defineEmits(['restart']);
+
 const handleReturn = () => {
     router.push('/');
+};
+
+const handleRestart = () => {
+    emit('restart');
 };
 </script>
 

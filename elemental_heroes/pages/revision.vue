@@ -86,7 +86,7 @@
       </div>
     </div>
 
-    <!-- Shared Flashcards Section -->
+    <!-- My Flashcards Section -->
     <div class="mb-5">
       <h2 class="section-title">My Flashcards</h2>
 
@@ -107,17 +107,17 @@
           >
             <div class="card custom-card position-relative card-container">
               <!-- Card content wrapped in NuxtLink -->
-              <!-- <NuxtLink
-                :to="{ path: '/flashcards', query: { folder: folder.name } }"
+              <NuxtLink
+                :to="{ path: '/flashcard', query: { name: folder.name, mode: 'review' } }"
                 style="text-decoration: none; color: inherit"
-              > -->
-              <div class="card-body">
-                <h5 class="card-title">{{ folder.name }}</h5>
-                <p class="card-text text-muted">
-                  {{ folder.totalCards }} cards
-                </p>
-              </div>
-              <!-- </NuxtLink> -->
+              >
+                <div class="card-body">
+                  <h5 class="card-title">{{ folder.name }}</h5>
+                  <p class="card-text text-muted">
+                    {{ folder.totalCards }} cards
+                  </p>
+                </div>
+              </NuxtLink>
 
               <!-- Delete button -->
               <button
@@ -156,7 +156,6 @@ import { useRuntimeConfig } from "#app";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import NoteFlashcardSkeleton from "~/components/NoteFlashcardSkeleton.vue";
-import FloatingChat from "@/components/FloatingChat.vue";
 
 const config = useRuntimeConfig();
 const router = useRouter();
