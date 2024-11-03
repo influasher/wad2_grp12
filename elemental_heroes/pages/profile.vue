@@ -5,8 +5,10 @@
 
   <div class="profile" v-if="profile">
     <div class="profile-left">
-      <div class="avatar">
-        <img :src="avatar_url" alt="" />
+      <div class="avatar-section">
+        <div class="avatar">
+          <img :src="avatar_url" alt="" />
+        </div>
       </div>
     </div>
 
@@ -52,11 +54,15 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { useRuntimeConfig } from '#app';
+import { ref } from 'vue';
+
 const config = useRuntimeConfig()
 const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey)
 const profile = ref(null)
 const avatar_url = ref(null)
 const background_url = ref(null)
+const isUploadingAvatar = ref(null)
+const isUploadingBackground = ref(null)
 
 async function getProfile() {
   //get profile, hardcoded to id=1 for now
@@ -66,34 +72,40 @@ async function getProfile() {
     console.error('Error fetching profile:', error.message);
   } else {
     profile.value = data;
-    // console.log(profile.value);
+    // console.log(profile.value.background_url)
+    // console.log(profile.value.background_url);
+    getBackground()
+    getAvatar()
   }
 
 }
 
 async function getAvatar() {
   const { data, error } = await supabase
-  .storage.from("files_wad2").getPublicUrl("avatars/john_doe.png")
+    .storage.from("files_wad2").getPublicUrl(profile.value.avatar_url)
   if (data) {
     // console.log(data)
     avatar_url.value = data.publicUrl
     // console.log(img_url.value)
   }
-  }
+}
 
 async function getBackground() {
+  console.log(profile.value.background_url)
+
+  // console.log(profile.value.background_url)
   const { data, error } = await supabase
-  .storage.from("files_wad2").getPublicUrl("background_images/john_doe_background.jpg")
+    .storage.from("files_wad2").getPublicUrl(profile.value.background_url)
   if (data) {
     console.log(data)
     background_url.value = data.publicUrl
     console.log(background_url.value)
   }
-  }
+}
 
 async function updateFirstName(firstName) {
   //hardcoded to id=1 for now
-  const { data, error } = await supabase.from("profiles").update({first_name: firstName}).eq("id", 1);
+  const { data, error } = await supabase.from("profiles").update({ first_name: firstName }).eq("id", 1);
 
   if (data) {
     console.log(data)
@@ -105,7 +117,7 @@ async function updateFirstName(firstName) {
 
 async function updateLastName(lastName) {
   //hardcoded to id=1 for now
-  const { data, error } = await supabase.from("profiles").update({last_name: lastName}).eq("id", 1);
+  const { data, error } = await supabase.from("profiles").update({ last_name: lastName }).eq("id", 1);
 
   if (data) {
     console.log(data)
@@ -117,7 +129,7 @@ async function updateLastName(lastName) {
 
 async function updateBio(bio) {
   //hardcoded to id=1 for now
-  const { data, error } = await supabase.from("profiles").update({bio: bio}).eq("id", 1);
+  const { data, error } = await supabase.from("profiles").update({ bio: bio }).eq("id", 1);
 
   if (data) {
     console.log(data)
@@ -127,19 +139,107 @@ async function updateBio(bio) {
   }
 }
 
-async function updateAvatar() {
-  const avatarFile = event.target.files[0]
+async function updateAvatar(event) {
+  const file = event.target.files[0]
+  console.log(file)
+  if (!file) return
 
-  //get url of 
-  const {data, error} = await supabase.storage.from("files_wad2").update()
+  // Show confirmation alert
+  if (!confirm('Are you sure you want to update your profile picture?')) {
+    return
+  }
+
+  isUploadingAvatar.value = true
+  try {
+    // Get file extension and create filename
+    const fileExt = file.name.split('.').pop().toLowerCase()
+    const fileName = `${file.name}.${fileExt}` // Keep the same filename to replace existing
+    console.log(fileName)
+
+    // Upload new file with upsert option
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('files_wad2')
+      .upload(`avatars/${fileName}`, file, {
+        upsert: true // This will replace the existing file
+      })
+
+    if (uploadError) throw uploadError
+
+    // Update profile with new avatar_url
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ avatar_url: `avatars/${fileName}` })
+      .eq('id', 1)
+
+    if (updateError) throw updateError
+
+    // Update local state
+    avatar_url.value = `avatars/${fileName}`
+
+    // Show success alert
+    alert('Profile picture updated successfully!')
+
+  } catch (error) {
+    console.error('Error updating avatar:', error.message)
+    alert('Failed to update profile picture. Please try again.')
+  } finally {
+    isUploadingAvatar.value = false
+    getAvatar()
+  }
 }
 
+async function updateBackgroundImage(event) {
+  const file = event.target.files[0]
+  console.log(file)
+  if (!file) return
+
+  // Show confirmation alert
+  if (!confirm('Are you sure you want to update your Background picture?')) {
+    return
+  }
+
+  isUploadingBackground.value = true
+  try {
+    // Get file extension and create filename
+    const fileExt = file.name.split('.').pop().toLowerCase()
+    const fileName = `${file.name}.${fileExt}` // Keep the same filename to replace existing
+    console.log(fileName)
+
+    // Upload new file with upsert option
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('files_wad2')
+      .upload(`background_images/${fileName}`, file, {
+        upsert: true // This will replace the existing file
+      })
+
+    if (uploadError) throw uploadError
+
+    // Update profile with new avatar_url
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ background_url: `background_images/${fileName}` })
+      .eq('id', 1)
+
+    if (updateError) throw updateError
+
+    // Update local state
+    avatar_url.value = `background_images/${fileName}`
+
+    // Show success alert
+    alert('Background updated successfully!')
+
+  } catch (error) {
+    console.error('Error updating background:', error.message)
+    alert('Failed to update profile picture. Please try again.')
+  } finally {
+    isUploadingBackground.value = false
+    getBackground()
+  }
+}
 
 
 onMounted(() => {
   getProfile()
-  getAvatar()
-  getBackground()
 })
 </script>
 
