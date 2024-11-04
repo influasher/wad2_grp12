@@ -17,7 +17,7 @@
           />
         </button>
       </div>
-      <a href="/" class="sidebarButton" :class="{ active: isActive('/') }">
+      <a href="/" class="sidebarButton">
         <div class="p-3">
           <img src="../assets/images/home-svgrepo-com.svg"
             width="35"
@@ -26,7 +26,7 @@
             >Home</span>
         </div>
       </a>
-      <a href="/gamelist" class="sidebarButton" :class="{ active: isActive('/gamelist') }">
+      <a href="/gamelist" class="sidebarButton">
         <div class="p-3">
           <img src="../assets/images/gamepad-joystick-svgrepo-com.svg"
             width="35"
@@ -35,7 +35,7 @@
             >Games</span>
         </div>
       </a>
-      <a href="/revision" class="sidebarButton" :class="{ active: isActive('/revision') }">
+      <a href="/revision" class="sidebarButton">
         <div class="p-3">
           <img src="../assets/images/books-svgrepo-com.svg" 
             width="35" />
@@ -44,7 +44,7 @@
           <!-- </button> -->
         </div>
       </a>
-      <a href="/profile" class="sidebarButton" :class="{ active: isActive('/profile') }">
+      <a href="/profile" class="sidebarButton">
         <div class="p-3">
           <img src="../assets/images/user-svgrepo-com.svg" 
             width="35" 
@@ -65,7 +65,7 @@
                 <img :src="friend.avatar" width="35"/>
                 <span
                   class="position-absolute bottom-0 end-0 p-1 border border-light rounded-circle"
-                  :class="friend.status === 'online' ? 'bg-success' : 'bg-danger'"
+                  :class="friend.status === 'online' ? 'bg-success' : 'bg-secondary'"
                   style="opacity: 1">
                 </span>
               </div>
@@ -77,7 +77,7 @@
     </nav>
 
     <!-- Main content wrapper - Takes remaining width -->
-    <div class="content-wrapper d-flex flex-column w-100 mt-4">
+    <div class="content-wrapper d-flex flex-column w-100">
       <!-- <Navbar expand="lg" background-color="body-tertiary">
         <Container type="fluid">
           <NavbarBrand>
@@ -150,11 +150,6 @@ const friends = ref([
   { name: 'Ryan', avatar: '../assets/images/account-avatar-profile-user-6-svgrepo-com.svg', status: 'offline' },
   { name: 'Daniel', avatar: '../assets/images/account-avatar-profile-user-3-svgrepo-com.svg', status: 'online' },
 ]);
-
-
-const route = useRoute();
-const isActive = (path) => route.path === path;
-
 
 
 
