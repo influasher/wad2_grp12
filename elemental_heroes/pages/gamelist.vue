@@ -118,7 +118,7 @@ const tags = ref([
 
 </script>
 
-<style>
+<style scoped>
 .game-page {
   padding: 10px;
 }
