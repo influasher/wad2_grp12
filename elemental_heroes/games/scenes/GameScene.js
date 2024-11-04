@@ -7,7 +7,7 @@ export class GameScene extends Phaser.Scene {
         this.checklists = {
             QA: ["NaOH (aq)", "NH3 (aq)", "Test Tube"],
             Titration: ["Thermometer", "Graduated \nCylinder"],
-            Electrochemistry: ["Scale", "Measuring \nSpoon"],
+            Organic: ["Scale", "Measuring \nSpoon"],
             Metals: ["Dropper", "Glass \nStirring \nRod"]
         };
         this.currentTable = null; // Track the current table for showing popup
@@ -214,7 +214,7 @@ export class GameScene extends Phaser.Scene {
             { x: this.scale.width * 0.75, y: this.scale.height * 0.65 }
         ];
         // Define table names
-        const tableNames = ["QA", "Titration", "Electrochemistry", "Metals"];
+        const tableNames = ["QA", "Titration", "Organic", "Metals"];
 
         // let i = 0;
 

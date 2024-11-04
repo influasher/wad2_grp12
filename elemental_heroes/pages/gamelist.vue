@@ -43,7 +43,7 @@
                     :class="tag.colorClass"
                   >
                     <i :class="tag.icon" class="me-2" :style="{ color: tag.color }"></i>
-                    <span>{{ tag.label }}</span>
+                    {{ tag.label }}
                   </button>
                 </div>
               </div>
@@ -150,6 +150,7 @@ const tags = ref([
   background-color: #f9f9f9;
   border-radius: 15px;
   height: 40px;
+  padding: 1px;
 }
 
 .badge {
