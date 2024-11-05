@@ -20,12 +20,12 @@ export class GameScene extends Phaser.Scene {
         // this.load.image('player', '/assets/images/ball_red_small.png');
         this.load.spritesheet('playerIdle', '/assets/images/playerIdle.png', {
             frameWidth: 16,  // Width of each frame
-            frameHeight: 32  // Height of each frame (assuming 16x16 for each individual frame)
+            frameHeight: 24  // Height of each frame (assuming 16x16 for each individual frame)
         });
         
         this.load.spritesheet('playerRun', '/assets/images/playerRun.png', {
             frameWidth: 16, // Set frame width as needed (adjust if different)
-            frameHeight: 32 // Set frame height as needed (adjust if different)
+            frameHeight: 24 // Set frame height as needed (adjust if different)
         });
 
         this.load.image('table', '/assets/images/table.png');
@@ -130,6 +130,11 @@ export class GameScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'playerIdle');
         this.player.setScale(2);
 
+        this.physics.world.setBounds(0, 0, this.scale.width, this.scale.height); // Set world bounds to screen size
+
+        this.player.setCollideWorldBounds(true); // Prevents the player from moving out of the screen
+
+
         // Set the initial animation to "idle_forward" to start facing front
         this.player.play('idle_forward');
 
@@ -225,7 +230,7 @@ export class GameScene extends Phaser.Scene {
             let table = this.tables.create(x, y, 'table').setScale(1.75).refreshBody();
             console.log(table);
             table.body.setSize(table.displayWidth, table.displayHeight);
-            table.name = tableName
+            table.name = tableName;
             this.add.text(x, y, tableName, { fontSize: `${this.scale.width * 0.02}px`, color: '#000' }).setOrigin(0.5);
             // i ++
         });
