@@ -72,9 +72,14 @@
 
     </div>
 
-    <div class="leaderboard mt-4">
+    <!-- <div class="leaderboard mt-4">
       <h3 class="text-center">Leaderboard</h3>
-      <ul class="list-group">
+       <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>User</span>
+          <span>Score</span>
+          <span>Games played</span>
+        </li>
         <li
           v-for="(profile, index) in leaderboard"
           :key="profile.id"
@@ -84,7 +89,53 @@
           <span class="badge bg-primary rounded-pill">{{ profile.score }}</span>
           <span class="badge bg-primary rounded-pill">{{ profile.games_played }}</span>
         </li>
-      </ul>
+      </ul> 
+      <canvas id="leaderboardChart"></canvas>
+
+    </div> -->
+
+    <div class="leaderboard-container">
+      <h3 class="leaderboard-title">Leaderboard</h3>
+      <!-- <div class="top-three">
+        <div v-for="(profile, index) in leaderboard.slice(0, 3)" :key="profile.id" class="leaderboard-card top-card" :class="getCardClass(index)">
+          <div class="rank-number">{{ index + 1 }}</div>
+          <div class="avatar">
+            <img :src="profile.avatar || '/default-avatar.png'" alt="User Avatar" />
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
+            <div class="user-score">{{ profile.score }} pts</div>
+          </div>
+        </div>
+      </div> -->
+      <div class="top-three">
+        <div v-for="(profile, index) in leaderboard.slice(0, 3)" 
+            :key="profile.id" 
+            class="leaderboard-card top-card" 
+            :class="getCardClass(index)"
+            :style="{ height: getBarHeight(index) }">
+          <div class="rank-number">{{ index + 1 }}</div>
+          <div class="avatar">
+            <img :src="profile.avatar || '/default-avatar.png'" alt="User Avatar" />
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
+            <div class="user-score">{{ profile.score }} pts</div>
+          </div>
+        </div>
+      </div>
+      <div class="regular-places">
+        <div v-for="(profile, index) in leaderboard.slice(3)" :key="profile.id" class="leaderboard-card">
+          <div class="rank-number">{{ index + 4 }}</div>
+          <div class="avatar">
+            <img :src="profile.avatar || '/default-avatar.png'" alt="User Avatar" />
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
+            <div class="user-score">{{ profile.score }} pts</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -166,7 +217,112 @@
 
 .list-group-item {
   background-color: #f9f9f9;
+  text-align: center;
 }
+
+/* #leaderboardChart {
+  width: 100% !important;
+  height: 400px !important;
+} */
+
+.leaderboard-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 15px;
+}
+
+.leaderboard-title {
+  /* display: flex; */
+  text-align: center;
+  font-size: 24px;
+  padding-bottom: 20px;
+  /* justify-content: center; */
+  margin: auto;
+  
+}
+
+.top-card {
+  width: 30%; /* Each top card takes 30% of the width */
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.top-three {
+  display: flex;
+  justify-content: space-around; /* Spread out the top three cards */
+  align-items: flex-end; /* Align cards based on their heights */
+  margin-bottom: 20px;
+}
+
+.first-place {
+  background-color: #ffd700; /* Gold */
+  order: 2; /* Position first place in the middle */
+}
+
+.second-place {
+  background-color: #c0c0c0; /* Silver */
+  order: 1; /* Position second place on the left */
+}
+
+.third-place {
+  background-color: #cd7f32; /* Bronze */
+  order: 3; /* Position third place on the right */
+}
+
+/* Add custom heights for visualization */
+.top-card {
+  flex: 1;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+.rank-number {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.avatar img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.user-info {
+  text-align: center;
+}
+
+.user-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.user-score {
+  font-size: 14px;
+  color: #666;
+}
+
+.regular-places .leaderboard-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
 </style>
 
 <script setup>
@@ -174,6 +330,11 @@ import { ref, onMounted } from "vue";
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
 import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
+import { Chart, registerables } from "chart.js";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+Chart.register(ChartDataLabels);
+Chart.register(...registerables);
 
 const config = useRuntimeConfig();
 const supabase = createClient(
@@ -183,6 +344,21 @@ const supabase = createClient(
 const games = ref([]);
 const isLoading = ref(true);
 const leaderboard = ref([]); // Initialize leaderboard as a ref
+
+
+function getBarHeight(index) {
+  switch (index) {
+    case 0:
+      return '280px'; // Highest for 1st place
+    case 1:
+      return '230px'; // Second highest for 2nd place
+    case 2:
+      return '200px'; // Lowest for 3rd place
+    default:
+      return '100px';
+  }
+}
+
 
 async function fetchGames() {
   try {
@@ -207,21 +383,131 @@ async function fetchGames() {
   }
 }
 
+
+// async function fetchLeaderboard() {
+//   try {
+//     const { data, error } = await supabase
+//       .from("profiles")
+//       .select("id, first_name, last_name, score, games_played")
+//       .order("score", { ascending: false });
+
+//     if (error) throw error;
+//     leaderboard.value = data;
+
+//     renderLeaderboardChart();
+//   } catch (error) {
+//     console.error("Error fetching leaderboard:", error.message);
+//   }
+// }
+
+
+// function renderLeaderboardChart() {
+//   const ctx = document.getElementById("leaderboardChart").getContext("2d");
+
+//   new Chart(ctx, {
+//     type: "bar",
+//     data: {
+//       labels: leaderboard.value.map(
+//         (profile) => `${profile.first_name} ${profile.last_name}`
+//       ),
+//       datasets: [
+//         {
+//           label: "Score",
+//           data: leaderboard.value.map((profile) => profile.score),
+//           backgroundColor: leaderboard.value.map((_, index) => {
+//             if (index < 3) {
+//               return 'rgba(89, 63, 255, 0.7)'; // Top 3: Green with 0.7 transparency
+//             } else if (index < 5) {
+//               return 'rgba(139, 110, 243, 0.7)'; // Next 2: Yellow with 0.7 transparency
+//             } else {
+//               return 'rgba(178, 169, 236, 0.7)'; // Rest: Red with 0.7 transparency
+//             }
+//           }),
+//           borderColor: leaderboard.value.map((_, index) => {
+//             return index === 1 ? 'rgba(42, 42, 43, 0.7)' : 'transparent'; // Add a black border to the user's bar, transparent for others
+//           }),
+//           borderWidth: leaderboard.value.map((_, index) => {
+//             return index === 1 ? 3 : 0; // Set border width for the user's bar
+//           }),
+//           borderRadius: 10, // Set this to round the corners of the bars
+//           borderSkipped: false, // Ensure rounding applies to all sides
+//         },
+//       ],
+//     },
+//     options: {
+//       indexAxis: "y", // Horizontal bar chart
+//       responsive: true,
+//       scales: {
+//         x: {
+//           display: false, // Hide the x-axis grid lines
+//         },
+//         y: {
+//           grid: {
+//             display: false, // Hide the y-axis grid lines
+//           },
+//           ticks: {
+//             autoSkip: false, // Ensure all labels are shown
+//           },
+//         },
+//       },
+//       plugins: {
+//         legend: {
+//           display: false,
+//         },
+//         datalabels: {
+//           display: true, // Enable data labels
+//           align: 'end',
+//           anchor: 'end',
+//           color: '#000', // Adjust color as needed
+//           font: {
+//             size: 12, // Adjust font size as needed
+//           },
+//         },
+//       },
+//     },
+//     plugins: [ChartDataLabels], // Include the ChartDataLabels plugin
+//   });
+// }
+
 async function fetchLeaderboard() {
   try {
     const { data, error } = await supabase
-      .from("profiles")
-      .select("id, first_name, last_name, score, games_played")
-      .order("score", { ascending: false });
-      console.log(data)
+      .from('profiles')
+      .select('id, first_name, last_name, score')
+      .order('score', { ascending: false });
 
     if (error) throw error;
 
-    leaderboard.value = data;
+    leaderboard.value = await Promise.all(
+      data.map(async (profile) => {
+        const avatarPath = `avatars/${profile.first_name.toLowerCase()}_${profile.last_name.toLowerCase()}.png`;
+        const { data: avatarData, error: avatarError } = await supabase
+          .storage
+          .from('files_wad2')
+          .getPublicUrl(avatarPath);
+
+        if (avatarError) {
+          console.error('Error fetching avatar:', avatarError.message);
+          profile.avatar = '/default-avatar.png'; // Fallback to a default image if there's an error
+        } else {
+          profile.avatar = avatarData.publicUrl || '/default-avatar.png';
+        }
+        return profile;
+      })
+    );
+
   } catch (error) {
-    console.error("Error fetching leaderboard:", error.message);
+    console.error('Error fetching leaderboard:', error.message);
   }
 }
+
+function getCardClass(index) {
+  if (index === 0) return 'first-place';
+  if (index === 1) return 'second-place';
+  if (index === 2) return 'third-place';
+  return 'regular-place';
+}
+
 
 const playableGameId = ref(1); // Assuming game with ID 1 is the only playable one
 
