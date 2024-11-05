@@ -1,12 +1,12 @@
 <template>
   <div class="wrapper d-flex">
     <!-- Sidebar - Fixed on the left -->
-    <nav id="sidebar" :class="{ notActive: isSidebarNotActive }">
+    <nav id="sidebar" :class="{ closed: isSidebarClosed }">
       <div
         class="sidebar-header d-flex align-items-center justify-content-between"
       >
         <a href="/" class="elementalHome">
-          <h3 class="px-4 press-start-2p-regular fs-6">Elemental Heroes</h3>
+          <h6 class="px-4 press-start-2p-regular">Elemental Heroes</h6>
         </a>
         <button id="sidebarCollapse" @click="toggleSidebar" class="p-4">
           <img
@@ -17,35 +17,68 @@
           />
         </button>
       </div>
-      <a href="/gamelist" class="sidebarButton">
-        <div class="mt-4 p-3">
-          <img src="../assets/images/gamepad-joystick-svgrepo-com.svg"
-            width="50"
+      <a href="/" class="sidebarButton">
+        <div class="p-3">
+          <img src="../assets/images/home-svgrepo-com.svg"
+            width="35"
           />
-          <span v-if="!isSidebarNotActive" class="ms-2 press-start-2p-regular"
-            >Games</span
-          >
+          <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
+            >Home</span>
+        </div>
+      </a>
+      <a href="/gamelist" class="sidebarButton">
+        <div class="p-3">
+          <img src="../assets/images/gamepad-joystick-svgrepo-com.svg"
+            width="35"
+          />
+          <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
+            >Games</span>
         </div>
       </a>
       <a href="/revision" class="sidebarButton">
         <div class="p-3">
-          <!-- <button type="button" class="btn btn-block"> -->
-
-          <img src="../assets/images/git2-svgrepo-com.svg" width="50" />
-          <span v-if="!isSidebarNotActive" class="ms-2 press-start-2p-regular"
-            >Revision</span
-          >
+          <img src="../assets/images/books-svgrepo-com.svg" 
+            width="35" />
+          <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
+            >Revision</span>
           <!-- </button> -->
         </div>
       </a>
-      <div class="mt-4">
+      <a href="/profile" class="sidebarButton">
+        <div class="p-3">
+          <img src="../assets/images/user-svgrepo-com.svg" 
+            width="35" 
+            />
+          <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
+            >Profile</span>
+        </div>
+      </a>
+      <hr class="mx-3">
+      <span v-if="!isSidebarClosed" class="ms-1 press-start-2p-regular ps-3" style="font-size:11px"
+            >Friends</span>
+      <span v-else style="opacity: 0; font-size:11px"> Friends</span>
+      <div id="friendsList" >
         <!--here we will render the friends dynamicaally-->
+        <div v-for="friend in friends" class="sidebarButton">
+            <div class="p-3">
+              <div class="position-relative">
+                <img :src="friend.avatar" width="35"/>
+                <span
+                  class="position-absolute bottom-0 end-0 p-1 border border-light rounded-circle"
+                  :class="friend.status === 'online' ? 'bg-success' : 'bg-secondary'"
+                  style="opacity: 1">
+                </span>
+              </div>
+              <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
+            >{{ friend.name }}</span>
+          </div>
+        </div>
       </div>
     </nav>
 
     <!-- Main content wrapper - Takes remaining width -->
     <div class="content-wrapper d-flex flex-column w-100">
-      <Navbar expand="lg" background-color="body-tertiary">
+      <!-- <Navbar expand="lg" background-color="body-tertiary">
         <Container type="fluid">
           <NavbarBrand>
             <img
@@ -56,10 +89,10 @@
               class="d-inline-block align-top"
             />
           </NavbarBrand>
-          <NavbarToggler />
+          <NavbarToggler /> -->
           <!-- <button id="sidebarCollapse" @click="toggleSidebar">Toggle Sidebar</button> -->
 
-          <NavbarCollapse>
+          <!-- <NavbarCollapse>
             <NavbarNavList margin="e-auto b-2 b-lg-0">
               <NavItem>
                 <NavLink active to="/">Home</NavLink>
@@ -86,7 +119,7 @@
             </BForm>
           </NavbarCollapse>
         </Container>
-      </Navbar>
+      </Navbar> -->
 
       <!-- Main content area -->
       <main class="flex-grow-1">
@@ -104,11 +137,21 @@
 <script setup>
 import { ref } from "vue";
 
-const isSidebarNotActive = ref(false);
+const isSidebarClosed = ref(false);
 
 function toggleSidebar() {
-  isSidebarNotActive.value = !isSidebarNotActive.value;
+  isSidebarClosed.value = !isSidebarClosed.value;
 }
+
+const friends = ref([
+  { name: 'Asher', avatar: '../assets/images/account-avatar-profile-user-12-svgrepo-com.svg', status: 'online' },
+  { name: 'Wesley', avatar: '../assets/images/account-avatar-profile-user-13-svgrepo-com.svg', status: 'offline' },
+  { name: 'Selina', avatar: '../assets/images/account-avatar-profile-user-4-svgrepo-com.svg', status: 'online' },
+  { name: 'Ryan', avatar: '../assets/images/account-avatar-profile-user-6-svgrepo-com.svg', status: 'offline' },
+  { name: 'Daniel', avatar: '../assets/images/account-avatar-profile-user-3-svgrepo-com.svg', status: 'online' },
+]);
+
+
 
 </script>
 
@@ -129,17 +172,22 @@ function toggleSidebar() {
 
 /* Sidebar styling */
 #sidebar {
-  min-width: 250px;
-  max-width: 250px;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-  transition: all 0.3s;
+  transition: min-width 0.3s ease, max-width 0.3s ease, padding 0.3s ease;
   background: #cecae7;
   color: #1e1e1e;
+}
 
+#sidebar.closed {
+  width: 70px;
+  text-align: center;
 }
 
 .elementalHome {
@@ -148,39 +196,7 @@ function toggleSidebar() {
   transition: ease 0.3s
 }
 
-.sidebarButton {
-  color: inherit;
-  text-decoration: none;
-  display: block;
-  width: 100%;
-  font-size: 12.5px;
-}
-
-.sidebarButton:hover {
-  background-color: #b2a9ec;
-  width: 100%;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Content wrapper styling */
-.content-wrapper {
-  margin-left: 250px;
-  transition: all 0.3s;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-#sidebar.notActive + .content-wrapper {
-  margin-left: 80px;
-}
-
-#sidebar.notActive {
-  min-width: 80px;
-  max-width: 80px;
-  text-align: center;
-}
-
+/* Div with Elemental Heroes */
 #sidebar .sidebar-header {
   display: flex;
   justify-content: space-between;
@@ -188,9 +204,10 @@ function toggleSidebar() {
   color: #1e1e1e;
   height: 72px;
   position: relative;
+  transition: padding 0.3s ease, opacity 0.3s ease;
 }
 
-#sidebar .sidebar-header h3 {
+#sidebar .sidebar-header h6 {
   position: absolute;
   top: 50%;
   /* Center vertically */
@@ -198,8 +215,24 @@ function toggleSidebar() {
   /* Fine-tune vertical position */
   margin: 0;
   padding-top: 10px;
-  transition-delay: 0.3s
+  opacity: 1;
+  transition: opacity 0.5s ease;
+
   /* Adjust this value to move the text down */
+}
+
+#sidebar.closed .sidebar-header {
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+#sidebar.closed .sidebar-header h6 {
+  display: none;
+  opacity: 0; /* Hide text in compact view */
+  transition: opacity 0.3s ease 0.1s; /* Delay to allow sidebar to resize first */
 }
 
 #sidebar .sidebar-header button#sidebarCollapse {
@@ -211,58 +244,94 @@ function toggleSidebar() {
   background: none;
 }
 
+
 /* Update the button styles for notActive state */
-#sidebar.notActive .sidebar-header button#sidebarCollapse {
+#sidebar.closed .sidebar-header button#sidebarCollapse {
   display: block;
   margin: 0 auto;
   left: 0;
 }
 
-#sidebar.notActive .sidebar-header {
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+/* Buttons such as home, game, revision */
+.sidebarButton {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  font-size: 12.5px;
+  transition: padding 0.3s ease, opacity 0.3s ease;
 }
 
-#sidebar.notActive .sidebar-header h3 {
+.sidebarButton:hover {
+  background-color: #b2a9ec;
+  width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebarButton.active {
+  background-color: #B3A8E7; /* Modify this color for the active state */
+}
+
+.sidebarButton > div {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  transition: padding 0.3s ease;
+}
+
+
+/* Smooth transition for showing/hiding the text */
+.sidebarButton span {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+#sidebar.closed .sidebarButton span {
+  opacity: 0; /* Hide text in compact view */
+  transition: opacity 0.3s ease 0.1s; /* Delay to allow sidebar to resize first */
+}
+
+/* Friends List */
+#friendsList{
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+#friendsList::-webkit-scrollbar {
+  width: 8px;
   display: none;
 }
 
-#sidebar.notActive .sidebar-header strong {
-  display: block;
+#friendsList:hover::-webkit-scrollbar {
+  display:block;
 }
 
-#sidebar ul li a {
-  text-align: left;
+#friendsList::-webkit-scrollbar-thumb {
+  background-color: #b2a9ec; /* Optional: customize scrollbar color */
+  border-radius: 4px;
 }
 
-#sidebar.notActive ul li a {
-  padding: 20px 10px;
-  text-align: center;
-  font-size: 0.85em;
+/* Content wrapper styling */
+.content-wrapper {
+  margin-left: 250px;
+  transition: all 0.3s;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-#sidebar.notActive ul li a i {
-  margin-right: 0;
-  display: block;
-  font-size: 1.8em;
-  margin-bottom: 5px;
+#sidebar.closed + .content-wrapper {
+  margin-left: 70px;
 }
 
-#sidebar.notActive ul ul a {
+
+#sidebar.closed ul ul a {
   padding: 10px !important;
 }
 
-#sidebar.notActive .dropdown-toggle::after {
-  top: auto;
-  bottom: 10px;
-  right: 50%;
-  transform: translateX(50%);
-}
 
-.navbar {
+/* .navbar {
   position: sticky;
   top: 0;
   z-index: 999;
@@ -276,7 +345,7 @@ function toggleSidebar() {
   height: 100%;
   display: flex;
   align-items: center;
-}
+} */
 
 main {
   min-height: calc(100vh - 142px); /* 72px header + 70px footer */
@@ -302,49 +371,39 @@ footer p {
 }
 
 @media (max-width: 768px) {
-  #sidebar {
-    margin-left: -250px;
-  }
-
-  #sidebar.notActive {
-    margin-left: 0;
-    min-width: 80px;
-    max-width: 80px;
-  }
-
   .content-wrapper {
-    margin-left: 0;
+    margin-left: 70px;
   }
 
-  #sidebar.notActive + .content-wrapper {
-    margin-left: 80px;
+  #sidebar.closed + .content-wrapper {
+    margin-left: 70px;
   }
 
-  #sidebar .sidebar-header strong {
+  /* #sidebar .sidebar-header strong {
+    display: none;
+  } */
+
+  #sidebar.closed .sidebar-header h6 {
     display: none;
   }
 
-  #sidebar.notActive .sidebar-header h3 {
-    display: none;
-  }
-
-  #sidebar.notActive .sidebar-header strong {
+  /* #sidebar.closed .sidebar-header strong {
     display: block;
   }
 
-  #sidebar.notActive ul li a {
+  #sidebar.closed ul li a {
     padding: 20px 10px;
     font-size: 0.85em;
   }
 
-  #sidebar.notActive ul li a i {
+  #sidebar.closed ul li a i {
     margin-right: 0;
     display: block;
     font-size: 1.8em;
     margin-bottom: 5px;
   }
 
-  #sidebar.notActive ul ul a {
+  #sidebar.closed ul ul a {
     padding: 10px !important;
   }
 
@@ -353,6 +412,6 @@ footer p {
     bottom: 10px;
     right: 50%;
     transform: translateX(50%);
-  }
+  } */
 }
 </style>
