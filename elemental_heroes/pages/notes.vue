@@ -32,13 +32,11 @@
     <div class="d-flex justify-content-center mb-4">
       <iframe
         v-if="noteUrl"
-        class="d2l-fileviewer-rendered-pdf"
+        class="pdf-viewer"
         scrolling="no"
         seamless="seamless"
         :src="noteUrl"
-        style="width: 80%; height: 651px"
-      >
-      </iframe>
+      ></iframe>
     </div>
     <FloatingChat :fileId="noteName" />
   </div>
@@ -77,13 +75,20 @@ async function handleDelete() {
       return;
     }
 
-    // Delete the file from storage
-    const { error } = await supabase.storage
+    // Delete the PDF file
+    const { error: deletePDFError } = await supabase.storage
       .from("files_wad2")
       .remove([`user_pdfs/${noteName}.pdf`]);
 
-    if (error) {
-      throw error;
+    // Delete PDF Preview file
+    const { error: deletePreviewError } = await supabase.storage
+      .from("files_wad2")
+      .remove([`previews/${noteName}.png`]);
+
+    if (deletePDFError) throw deletePDFError;
+
+    if (deletePreviewError) {
+      throw deletePreviewError;
     }
 
     // If deletion is successful, navigate back to the previous page or home
@@ -133,5 +138,18 @@ onMounted(() => {
 
 .delete-btn:hover svg {
   transform: scale(1.2);
+}
+
+.pdf-viewer {
+  width: 80%;
+  height: 100vh; /* Sets height to 70% of the viewport height */
+  border: none;
+}
+
+@media (max-width: 768px) {
+  .pdf-viewer {
+    width: 100%;
+    height: 100vh;
+  }
 }
 </style>

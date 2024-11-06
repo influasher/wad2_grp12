@@ -8,9 +8,9 @@
     <main>
       <!-- Loading Screen -->
       <div v-if="isGenerating" class="loading-content">
-          <h2>Generating Flashcards</h2>
-          <p>Get ready to revise!</p>
-          <div class="spinner"></div>
+        <h2>Generating Flashcards</h2>
+        <p>Get ready to revise!</p>
+        <div class="spinner"></div>
       </div>
 
       <!-- Flashcard Content -->
@@ -66,8 +66,8 @@
         <div v-else class="info-message">No flashcards available.</div>
       </div>
     </main>
-    <FloatingChat :file-id="fileName"/>
-    <CompletionPopup 
+    <FloatingChat :file-id="fileName" />
+    <CompletionPopup
       :show="showCompletionPopup"
       :onGenerateMore="handleGenerateMore"
       :mode="mode"
@@ -80,8 +80,8 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
-import FloatingChat from '@/components/FloatingChat.vue';
-import CompletionPopup from '@/components/CompletionPopup.vue';
+import FloatingChat from "@/components/FloatingChat.vue";
+import CompletionPopup from "@/components/CompletionPopup.vue";
 import { createClient } from "@supabase/supabase-js";
 
 const config = useRuntimeConfig();
@@ -145,7 +145,7 @@ async function retrieveExistingFlashcards() {
         try {
           // Parse the JSON content
           const parsedData = JSON.parse(text);
-          
+
           // Validate the data structure
           if (!parsedData.flashcards || !Array.isArray(parsedData.flashcards)) {
             console.error(`Invalid flashcard data structure in ${file.name}`);
@@ -216,7 +216,7 @@ const handleGenerateMore = async () => {
       "http://127.0.0.1:5000/api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
-        count: 5
+        count: 5,
       }
     );
 
@@ -239,9 +239,9 @@ const handleRestart = () => {
   currentCardAnswered.value = false;
   selectedAnswerIndex.value = null;
   feedbackMessage.value = "";
-  
+
   flashcards.value = shuffleArray([...flashcards.value]);
-  
+
   prepareCurrentCard();
 };
 
@@ -277,7 +277,9 @@ const handleAnswerChoice = async (index) => {
     currentCardAnswered.value = true;
     feedbackMessage.value = `
       <p class="correct">Correct! Well done!</p>
-      <p class="correct">${currentCard.value.quote || ""}<br/>Page ${currentCard.value.page}</p>
+      <p class="correct">${currentCard.value.quote || ""}<br/>Page ${
+      currentCard.value.page
+    }</p>
     `;
 
     if (currentCardIndex.value === flashcards.value.length - 1) {
@@ -355,13 +357,13 @@ const showNextCard = () => {
 //if flashcard.vue is loaded for existing flashcards
 
 onMounted(() => {
-  console.log('Mounted with mode:', mode.value);
-  console.log('File name:', fileName.value);
-  if (mode.value === 'review'){
-    console.log('Initiating flashcard retrieval');
+  console.log("Mounted with mode:", mode.value);
+  console.log("File name:", fileName.value);
+  if (mode.value === "review") {
+    console.log("Initiating flashcard retrieval");
     retrieveExistingFlashcards();
-  } else if (isGenerating.value){
-    console.log('Initiating flashcard generation');
+  } else if (isGenerating.value) {
+    console.log("Initiating flashcard generation");
     generateFlashcards();
   }
 });
@@ -369,12 +371,12 @@ onMounted(() => {
 
 <style scoped>
 * {
-    --primary-color: #CECAE7;
-    --secondary-color: #B2A9EC;
-    --button-color: #7662F2;
-    --button-hover: #593FFF;
-    --text-color: #333;
-    --border-radius: 12px;
+  --primary-color: #cecae7;
+  --secondary-color: #b2a9ec;
+  --button-color: #7662f2;
+  --button-hover: #593fff;
+  --text-color: #333;
+  --border-radius: 12px;
 }
 
 .container {

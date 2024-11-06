@@ -3,7 +3,7 @@
     <div class="row mb-3 justify-content-center">
       <div class="col-12 d-flex flex-wrap justify-content-center">
         <div v-for="(tag, index) in tags" :key="index" class="mb-2 me-2">
-          <button 
+          <button
             class="btn rounded-pill my-1"
             :class="`${tag.colorClass} text-white`"
           >
@@ -15,10 +15,15 @@
 
     <div class="row justify-content-center">
       <!-- Game container: Full width on small screens, 10 columns on large screens -->
-      <div id="game-container" class="screen col-12 col-xl-9 d-none d-lg-block">
-      </div>
+      <div
+        id="game-container"
+        class="screen col-12 col-xl-9 d-none d-lg-block"
+      ></div>
 
-      <div v-if="loading" class="col-12 d-flex justify-content-center loading-card">
+      <div
+        v-if="loading"
+        class="col-12 d-flex justify-content-center loading-card"
+      >
         <CarouselSkeleton />
       </div>
 
@@ -26,7 +31,9 @@
       <div class="col-12 d-flex justify-content-center d-lg-none">
         <div class="card not-playable-card">
           <div class="card-body">
-            <h3 class="card-title text-center">Play the game on a laptop for optimal experience</h3>
+            <h3 class="card-title text-center">
+              Play the game on a laptop for optimal experience
+            </h3>
           </div>
         </div>
       </div>
@@ -53,7 +60,6 @@
     </div>
   </div>
 </template>
-
 
 <script lang="js" setup>
 import { createClient } from '@supabase/supabase-js'
@@ -113,9 +119,6 @@ const tags = ref([
   { label: 'Periodic Table', colorClass: 'bg-secondary bg-gradient' },
   { label: 'Chemistry', colorClass: 'bg-primary bg-gradient' },
 ]);
-
-
-
 </script>
 
 <style scoped>
@@ -123,14 +126,14 @@ const tags = ref([
   padding: 10px;
 }
 
-#game-container{
-            width: 60vw;               /* Set the fixed width of the game */
-            height: auto;              /* Set the fixed height of the game */
-            padding: 10px;              /* Add padding inside the container */
-            display: flex;
-            justify-content: center;    /* Center the game inside the container */
-            align-items: center;        /* Center the game vertically inside */
-        }
+#game-container {
+  width: 60vw; /* Set the fixed width of the game */
+  height: auto; /* Set the fixed height of the game */
+  padding: 10px; /* Add padding inside the container */
+  display: flex;
+  justify-content: center; /* Center the game inside the container */
+  align-items: center; /* Center the game vertically inside */
+}
 
 #subjects {
   margin-top: 10px;
@@ -139,7 +142,7 @@ const tags = ref([
 
 .custom-card {
   width: 100%;
-  border: 1px solid #1e1e1e
+  border: 1px solid #1e1e1e;
 }
 
 .custom-card:hover {
@@ -158,7 +161,7 @@ const tags = ref([
   font-weight: light;
   margin: 5px;
   border-radius: 10px;
-  width: 40%
+  width: 40%;
 }
 
 .loading-card {
@@ -166,10 +169,9 @@ const tags = ref([
   height: 500px;
   text-align: center;
   border: 1px solid #e4e3e3;
-
 }
 
-.card-body{
+.card-body {
   display: flex;
   justify-content: center;
   align-items: center;

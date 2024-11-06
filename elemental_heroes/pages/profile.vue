@@ -1,51 +1,97 @@
 <template>
   <div class="background-img">
-    <img :src="background_url" alt="Background Image" />
+    <img :src="background_url" alt="" />
     <div class="edit-background-icon" @click="triggerBackgroundInput">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M12 20h9" />
         <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
       </svg>
     </div>
-    <input type="file" accept="image/*" @change="updateBackgroundImage" ref="backgroundInput" class="file-input" />
+    <input
+      type="file"
+      accept="image/*"
+      @change="updateBackgroundImage"
+      ref="backgroundInput"
+      class="file-input"
+    />
   </div>
 
   <div class="profile" v-if="profile">
     <div class="profile-left">
       <div class="avatar-section">
         <div class="avatar">
-          <img :src="avatar_url" alt="Profile Avatar" />
+          <img :src="avatar_url" alt="" />
           <div class="edit-icon" @click="triggerFileInput">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+              <path
+                d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
+              />
             </svg>
           </div>
         </div>
-        <input type="file" accept="image/*" @change="updateAvatar" ref="fileInput" class="file-input" />
+        <input
+          type="file"
+          accept="image/*"
+          @change="updateAvatar"
+          ref="fileInput"
+          class="file-input"
+        />
       </div>
     </div>
 
     <div class="profile-right">
       <div class="name">
         <template v-if="isEditing">
-          <input v-model="editableFirstName" class="name-input" placeholder="First Name" />
-          <input v-model="editableLastName" class="name-input" placeholder="Last Name" />
+          <input
+            v-model="editableFirstName"
+            class="name-input"
+            placeholder="First Name"
+          />
+          <input
+            v-model="editableLastName"
+            class="name-input"
+            placeholder="Last Name"
+          />
         </template>
         <template v-else>
           <h1>{{ profile.first_name }} {{ profile.last_name }}</h1>
         </template>
       </div>
 
-    <div class="stats">
-      <span>{{ profile.games_played }} games</span>
-      <span>•</span>
-      <span>MMR: {{ profile.score }}</span>
-    </div>
+      <div class="stats">
+        <span>{{ profile.games_played }} games</span>
+        <span>•</span>
+        <span>MMR: {{ profile.score }}</span>
+      </div>
 
-    <div class="bio">
+      <div class="bio">
         <template v-if="isEditing">
-          <textarea v-model="editableBio" class="bio-input" placeholder="Your bio"></textarea>
+          <textarea
+            v-model="editableBio"
+            class="bio-input"
+            placeholder="Your bio"
+          ></textarea>
         </template>
         <template v-else>
           <p>{{ profile.bio }}</p>
@@ -54,7 +100,9 @@
     </div>
 
     <div class="action-buttons">
-      <button v-if="!isEditing" @click="startEdit" class="edit-profile-btn">Edit Profile</button>
+      <button v-if="!isEditing" @click="startEdit" class="edit-profile-btn">
+        Edit Profile
+      </button>
       <div v-if="isEditing" class="edit-actions">
         <button @click="saveChanges" class="save-btn">Save</button>
         <button @click="cancelEdit" class="cancel-btn">Cancel</button>
@@ -62,8 +110,6 @@
     </div>
   </div>
 </template>
-
-
 
 <script lang="js" setup>
 
@@ -80,7 +126,7 @@ const isUploadingAvatar = ref(null)
 const isUploadingBackground = ref(null)
 
 const fileInput = ref(null);
-const backgroundInput = ref(null); 
+const backgroundInput = ref(null);
 
 // State for editing name
 const isEditing = ref(false);
@@ -283,27 +329,30 @@ onMounted(() => {
 <style>
 .background-img {
   width: 100%;
-  max-height: 600px;
+  max-height: 50vh; /* Adjust height based on viewport */
   display: inline-block;
   position: relative;
   overflow: hidden;
+}
 
-  img {
-    width: 100%;
-  }
+.background-img img {
+  width: 100%;
+  height: auto; /* Ensures aspect ratio is maintained */
 }
 
 .profile {
   position: relative;
-  top: -180px;
+  top: -10vh; /* Adjust negative margin for smaller screens */
   margin: 0 auto;
-  width: 80%;
+  width: 90%; /* Adjusted to scale on smaller screens */
+  max-width: 800px; /* Constrain max width for readability */
   background: white;
-  padding: 40px 40px;
+  padding: 20px; /* Reduced padding for better scaling */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   display: flex;
-  gap: 40px;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .profile-left {
@@ -318,39 +367,51 @@ onMounted(() => {
   padding: 20px 0;
 }
 
-.edit-profile-btn, .save-btn, .cancel-btn {
+.profile-left,
+.profile-right {
+  width: 100%;
+}
+
+.edit-profile-btn,
+.save-btn,
+.cancel-btn {
   background-color: #8b6ef3;
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 4px 12px; /* Smaller padding for a compact look */
-  font-size: 13px; /* Smaller font size */
-  font-weight: 500;
+  padding: 6px 12px;
+  font-size: 1em;
   cursor: pointer;
   transition: background-color 0.2s;
-  align-self: flex-start; /* Prevents buttons from expanding in the container */
-  max-width: 120px; /* Optional max-width to control button size */
-  width: auto;
+  margin: 0 auto;
+  width: fit-content;
 }
 
-.edit-profile-btn:hover, .save-btn:hover, .cancel-btn:hover {
+.edit-profile-btn:hover,
+.save-btn:hover,
+.cancel-btn:hover {
   background-color: #b2a9ec;
 }
 
 .edit-actions {
   display: flex;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
 }
 
 .avatar {
-  width: 200px;
-  height: 200px;
+  width: 30vw;
+  height: 30vw;
+  max-width: 150px; /* Constrain max size */
+  max-height: 150px;
   overflow: hidden;
   border: 2px solid #8b6ef3;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
+  position: relative; /* Set relative positioning here */
 }
 
 .avatar img {
@@ -377,7 +438,6 @@ onMounted(() => {
   border: 1px solid #ccc;
 }
 
-
 .save-btn {
   background-color: #4caf50;
   color: white;
@@ -388,7 +448,8 @@ onMounted(() => {
   color: white;
 }
 
-.name-input, .bio-input {
+.name-input,
+.bio-input {
   width: 100%;
   font-size: 18px;
   padding: 8px;
@@ -402,24 +463,25 @@ onMounted(() => {
 }
 
 .name h1 {
-  font-size: 32px;
+  font-size: calc(1.5em + 1vw); /* Responsive font size */
   font-weight: 600;
-  margin: 0;
-  margin-bottom: 8px;
+  text-align: center;
 }
 
 .stats {
   color: #666;
-  font-size: 16px;
+  font-size: 0.9em;
   display: flex;
   gap: 8px;
   align-items: center;
+  justify-content: center;
 }
 
 .bio {
-  font-size: 16px;
+  font-size: 1em;
   line-height: 1.5;
   color: #333;
+  text-align: center;
 }
 
 .score {
@@ -440,8 +502,9 @@ onMounted(() => {
 
 .edit-icon {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 5px; /* Positions icon at the bottom */
+  left: 50%; /* Centers the icon horizontally */
+  transform: translateX(-50%); /* Adjusts position to truly center it */
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
   width: 30px;
@@ -451,6 +514,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .edit-icon:hover {
@@ -516,7 +580,6 @@ onMounted(() => {
   display: none;
 }
 
-
 /* Optional: Add hover effect on stats */
 .stats span:not(:nth-child(2)) {
   cursor: pointer;
@@ -579,5 +642,28 @@ onMounted(() => {
 
 .friend-btn:active {
   transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .profile {
+    padding: 10px;
+    width: 95%;
+  }
+
+  .name h1 {
+    font-size: 1.5em; /* Reduced font size on smaller screens */
+  }
+
+  .bio,
+  .stats {
+    font-size: 0.9em;
+  }
+
+  .edit-profile-btn,
+  .save-btn,
+  .cancel-btn {
+    padding: 4px 8px;
+    font-size: 0.9em;
+  }
 }
 </style>

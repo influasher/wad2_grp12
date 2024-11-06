@@ -37,14 +37,21 @@
               <div
                 class="card-img-overlay d-flex flex-column justify-content-end"
               >
-                <h3 class="card-title">{{ game.title }}<span v-if="!isGamePlayable(game.id)" class="ms-2">[Coming Soon]</span></h3>
+                <h3 class="card-title">
+                  {{ game.title
+                  }}<span v-if="!isGamePlayable(game.id)" class="ms-2"
+                    >[Coming Soon]</span
+                  >
+                </h3>
                 <p class="card-text">{{ game.description }}</p>
                 <!-- <button type="button" class="btn btn-primary"   :disabled="!isGamePlayable(game.id)"
                 >Play</button> -->
                 <router-link v-if="isGamePlayable(game.id)" to="/gamelist">
-                <button type="button" class="btn btn-primary">Play</button>
+                  <button type="button" class="btn btn-primary">Play</button>
                 </router-link>
-                <button v-else type="button" class="btn btn-primary" disabled>Play</button>
+                <button v-else type="button" class="btn btn-primary" disabled>
+                  Play
+                </button>
               </div>
             </div>
           </div>
@@ -69,7 +76,6 @@
           <span class="visually-hidden">Next</span>
         </button>
       </div>
-
     </div>
 
 
@@ -90,7 +96,9 @@
             <img :src="profile.avatar || '/assets/images/coolAvatar.png'"  />
           </div>
           <div class="user-info">
-            <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
+            <div class="user-name">
+              {{ profile.first_name }} {{ profile.last_name }}
+            </div>
             <div class="user-score">{{ profile.score }} pts</div>
           </div>
         </div>
@@ -179,7 +187,6 @@
   background-color: #8b6ef3;
   width: 20%;
   white-space: nowrap; /* Prevents text from wrapping */
-
 }
 
 /* Add styles for skeleton container */
@@ -221,7 +228,6 @@
   padding-bottom: 20px;
   /* justify-content: center; */
   margin: auto;
-  
 }
 
 .top-card {
@@ -263,7 +269,6 @@
   text-align: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 
 .rank-number {
   font-size: 24px;
@@ -338,20 +343,18 @@ const games = ref([]);
 const isLoading = ref(true);
 const leaderboard = ref([]); // Initialize leaderboard as a ref
 
-
 function getBarHeight(index) {
   switch (index) {
     case 0:
-      return '280px'; // Highest for 1st place
+      return "280px"; // Highest for 1st place
     case 1:
-      return '230px'; // Second highest for 2nd place
+      return "230px"; // Second highest for 2nd place
     case 2:
-      return '200px'; // Lowest for 3rd place
+      return "200px"; // Lowest for 3rd place
     default:
-      return '100px';
+      return "100px";
   }
 }
-
 
 async function fetchGames() {
   try {
@@ -363,7 +366,7 @@ async function fetchGames() {
       .from("games")
       .select("id, title, description, thumbnail_url");
 
-      console.log(data)
+    console.log(data);
 
     if (error) throw error;
 
@@ -375,7 +378,6 @@ async function fetchGames() {
     isLoading.value = false;
   }
 }
-
 
 // async function fetchLeaderboard() {
 //   try {
@@ -392,7 +394,6 @@ async function fetchGames() {
 //     console.error("Error fetching leaderboard:", error.message);
 //   }
 // }
-
 
 // function renderLeaderboardChart() {
 //   const ctx = document.getElementById("leaderboardChart").getContext("2d");
@@ -532,21 +533,19 @@ async function fetchLeaderboard() {
         };
       })
     );
-
   } catch (error) {
-    console.error('Error fetching leaderboard:', error.message);
+    console.error("Error fetching leaderboard:", error.message);
   }
 }
 
 
 
 function getCardClass(index) {
-  if (index === 0) return 'first-place';
-  if (index === 1) return 'second-place';
-  if (index === 2) return 'third-place';
-  return 'regular-place';
+  if (index === 0) return "first-place";
+  if (index === 1) return "second-place";
+  if (index === 2) return "third-place";
+  return "regular-place";
 }
-
 
 const playableGameId = ref(1); // Assuming game with ID 1 is the only playable one
 
