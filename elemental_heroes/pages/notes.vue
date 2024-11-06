@@ -140,14 +140,12 @@ onMounted(() => {
   transform: scale(1.2);
 }
 
-/* New Styles for the Iframe */
 .pdf-viewer {
   width: 80%;
   height: 100vh; /* Sets height to 70% of the viewport height */
   border: none;
 }
 
-/* Optional: Make the iframe responsive */
 @media (max-width: 768px) {
   .pdf-viewer {
     width: 100%;
