@@ -37,14 +37,21 @@
               <div
                 class="card-img-overlay d-flex flex-column justify-content-end"
               >
-                <h3 class="card-title">{{ game.title }}<span v-if="!isGamePlayable(game.id)" class="ms-2">[Coming Soon]</span></h3>
+                <h3 class="card-title">
+                  {{ game.title
+                  }}<span v-if="!isGamePlayable(game.id)" class="ms-2"
+                    >[Coming Soon]</span
+                  >
+                </h3>
                 <p class="card-text">{{ game.description }}</p>
                 <!-- <button type="button" class="btn btn-primary"   :disabled="!isGamePlayable(game.id)"
                 >Play</button> -->
                 <router-link v-if="isGamePlayable(game.id)" to="/gamelist">
-                <button type="button" class="btn btn-primary">Play</button>
+                  <button type="button" class="btn btn-primary">Play</button>
                 </router-link>
-                <button v-else type="button" class="btn btn-primary" disabled>Play</button>
+                <button v-else type="button" class="btn btn-primary" disabled>
+                  Play
+                </button>
               </div>
             </div>
           </div>
@@ -69,7 +76,6 @@
           <span class="visually-hidden">Next</span>
         </button>
       </div>
-
     </div>
 
     <!-- <div class="leaderboard mt-4">
@@ -109,29 +115,45 @@
         </div>
       </div> -->
       <div class="top-three">
-        <div v-for="(profile, index) in leaderboard.slice(0, 3)" 
-            :key="profile.id" 
-            class="leaderboard-card top-card" 
-            :class="getCardClass(index)"
-            :style="{ height: getBarHeight(index) }">
+        <div
+          v-for="(profile, index) in leaderboard.slice(0, 3)"
+          :key="profile.id"
+          class="leaderboard-card top-card"
+          :class="getCardClass(index)"
+          :style="{ height: getBarHeight(index) }"
+        >
           <div class="rank-number">{{ index + 1 }}</div>
           <div class="avatar">
-            <img :src="profile.avatar || '/default-avatar.png'" alt="User Avatar" />
+            <img
+              :src="profile.avatar || '/default-avatar.png'"
+              alt="User Avatar"
+            />
           </div>
           <div class="user-info">
-            <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
+            <div class="user-name">
+              {{ profile.first_name }} {{ profile.last_name }}
+            </div>
             <div class="user-score">{{ profile.score }} pts</div>
           </div>
         </div>
       </div>
       <div class="regular-places">
-        <div v-for="(profile, index) in leaderboard.slice(3)" :key="profile.id" class="leaderboard-card">
+        <div
+          v-for="(profile, index) in leaderboard.slice(3)"
+          :key="profile.id"
+          class="leaderboard-card"
+        >
           <div class="rank-number">{{ index + 4 }}</div>
           <div class="avatar">
-            <img :src="profile.avatar || '/default-avatar.png'" alt="User Avatar" />
+            <img
+              :src="profile.avatar || '/default-avatar.png'"
+              alt="User Avatar"
+            />
           </div>
           <div class="user-info">
-            <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
+            <div class="user-name">
+              {{ profile.first_name }} {{ profile.last_name }}
+            </div>
             <div class="user-score">{{ profile.score }} pts</div>
           </div>
         </div>
@@ -200,7 +222,6 @@
   background-color: #8b6ef3;
   width: 20%;
   white-space: nowrap; /* Prevents text from wrapping */
-
 }
 
 /* Add styles for skeleton container */
@@ -240,7 +261,6 @@
   padding-bottom: 20px;
   /* justify-content: center; */
   margin: auto;
-  
 }
 
 .top-card {
@@ -283,7 +303,6 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-
 .rank-number {
   font-size: 24px;
   font-weight: bold;
@@ -321,8 +340,6 @@
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
-
 </style>
 
 <script setup>
@@ -331,7 +348,7 @@ import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
 import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
 import { Chart, registerables } from "chart.js";
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 Chart.register(ChartDataLabels);
 Chart.register(...registerables);
@@ -345,20 +362,18 @@ const games = ref([]);
 const isLoading = ref(true);
 const leaderboard = ref([]); // Initialize leaderboard as a ref
 
-
 function getBarHeight(index) {
   switch (index) {
     case 0:
-      return '280px'; // Highest for 1st place
+      return "280px"; // Highest for 1st place
     case 1:
-      return '230px'; // Second highest for 2nd place
+      return "230px"; // Second highest for 2nd place
     case 2:
-      return '200px'; // Lowest for 3rd place
+      return "200px"; // Lowest for 3rd place
     default:
-      return '100px';
+      return "100px";
   }
 }
-
 
 async function fetchGames() {
   try {
@@ -370,7 +385,7 @@ async function fetchGames() {
       .from("games")
       .select("id, title, description, thumbnail_url");
 
-      console.log(data)
+    console.log(data);
 
     if (error) throw error;
 
@@ -382,7 +397,6 @@ async function fetchGames() {
     isLoading.value = false;
   }
 }
-
 
 // async function fetchLeaderboard() {
 //   try {
@@ -399,7 +413,6 @@ async function fetchGames() {
 //     console.error("Error fetching leaderboard:", error.message);
 //   }
 // }
-
 
 // function renderLeaderboardChart() {
 //   const ctx = document.getElementById("leaderboardChart").getContext("2d");
@@ -472,42 +485,39 @@ async function fetchGames() {
 async function fetchLeaderboard() {
   try {
     const { data, error } = await supabase
-      .from('profiles')
-      .select('id, first_name, last_name, score')
-      .order('score', { ascending: false });
+      .from("profiles")
+      .select("id, first_name, last_name, score")
+      .order("score", { ascending: false });
 
     if (error) throw error;
 
     leaderboard.value = await Promise.all(
       data.map(async (profile) => {
         const avatarPath = `avatars/${profile.first_name.toLowerCase()}_${profile.last_name.toLowerCase()}.png`;
-        const { data: avatarData, error: avatarError } = await supabase
-          .storage
-          .from('files_wad2')
+        const { data: avatarData, error: avatarError } = await supabase.storage
+          .from("files_wad2")
           .getPublicUrl(avatarPath);
 
         if (avatarError) {
-          console.error('Error fetching avatar:', avatarError.message);
-          profile.avatar = '/default-avatar.png'; // Fallback to a default image if there's an error
+          console.error("Error fetching avatar:", avatarError.message);
+          profile.avatar = "/default-avatar.png"; // Fallback to a default image if there's an error
         } else {
-          profile.avatar = avatarData.publicUrl || '/default-avatar.png';
+          profile.avatar = avatarData.publicUrl || "/default-avatar.png";
         }
         return profile;
       })
     );
-
   } catch (error) {
-    console.error('Error fetching leaderboard:', error.message);
+    console.error("Error fetching leaderboard:", error.message);
   }
 }
 
 function getCardClass(index) {
-  if (index === 0) return 'first-place';
-  if (index === 1) return 'second-place';
-  if (index === 2) return 'third-place';
-  return 'regular-place';
+  if (index === 0) return "first-place";
+  if (index === 1) return "second-place";
+  if (index === 2) return "third-place";
+  return "regular-place";
 }
-
 
 const playableGameId = ref(1); // Assuming game with ID 1 is the only playable one
 

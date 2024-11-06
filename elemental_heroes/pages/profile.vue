@@ -2,12 +2,28 @@
   <div class="background-img">
     <img :src="background_url" alt="" />
     <div class="edit-background-icon" @click="triggerBackgroundInput">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M12 20h9" />
         <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
       </svg>
     </div>
-    <input type="file" accept="image/*" @change="updateBackgroundImage" ref="backgroundInput" class="file-input" />
+    <input
+      type="file"
+      accept="image/*"
+      @change="updateBackgroundImage"
+      ref="backgroundInput"
+      class="file-input"
+    />
   </div>
 
   <div class="profile" v-if="profile">
@@ -16,36 +32,66 @@
         <div class="avatar">
           <img :src="avatar_url" alt="" />
           <div class="edit-icon" @click="triggerFileInput">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+              <path
+                d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
+              />
             </svg>
           </div>
         </div>
-        <input type="file" accept="image/*" @change="updateAvatar" ref="fileInput" class="file-input" />
+        <input
+          type="file"
+          accept="image/*"
+          @change="updateAvatar"
+          ref="fileInput"
+          class="file-input"
+        />
       </div>
     </div>
 
     <div class="profile-right">
       <div class="name">
         <template v-if="isEditing">
-          <input v-model="editableFirstName" class="name-input" placeholder="First Name" />
-          <input v-model="editableLastName" class="name-input" placeholder="Last Name" />
+          <input
+            v-model="editableFirstName"
+            class="name-input"
+            placeholder="First Name"
+          />
+          <input
+            v-model="editableLastName"
+            class="name-input"
+            placeholder="Last Name"
+          />
         </template>
         <template v-else>
           <h1>{{ profile.first_name }} {{ profile.last_name }}</h1>
         </template>
       </div>
 
-    <div class="stats">
-      <span>{{ profile.games_played }} games</span>
-      <span>•</span>
-      <span>MMR: {{ profile.score }}</span>
-    </div>
+      <div class="stats">
+        <span>{{ profile.games_played }} games</span>
+        <span>•</span>
+        <span>MMR: {{ profile.score }}</span>
+      </div>
 
-    <div class="bio">
+      <div class="bio">
         <template v-if="isEditing">
-          <textarea v-model="editableBio" class="bio-input" placeholder="Your bio"></textarea>
+          <textarea
+            v-model="editableBio"
+            class="bio-input"
+            placeholder="Your bio"
+          ></textarea>
         </template>
         <template v-else>
           <p>{{ profile.bio }}</p>
@@ -54,7 +100,9 @@
     </div>
 
     <div class="action-buttons">
-      <button v-if="!isEditing" @click="startEdit" class="edit-profile-btn">Edit Profile</button>
+      <button v-if="!isEditing" @click="startEdit" class="edit-profile-btn">
+        Edit Profile
+      </button>
       <div v-if="isEditing" class="edit-actions">
         <button @click="saveChanges" class="save-btn">Save</button>
         <button @click="cancelEdit" class="cancel-btn">Cancel</button>
@@ -62,8 +110,6 @@
     </div>
   </div>
 </template>
-
-
 
 <script lang="js" setup>
 
@@ -80,7 +126,7 @@ const isUploadingAvatar = ref(null)
 const isUploadingBackground = ref(null)
 
 const fileInput = ref(null);
-const backgroundInput = ref(null); 
+const backgroundInput = ref(null);
 
 // State for editing name
 const isEditing = ref(false);
@@ -341,7 +387,9 @@ onMounted(() => {
   width: fit-content;
 }
 
-.edit-profile-btn:hover, .save-btn:hover, .cancel-btn:hover {
+.edit-profile-btn:hover,
+.save-btn:hover,
+.cancel-btn:hover {
   background-color: #b2a9ec;
 }
 
@@ -390,7 +438,6 @@ onMounted(() => {
   border: 1px solid #ccc;
 }
 
-
 .save-btn {
   background-color: #4caf50;
   color: white;
@@ -401,7 +448,8 @@ onMounted(() => {
   color: white;
 }
 
-.name-input, .bio-input {
+.name-input,
+.bio-input {
   width: 100%;
   font-size: 18px;
   padding: 8px;
@@ -531,7 +579,6 @@ onMounted(() => {
 .file-input {
   display: none;
 }
-
 
 /* Optional: Add hover effect on stats */
 .stats span:not(:nth-child(2)) {
