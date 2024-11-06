@@ -574,7 +574,7 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  background: linear-gradient(to top, rgba(0, 0.2, 0.4, 0.6) 50%, transparent);
   padding: 20px;
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
