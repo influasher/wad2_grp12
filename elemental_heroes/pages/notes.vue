@@ -77,13 +77,20 @@ async function handleDelete() {
       return;
     }
 
-    // Delete the file from storage
-    const { error } = await supabase.storage
+    // Delete the PDF file
+    const { error: deletePDFError } = await supabase.storage
       .from("files_wad2")
       .remove([`user_pdfs/${noteName}.pdf`]);
 
-    if (error) {
-      throw error;
+    // Delete PDF Preview file
+    const { error: deletePreviewError } = await supabase.storage
+      .from("files_wad2")
+      .remove([`previews/${noteName}.png`]);
+
+    if (deletePDFError) throw deletePDFError;
+
+    if (deletePreviewError) {
+      throw deletePreviewError;
     }
 
     // If deletion is successful, navigate back to the previous page or home

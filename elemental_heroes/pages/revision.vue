@@ -53,11 +53,17 @@
               :to="{ path: '/notes', query: { name: note.name } }"
               style="text-decoration: none"
             >
-              <div class="card-body">
-                <h5 class="card-title">{{ note.name }}</h5>
-                <p class="card-text text-muted">
-                  Uploaded: {{ note.formattedDate }}
-                </p>
+              <div class="preview-container">
+                <img
+                  :src="note.previewUrl || '/placeholder-pdf.png'"
+                  :alt="note.name"
+                  class="pdf-preview"
+                  @error="handlePreviewError"
+                />
+                <div class="preview-overlay">
+                  <h5 class="card-title">{{ note.name }}</h5>
+                  <p class="card-text">Uploaded: {{ note.formattedDate }}</p>
+                </div>
               </div>
             </NuxtLink>
 
@@ -234,11 +240,20 @@ const handleNoteDelete = async (noteName) => {
     isDeleting.value = true;
 
     // Delete the PDF file
-    const { error: deleteError } = await supabase.storage
+    const { error: deletePDFError } = await supabase.storage
       .from("files_wad2")
       .remove([`user_pdfs/${noteName}.pdf`]);
 
-    if (deleteError) throw deleteError;
+    // Delete PDF Preview file
+    const { error: deletePreviewError } = await supabase.storage
+      .from("files_wad2")
+      .remove([`previews/${noteName}.png`]);
+
+    if (deletePDFError) throw deletePDFError;
+
+    if (deletePreviewError) {
+      throw deletePreviewError;
+    }
 
     // Refresh the notes list
     await getNotes();
@@ -269,9 +284,8 @@ const handleFileSelected = (event) => {
   }
 };
 
-// Upload PDF function from flashcard.vue
 const uploadPdf = async (event) => {
-  event.stopPropagation(); // Prevent card click event
+  event.stopPropagation();
 
   if (!selectedFile.value) {
     alert("Please select a PDF file first.");
@@ -282,31 +296,23 @@ const uploadPdf = async (event) => {
   formData.append("file", selectedFile.value);
 
   try {
+    // Start upload process
     uploading.value = true;
     uploadBtnText.value = "Uploading...";
     uploadStatus.value = "Uploading PDF...";
 
+    // 1. Upload the PDF file
     const response = await axios.post(
       "http://127.0.0.1:5000/api/supabase/upload-pdf",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
+      formData
     );
 
-    uploadStatus.value = ``;
+    // Success handling
+    uploadStatus.value = "";
     alert(`PDF uploaded successfully! ${response.data.num_pages} pages found.`);
 
-    // Reset file selection and refresh notes list
-    // setTimeout(() => {
-    //   selectedFile.value = null;
-    //   uploadStatus.value = "";
-    //   getNotes();
-    // }, 1000);
+    // Reset and refresh
     selectedFile.value = null;
-    uploadStatus.value = "";
     getNotes();
   } catch (error) {
     console.error("Error uploading PDF:", error);
@@ -317,6 +323,7 @@ const uploadPdf = async (event) => {
   }
 };
 
+// Modify getNotes function to include preview URLs
 async function getNotes() {
   try {
     isLoadingNotes.value = true;
@@ -327,24 +334,31 @@ async function getNotes() {
     if (error) {
       console.log("Error fetching notes:", error);
     } else if (data) {
-      console.log("Fetched data:", data);
-      notes.value = data.map((item) => {
-        const nameWithoutExtension = item.name.replace(/\.[^/.]+$/, "");
-        const formattedDate = new Date(item.created_at).toLocaleDateString(
-          undefined,
-          {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }
-        );
+      notes.value = await Promise.all(
+        data.map(async (item) => {
+          const nameWithoutExtension = item.name.replace(/\.[^/.]+$/, "");
+          const formattedDate = new Date(item.created_at).toLocaleDateString(
+            undefined,
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }
+          );
 
-        return {
-          ...item,
-          name: nameWithoutExtension,
-          formattedDate,
-        };
-      });
+          // Get preview URL
+          const { data: previewUrl } = supabase.storage
+            .from("files_wad2")
+            .getPublicUrl(`previews/${nameWithoutExtension}.png`);
+
+          return {
+            ...item,
+            name: nameWithoutExtension,
+            formattedDate,
+            previewUrl: previewUrl?.publicUrl,
+          };
+        })
+      );
     }
   } catch (error) {
     console.error("Error:", error);
@@ -419,14 +433,13 @@ onMounted(() => {
 }
 
 .custom-card {
-  background-color: #ffffff; /* White background for contrast */
-  height: 150px;
-  border: 0.5px solid #e4e3e3; /* Light border */
-  border-radius: 8px; /* Rounded corners */
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  */
-  /* Subtle shadow for depth */
-  transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for hover effect */
+  background-color: #ffffff;
+  border: 0.5px solid #e4e3e3;
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
   overflow: auto;
+  height: auto;
+  padding: 0;
 }
 
 .custom-card::-webkit-scrollbar {
@@ -434,26 +447,24 @@ onMounted(() => {
 }
 
 .custom-card:hover {
-  transform: translateY(-5px); /* Slight lift on hover */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .card-title {
   font-weight: bold;
-  color: #333; /* Darker text color for better readability */
+  color: #333;
 }
 
 .card-text {
-  color: #666; /* Slightly lighter text color for secondary information */
+  color: #666;
 }
 
-/* Updated card container style */
 .card-container {
   position: relative;
-  overflow: visible; /* Allow delete button to be visible outside card boundaries if needed */
+  overflow: visible;
 }
 
-/* Updated delete button styles */
 .delete-btn {
   position: absolute;
   bottom: 8px;
@@ -472,10 +483,12 @@ onMounted(() => {
   justify-content: center;
 }
 
-/* Show delete button on card hover */
 .card-container:hover .delete-btn {
   opacity: 1;
   pointer-events: auto;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 8px;
 }
 
 .delete-btn:hover {
@@ -483,16 +496,10 @@ onMounted(() => {
   transform: scale(1.1);
 }
 
-/* Adjust card-body padding to prevent text overlap with delete button */
 .card-body {
-  padding-bottom: 2.5rem; /* Add extra padding at bottom to accommodate delete button */
+  padding-bottom: 2.5rem;
 }
 
-/* Note card specific styles */
-/* .note-card {
-  border: 1px solid #e5e7eb;
-  background: linear-gradient(to bottom right, #ffffff, #fafafa);
-} */
 .note-card .card-title {
   color: #374151;
   font-weight: 600;
@@ -512,17 +519,10 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 
-/* Flashcard specific styles */
-/* .flashcard {
-  border: 1px solid var(--unity-purple);
-  background: linear-gradient(135deg, var(--unity-gray) 0%, #ffffff 100%);
-} */
-
-/* .flashcard:hover {
+.flashcard:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(139, 110, 243, 0.15);
-  border-color: var(--unity-purple);
-} */
+  box-shadow: 0 16px 32px rgba(139, 110, 243, 0.25);
+}
 
 .flashcard .card-title {
   color: var(--unity-text);
@@ -550,13 +550,52 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 
-/* On hover state for better interaction */
-/* .flashcard:hover .card-title {
-  color: var(--unity-hover);
-} */
+.preview-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 75%;
+  overflow: hidden;
+  border-radius: 8px;
+}
 
-/* Additional styles for better contrast */
-/* .flashcard:hover .card-text {
-  color: var(--unity-dark);
-} */
+.pdf-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.preview-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: 20px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.preview-overlay .card-title {
+  color: white;
+  margin-bottom: 5px;
+}
+
+.preview-overlay .card-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+.note-card:hover .pdf-preview {
+  transform: scale(1.05);
+}
+
+.note-card .preview-overlay .card-title,
+.note-card .preview-overlay .card-text {
+  color: white;
+}
 </style>
