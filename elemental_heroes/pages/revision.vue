@@ -46,7 +46,9 @@
         </template>
 
         <div class="col-md-3" v-for="note in notes" :key="note">
-          <div class="card custom-card position-relative card-container">
+          <div
+            class="card custom-card note-card position-relative card-container"
+          >
             <NuxtLink
               :to="{ path: '/notes', query: { name: note.name } }"
               style="text-decoration: none"
@@ -105,10 +107,15 @@
             v-for="folder in flashcardFolders"
             :key="folder.name"
           >
-            <div class="card custom-card position-relative card-container">
+            <div
+              class="card custom-card flashcard position-relative card-container"
+            >
               <!-- Card content wrapped in NuxtLink -->
               <NuxtLink
-                :to="{ path: '/flashcard', query: { name: folder.name, mode: 'review' } }"
+                :to="{
+                  path: '/flashcard',
+                  query: { name: folder.name, mode: 'review' },
+                }"
                 style="text-decoration: none; color: inherit"
               >
                 <div class="card-body">
@@ -480,4 +487,76 @@ onMounted(() => {
 .card-body {
   padding-bottom: 2.5rem; /* Add extra padding at bottom to accommodate delete button */
 }
+
+/* Note card specific styles */
+/* .note-card {
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(to bottom right, #ffffff, #fafafa);
+} */
+.note-card .card-title {
+  color: #374151;
+  font-weight: 600;
+  position: relative;
+  padding-left: 24px;
+}
+.note-card .card-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' /%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Flashcard specific styles */
+/* .flashcard {
+  border: 1px solid var(--unity-purple);
+  background: linear-gradient(135deg, var(--unity-gray) 0%, #ffffff 100%);
+} */
+
+/* .flashcard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(139, 110, 243, 0.15);
+  border-color: var(--unity-purple);
+} */
+
+.flashcard .card-title {
+  color: var(--unity-text);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flashcard .card-text {
+  color: var(--unity-text);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.flashcard .card-text::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238B6EF3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' /%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* On hover state for better interaction */
+/* .flashcard:hover .card-title {
+  color: var(--unity-hover);
+} */
+
+/* Additional styles for better contrast */
+/* .flashcard:hover .card-text {
+  color: var(--unity-dark);
+} */
 </style>
