@@ -283,27 +283,30 @@ onMounted(() => {
 <style>
 .background-img {
   width: 100%;
-  max-height: 600px;
+  max-height: 50vh; /* Adjust height based on viewport */
   display: inline-block;
   position: relative;
   overflow: hidden;
+}
 
-  img {
-    width: 100%;
-  }
+.background-img img {
+  width: 100%;
+  height: auto; /* Ensures aspect ratio is maintained */
 }
 
 .profile {
   position: relative;
-  top: -180px;
+  top: -10vh; /* Adjust negative margin for smaller screens */
   margin: 0 auto;
-  width: 80%;
+  width: 90%; /* Adjusted to scale on smaller screens */
+  max-width: 800px; /* Constrain max width for readability */
   background: white;
-  padding: 40px 40px;
+  padding: 20px; /* Reduced padding for better scaling */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   display: flex;
-  gap: 40px;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .profile-left {
@@ -318,19 +321,24 @@ onMounted(() => {
   padding: 20px 0;
 }
 
-.edit-profile-btn, .save-btn, .cancel-btn {
+.profile-left,
+.profile-right {
+  width: 100%;
+}
+
+.edit-profile-btn,
+.save-btn,
+.cancel-btn {
   background-color: #8b6ef3;
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 4px 12px; /* Smaller padding for a compact look */
-  font-size: 13px; /* Smaller font size */
-  font-weight: 500;
+  padding: 6px 12px;
+  font-size: 1em;
   cursor: pointer;
   transition: background-color 0.2s;
-  align-self: flex-start; /* Prevents buttons from expanding in the container */
-  max-width: 120px; /* Optional max-width to control button size */
-  width: auto;
+  margin: 0 auto;
+  width: fit-content;
 }
 
 .edit-profile-btn:hover, .save-btn:hover, .cancel-btn:hover {
@@ -339,18 +347,23 @@ onMounted(() => {
 
 .edit-actions {
   display: flex;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
 }
 
 .avatar {
-  width: 200px;
-  height: 200px;
+  width: 30vw;
+  height: 30vw;
+  max-width: 150px; /* Constrain max size */
+  max-height: 150px;
   overflow: hidden;
   border: 2px solid #8b6ef3;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
+  position: relative; /* Set relative positioning here */
 }
 
 .avatar img {
@@ -402,24 +415,25 @@ onMounted(() => {
 }
 
 .name h1 {
-  font-size: 32px;
+  font-size: calc(1.5em + 1vw); /* Responsive font size */
   font-weight: 600;
-  margin: 0;
-  margin-bottom: 8px;
+  text-align: center;
 }
 
 .stats {
   color: #666;
-  font-size: 16px;
+  font-size: 0.9em;
   display: flex;
   gap: 8px;
   align-items: center;
+  justify-content: center;
 }
 
 .bio {
-  font-size: 16px;
+  font-size: 1em;
   line-height: 1.5;
   color: #333;
+  text-align: center;
 }
 
 .score {
@@ -440,8 +454,9 @@ onMounted(() => {
 
 .edit-icon {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 5px; /* Positions icon at the bottom */
+  left: 50%; /* Centers the icon horizontally */
+  transform: translateX(-50%); /* Adjusts position to truly center it */
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
   width: 30px;
@@ -451,6 +466,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .edit-icon:hover {
@@ -579,5 +595,28 @@ onMounted(() => {
 
 .friend-btn:active {
   transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .profile {
+    padding: 10px;
+    width: 95%;
+  }
+
+  .name h1 {
+    font-size: 1.5em; /* Reduced font size on smaller screens */
+  }
+
+  .bio,
+  .stats {
+    font-size: 0.9em;
+  }
+
+  .edit-profile-btn,
+  .save-btn,
+  .cancel-btn {
+    padding: 4px 8px;
+    font-size: 0.9em;
+  }
 }
 </style>
