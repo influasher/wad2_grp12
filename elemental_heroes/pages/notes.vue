@@ -32,13 +32,11 @@
     <div class="d-flex justify-content-center mb-4">
       <iframe
         v-if="noteUrl"
-        class="d2l-fileviewer-rendered-pdf"
+        class="pdf-viewer"
         scrolling="no"
         seamless="seamless"
         :src="noteUrl"
-        style="width: 80%; height: 651px"
-      >
-      </iframe>
+      ></iframe>
     </div>
     <FloatingChat :fileId="noteName" />
   </div>
@@ -140,5 +138,20 @@ onMounted(() => {
 
 .delete-btn:hover svg {
   transform: scale(1.2);
+}
+
+/* New Styles for the Iframe */
+.pdf-viewer {
+  width: 80%;
+  height: 100vh; /* Sets height to 70% of the viewport height */
+  border: none;
+}
+
+/* Optional: Make the iframe responsive */
+@media (max-width: 768px) {
+  .pdf-viewer {
+    width: 100%;
+    height: 100vh;
+  }
 }
 </style>
