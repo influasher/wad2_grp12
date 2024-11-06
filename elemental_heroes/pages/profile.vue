@@ -1,6 +1,6 @@
 <template>
   <div class="background-img">
-    <img :src="background_url" alt="Background Image" />
+    <img :src="background_url" alt="" />
     <div class="edit-background-icon" @click="triggerBackgroundInput">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 20h9" />
@@ -14,7 +14,7 @@
     <div class="profile-left">
       <div class="avatar-section">
         <div class="avatar">
-          <img :src="avatar_url" alt="Profile Avatar" />
+          <img :src="avatar_url" alt="" />
           <div class="edit-icon" @click="triggerFileInput">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9" />
