@@ -12,6 +12,8 @@ import traceback
 from datetime import datetime
 from supabase import create_client, Client
 from io import BytesIO
+from pdf2image import convert_from_path, convert_from_bytes
+import pypdfium2 as pdfium
 
 
 # Load environment variables
@@ -464,8 +466,11 @@ def upload_pdf_supabase():
                     file_options={"content-type": "application/pdf"},
                 )
 
+            # Generate PDF preview (1st page of PDF)
+            generate_preview(file_path, file_id)
+
             # Optional: Remove local file after upload
-            os.remove(file_path)
+            # os.remove(file_path)
 
             return jsonify(
                 {
@@ -677,6 +682,45 @@ Always return the response in the exact JSON format specified.""",
         ),
         200,
     )
+
+
+def generate_preview(filepath, file_id):
+    print(filepath)
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"})
+
+    file = request.files["file"]
+    if not file.filename.endswith(".pdf"):
+        return jsonify({"error": "File must be a PDF"})
+
+    try:
+        # Generate preview using pdf2image
+        print("entered this loop")
+        # images = convert_from_bytes(open(filepath, 'rb').read())
+        preview_path = os.path.join("previews", f"{file_id}.png")
+
+        pdf = pdfium.PdfDocument(filepath)
+        page = pdf[0]
+        image = page.render(scale=4).to_pil()
+        image.save(preview_path)
+        pdf.close()  # Close the PDF document
+
+        # Upload to Supabase
+        with open(preview_path, "rb") as preview_file:
+            preview_name = f"{os.path.splitext(file.filename)[0]}.png"
+            supabase.storage.from_("files_wad2").upload(
+                f"previews/{preview_name}", preview_file
+            )
+
+        # Clean up local files
+        os.remove(preview_path)
+        os.remove(filepath)
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": str(e)})
 
 
 if __name__ == "__main__":
