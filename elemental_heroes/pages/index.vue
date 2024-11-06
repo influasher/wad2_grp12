@@ -72,43 +72,14 @@
 
     </div>
 
-    <!-- <div class="leaderboard mt-4">
-      <h3 class="text-center">Leaderboard</h3>
-       <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <span>User</span>
-          <span>Score</span>
-          <span>Games played</span>
-        </li>
-        <li
-          v-for="(profile, index) in leaderboard"
-          :key="profile.id"
-          class="list-group-item d-flex justify-content-between align-items-center"
-        >
-          <span>{{ index + 1 }}. {{ profile.first_name }} {{ profile.last_name }}</span>
-          <span class="badge bg-primary rounded-pill">{{ profile.score }}</span>
-          <span class="badge bg-primary rounded-pill">{{ profile.games_played }}</span>
-        </li>
-      </ul> 
-      <canvas id="leaderboardChart"></canvas>
 
-    </div> -->
+    <div v-if="isLoading" class="leaderboard-skeleton">
+        <CarouselSkeleton />
+      </div>
 
-    <div class="leaderboard-container">
-      <h3 class="leaderboard-title">Leaderboard</h3>
-      <!-- <div class="top-three">
-        <div v-for="(profile, index) in leaderboard.slice(0, 3)" :key="profile.id" class="leaderboard-card top-card" :class="getCardClass(index)">
-          <div class="rank-number">{{ index + 1 }}</div>
-          <div class="avatar">
-            <img :src="profile.avatar || '/default-avatar.png'" alt="User Avatar" />
-          </div>
-          <div class="user-info">
-            <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
-            <div class="user-score">{{ profile.score }} pts</div>
-          </div>
-        </div>
-      </div> -->
-      <div class="top-three">
+    <div v-else class="leaderboard-container">
+      <h3 class="leaderboard-title fs-2 ">Leaderboard</h3>
+      <div class="top-three press-start-2p-regular">
         <div v-for="(profile, index) in leaderboard.slice(0, 3)" 
             :key="profile.id" 
             class="leaderboard-card top-card" 
@@ -116,7 +87,7 @@
             :style="{ height: getBarHeight(index) }">
           <div class="rank-number">{{ index + 1 }}</div>
           <div class="avatar">
-            <img :src="profile.avatar || '/default-avatar.png'" alt="User Avatar" />
+            <img :src="profile.avatar || '/assets/images/coolAvatar.png'"  />
           </div>
           <div class="user-info">
             <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
@@ -124,13 +95,13 @@
           </div>
         </div>
       </div>
-      <div class="regular-places">
-        <div v-for="(profile, index) in leaderboard.slice(3)" :key="profile.id" class="leaderboard-card">
-          <div class="rank-number">{{ index + 4 }}</div>
-          <div class="avatar">
-            <img :src="profile.avatar || '/default-avatar.png'" alt="User Avatar" />
+      <div class="regular-places press-start-2p-regular">
+        <div v-for="(profile, index) in leaderboard.slice(3)" :key="profile.id" class="leaderboard-card row">
+          <div class="rank-number col-4">{{ index + 4 }}</div>
+          <div class="avatar col-4">
+            <img :src="profile.avatar || '/assets/images/coolAvatar.png'"  />
           </div>
-          <div class="user-info">
+          <div class="user-info text-end col-4">
             <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
             <div class="user-score">{{ profile.score }} pts</div>
           </div>
@@ -141,6 +112,14 @@
 </template>
 
 <style lang="css" scoped>
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+.press-start-2p-regular {
+  font-family: "Press Start 2P", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 .home-page {
   display: block;
   justify-content: center;
@@ -220,17 +199,19 @@
   text-align: center;
 }
 
-/* #leaderboardChart {
-  width: 100% !important;
-  height: 400px !important;
-} */
-
 .leaderboard-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
   background-color: #f5f5f5;
   border-radius: 15px;
+}
+
+.leaderboard-skeleton{
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 15px;
+  padding: 20px;
 }
 
 .leaderboard-title {
@@ -254,8 +235,8 @@
 
 .top-three {
   display: flex;
-  justify-content: space-around; /* Spread out the top three cards */
-  align-items: flex-end; /* Align cards based on their heights */
+  justify-content: space-around; 
+  align-items: flex-end; 
   margin-bottom: 20px;
 }
 
@@ -290,15 +271,23 @@
   margin-bottom: 10px;
 }
 
-.avatar img {
-  width: 60px;
-  height: 60px;
+.avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px; /* Adjust as needed */
+  height: 50px; /* Adjust as needed */
+  margin: 0 auto; /* Center the avatar container itself */
+  border: 2px solid #8b6ef3;
   border-radius: 50%;
-  margin-bottom: 10px;
+  overflow: hidden; /* Hides overflow, ensuring a circular crop */
+  background-color: #000;
 }
 
-.user-info {
-  text-align: center;
+.avatar img {
+  width: 200%; /* Scale image to fit the container */
+  height: 100%;
+  /* object-fit: cover;  */
 }
 
 .user-name {
@@ -313,16 +302,20 @@
 
 .regular-places .leaderboard-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: center; /* Vertically center the items */
+  justify-content: flex-start; /* Align items to the start */
   padding: 10px 15px;
   margin-bottom: 10px;
-  background-color: #ffffff;
+  background-color: #cecae7;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-
+.regular-places .user-info {
+  display: flex;
+  flex-direction: column; /* Stack name and score vertically */
+  text-align: left; /* Align text to the left */
+}
 </style>
 
 <script setup>
@@ -330,11 +323,11 @@ import { ref, onMounted } from "vue";
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
 import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
-import { Chart, registerables } from "chart.js";
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+// import { Chart, registerables } from "chart.js";
+// import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-Chart.register(ChartDataLabels);
-Chart.register(...registerables);
+// Chart.register(ChartDataLabels);
+// Chart.register(...registerables);
 
 const config = useRuntimeConfig();
 const supabase = createClient(
@@ -469,30 +462,74 @@ async function fetchGames() {
 //   });
 // }
 
+// async function fetchLeaderboard() {
+//   try {
+//     const { data, error } = await supabase
+//       .from('profiles')
+//       .select('id, first_name, last_name, score')
+//       .order('score', { ascending: false });
+
+//     if (error) throw error;
+
+//     leaderboard.value = await Promise.all(
+//       data.map(async (profile) => {
+//         const avatarPath = `avatars/${profile.first_name.toLowerCase()}_${profile.last_name.toLowerCase()}.png`;
+//         const { data: avatarData, error: avatarError } = await supabase
+//           .storage
+//           .from('files_wad2')
+//           .getPublicUrl(avatarPath);
+
+//         if (avatarError) {
+//           console.error('Error fetching avatar:', avatarError.message);
+//           profile.avatar = '/assets/images/defaultAvatar.png'; // Fallback to a default image if there's an error
+//         } else {
+//           profile.avatar = avatarData.publicUrl || '/assets/images/defaultAvatar.png';
+//         }
+//         return profile;
+//       })
+//     );
+
+//   } catch (error) {
+//     console.error('Error fetching leaderboard:', error.message);
+//   }
+// }
+
+
 async function fetchLeaderboard() {
   try {
+    // Fetch profiles with the avatar URL path included
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, score')
+      .select('id, first_name, last_name, score, avatar_url') // Ensure avatar_url is included
       .order('score', { ascending: false });
 
     if (error) throw error;
 
+    // Fetch public URLs for each avatar
     leaderboard.value = await Promise.all(
       data.map(async (profile) => {
-        const avatarPath = `avatars/${profile.first_name.toLowerCase()}_${profile.last_name.toLowerCase()}.png`;
-        const { data: avatarData, error: avatarError } = await supabase
-          .storage
-          .from('files_wad2')
-          .getPublicUrl(avatarPath);
+        let avatarUrl;
 
-        if (avatarError) {
-          console.error('Error fetching avatar:', avatarError.message);
-          profile.avatar = '/default-avatar.png'; // Fallback to a default image if there's an error
+        if (profile.avatar_url) {
+          // Use the provided avatar URL path to fetch the public URL
+          const { data: avatarData, error: avatarError } = await supabase
+            .storage
+            .from('files_wad2')
+            .getPublicUrl(profile.avatar_url);
+
+          // Assign the public URL or fallback to default if there's an error
+          avatarUrl = avatarError || !avatarData.publicUrl
+            ? '/assets/images/coolAvatar.png' // Local path for default avatar
+            : avatarData.publicUrl;
         } else {
-          profile.avatar = avatarData.publicUrl || '/default-avatar.png';
+          // If no avatar URL is provided, use the default avatar
+          avatarUrl = '/assets/images/coolAvatar.png';
         }
-        return profile;
+
+        return {
+          ...profile,
+          avatar: avatarUrl // Assign avatar URL to each profile
+        };
       })
     );
 
@@ -500,6 +537,8 @@ async function fetchLeaderboard() {
     console.error('Error fetching leaderboard:', error.message);
   }
 }
+
+
 
 function getCardClass(index) {
   if (index === 0) return 'first-place';
