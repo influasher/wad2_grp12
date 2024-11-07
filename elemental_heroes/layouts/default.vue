@@ -161,6 +161,10 @@ onMounted(() => {
 .wrapper {
   display: flex;
   align-items: stretch;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Sidebar styling */
@@ -328,22 +332,22 @@ main {
 
 /* .background_wrap {
   position: relative;
-}
+} */
 
-.background_wrap::before {
+.wrapper::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: url("../assets/table-with-solutions-microscope-white.jpg") no-repeat center center;
+  background: url("../assets/chem-bg.jpg") no-repeat center center;
   background-size: cover;
-  opacity: 0.5;
+  opacity: 0.1;
   z-index: -1;
 }
 
-.background_wrap > * {
+/* .background_wrap > * {
   position: relative;
   z-index: 1;
 } */
