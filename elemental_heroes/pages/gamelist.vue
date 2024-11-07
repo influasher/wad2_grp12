@@ -48,6 +48,10 @@ import CarouselSkeleton from '~/components/CarouselSkeleton.vue';
 const config = useRuntimeConfig()
 const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey)
 
+//use this to get the supabase user
+const user = useSupabaseUser()
+
+
 let gameInstance;
 const loading = ref(true);
 

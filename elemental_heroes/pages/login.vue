@@ -124,6 +124,32 @@
               aria-labelledby="pills-register-tab"
             >
               <form @submit.prevent="handleSignUp">
+                <!-- First Name input -->
+                <div class="mb-4">
+                  <label for="firstName" class="form-label">First Name</label>
+                  <input
+                    v-model="firstName"
+                    type="text"
+                    id="firstName"
+                    class="form-control"
+                    placeholder="Enter your first name"
+                    required
+                  />
+                </div>
+
+                <!-- Last Name input -->
+                <div class="mb-4">
+                  <label for="lastName" class="form-label">Last Name</label>
+                  <input
+                    v-model="lastName"
+                    type="text"
+                    id="lastName"
+                    class="form-control"
+                    placeholder="Enter your last name"
+                    required
+                  />
+                </div>
+
                 <!-- Email input -->
                 <div class="mb-4">
                   <label for="registerEmail" class="form-label">Email</label>
@@ -192,7 +218,7 @@
               <!-- <div class="text-center mb-3">
                 <button @click="signInWithGoogle" class="btn google-btn w-100">
                   <img
-                    src="../assets/images/google.png"
+                    src="../assets/images/google-logo.png"
                     alt="Google Logo"
                     class="google-logo"
                   />
@@ -213,17 +239,10 @@
 definePageMeta({
   layout: false,
 });
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
-import { createClient } from "@supabase/supabase-js";
-import { useRuntimeConfig } from "#app";
 
-// const config = useRuntimeConfig();
-// const supabase = createClient(
-//   config.public.supabaseUrl,
-//   config.public.supabaseKey
-// );
-
+// Initialize Supabase client
 const client = useSupabaseClient();
 const router = useRouter();
 const user = useSupabaseUser();
@@ -234,6 +253,8 @@ const loginPassword = ref("");
 const loginError = ref("");
 
 // Signup form data
+const firstName = ref("");
+const lastName = ref("");
 const registerEmail = ref("");
 const registerPassword = ref("");
 const registerRepeatPassword = ref("");
@@ -269,23 +290,46 @@ const handleSignUp = async () => {
     return;
   }
 
-  const { error } = await client.auth.signUp({
-    email: registerEmail.value,
-    password: registerPassword.value,
-  });
+  try {
+    const { data, error } = await client.auth.signUp({
+      email: registerEmail.value,
+      password: registerPassword.value,
+      options: {
+        data: {
+          first_name: firstName.value,
+          last_name: lastName.value,
+        },
+      },
+    });
 
-  if (error) {
-    signupError.value = error.message;
-  } else {
-    alert(
-      "Registration successful! Please check your email to confirm your account."
-    );
-    // Optionally redirect or reset form fields
-    registerEmail.value = "";
-    registerPassword.value = "";
-    registerRepeatPassword.value = "";
+    if (error) {
+      signupError.value = error.message;
+    } else {
+      alert(
+        "Registration successful! Please check your email to confirm your account."
+      );
+      // Optionally redirect or reset form fields
+      firstName.value = "";
+      lastName.value = "";
+      registerEmail.value = "";
+      registerPassword.value = "";
+      registerRepeatPassword.value = "";
+    }
+  } catch (err) {
+    console.error("Sign up error:", err);
+    signupError.value = "An unexpected error occurred.";
   }
 };
+
+// Function to handle Google Sign-In/Sign-Up
+// const signInWithGoogle = async () => {
+//   const { error } = await client.auth.signInWithOAuth({
+//     provider: "google",
+//   });
+//   if (error) {
+//     alert("Error during Google authentication: " + error.message);
+//   }
+// };
 </script>
 
 <style scoped>

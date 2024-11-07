@@ -377,7 +377,6 @@ const supabase = createClient(
   config.public.supabaseUrl,
   config.public.supabaseKey
 );
-
 const games = ref([]);
 const isLoading = ref(true);
 const leaderboard = ref([]); // Initialize leaderboard as a ref
@@ -389,15 +388,10 @@ function getBarHeight(index) {
     case 1:
       return "230px"; // Second highest for 2nd place
     case 2:
-      return "200px"; // Lowest for 3rd placeF
+      return "200px"; // Lowest for 3rd place
     default:
       return "100px";
   }
-}
-
-async function getCurrentUser() {
-  const user = useSupabaseUser();
-  console.log(user.value);
 }
 
 async function fetchGames() {
@@ -608,6 +602,5 @@ async function fetchThumbnail(game) {
 onMounted(() => {
   fetchGames();
   fetchLeaderboard();
-  getCurrentUser();
 });
 </script>
