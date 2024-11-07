@@ -84,7 +84,7 @@
       </div>
 
     <div v-else class="leaderboard-container">
-      <h3 class="leaderboard-title fs-2 ">Leaderboard</h3>
+      <h3 class="leaderboard-title fs-5 press-start-2p-regular">Leaderboard</h3>
       <div class="top-three press-start-2p-regular">
         <div v-for="(profile, index) in leaderboard.slice(0, 3)" 
             :key="profile.id" 
@@ -196,7 +196,7 @@
 }
 
 .leaderboard {
-  max-width: 600px;
+  /* max-width: 600px; */
   margin: 0 auto;
   padding: 10px;
 }
@@ -207,8 +207,9 @@
 }
 
 .leaderboard-container {
-  max-width: 800px;
-  margin: 0 auto;
+  /* max-width: 800px; */
+  margin: 10px;
+  /* margin: 0 auto; */
   padding: 20px;
   background-color: #f5f5f5;
   border-radius: 15px;
@@ -240,10 +241,17 @@
 }
 
 .top-three {
+  /* max-width: 800px; */
   display: flex;
-  justify-content: space-around; 
+  /* justify-content: space-around;  */
+  justify-content: space-evenly;
   align-items: flex-end; 
   margin-bottom: 20px;
+   /* Centers the cards with equal spacing */
+  gap: 50px; /* Adjust spacing as needed */
+  margin-left: 10px;
+  margin-right: 10px;
+  
 }
 
 .first-place {
@@ -314,6 +322,8 @@
   background-color: #cecae7;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-left: 12px;
+  margin-right: 12px;
 }
 
 .regular-places .user-info {
