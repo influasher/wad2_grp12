@@ -362,7 +362,11 @@ onMounted(() => {
   if (mode.value === "review") {
     console.log("Initiating flashcard retrieval");
     retrieveExistingFlashcards();
-  } else if (isGenerating.value) {
+    // } else if (isGenerating.value) {
+    //   console.log("Initiating flashcard generation");
+    //   generateFlashcards();
+    // }
+  } else if (mode.value === "generate") {
     console.log("Initiating flashcard generation");
     generateFlashcards();
   }
