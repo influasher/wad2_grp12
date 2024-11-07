@@ -1,6 +1,6 @@
 <template>
   <div class="game-page">
-    <div class="row mb-3 justify-content-center">
+    <div class="row custom-row mb-3 justify-content-center">
       <div class="col-12 d-flex flex-wrap justify-content-center">
         <div v-for="(tag, index) in tags" :key="index" class="mb-2 me-2">
           <button
@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="row justify-content-center">
+    <div class="row custom-row justify-content-center">
       <!-- Game container: Full width on small screens, 10 columns on large screens -->
       <div
         id="game-container"
@@ -80,6 +80,9 @@ const tags = ref([
 </script>
 
 <style scoped>
+.custom-row {
+  --bs-gutter-x: 0;
+}
 .game-page {
   padding: 10px;
 }
