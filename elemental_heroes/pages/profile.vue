@@ -329,7 +329,7 @@ onMounted(() => {
 <style>
 .background-img {
   width: 100%;
-  max-height: 50vh; /* Adjust height based on viewport */
+  max-height: 50vh;
   display: inline-block;
   position: relative;
   overflow: hidden;
@@ -337,17 +337,17 @@ onMounted(() => {
 
 .background-img img {
   width: 100%;
-  height: auto; /* Ensures aspect ratio is maintained */
+  height: auto; 
 }
 
 .profile {
   position: relative;
-  top: -10vh; /* Adjust negative margin for smaller screens */
+  top: -30vh; 
   margin: 0 auto;
-  width: 90%; /* Adjusted to scale on smaller screens */
-  max-width: 800px; /* Constrain max width for readability */
+  width: 90%; 
+  max-width: 800px;
   background: white;
-  padding: 20px; /* Reduced padding for better scaling */
+  padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   display: flex;
@@ -401,11 +401,11 @@ onMounted(() => {
 
 .avatar {
   width: 30vw;
-  height: 30vw; /* Maintain a square aspect ratio to create a circle */
-  max-width: 150px; /* Set a maximum size */
+  height: 30vw;
+  max-width: 150px;
   max-height: 150px;
   border: 2px solid #8b6ef3;
-  border-radius: 50%; /* Makes the container circular */
+  border-radius: 50%;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -417,7 +417,7 @@ onMounted(() => {
 .avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures the image fills the circle without distortion */
+  object-fit: cover;
 }
 
 .name {
@@ -485,6 +485,10 @@ onMounted(() => {
   text-align: center;
 }
 
+.name h1, .bio, .stats, .action-buttons {
+  text-align: center;
+}
+
 .score {
   font-size: 16px;
   color: #333;
@@ -503,9 +507,9 @@ onMounted(() => {
 
 .edit-icon {
   position: absolute;
-  bottom: 5px; /* Positions icon at the bottom */
-  left: 50%; /* Centers the icon horizontally */
-  transform: translateX(-50%); /* Adjusts position to truly center it */
+  bottom: 5px;
+  left: 50%; 
+  transform: translateX(-50%);
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
   width: 30px;
@@ -523,11 +527,11 @@ onMounted(() => {
 }
 
 .edit-name-icon:hover svg {
-  stroke: #8b6ef3; /* Optional: color change on hover */
+  stroke: #8b6ef3;
 }
 
 .edit-name-icon {
-  cursor: pointer; /* Change cursor to pointer */
+  cursor: pointer;
   display: flex;
   align-items: center;
 }
@@ -581,7 +585,6 @@ onMounted(() => {
   display: none;
 }
 
-/* Optional: Add hover effect on stats */
 .stats span:not(:nth-child(2)) {
   cursor: pointer;
 }
