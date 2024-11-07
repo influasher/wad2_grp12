@@ -95,14 +95,14 @@
                 <p v-if="loginError" class="error-message">{{ loginError }}</p>
               </form>
               <!-- OR Divider -->
-              <div class="d-flex align-items-center mb-4">
+              <!-- <div class="d-flex align-items-center mb-4">
                 <hr class="flex-grow-1" />
                 <span class="mx-4">OR</span>
                 <hr class="flex-grow-1" />
-              </div>
+              </div> -->
 
               <!-- Google Sign-In Button -->
-              <div class="text-center mb-3">
+              <!-- <div class="text-center mb-3">
                 <button @click="signInWithGoogle" class="btn google-btn w-100">
                   <img
                     src="../assets/images/google.png"
@@ -111,7 +111,7 @@
                   />
                   Sign in with Google
                 </button>
-              </div>
+              </div> -->
             </div>
 
             <!-- End of Login Form -->
@@ -182,14 +182,14 @@
               </form>
 
               <!-- OR Divider -->
-              <div class="d-flex align-items-center mb-4">
+              <!-- <div class="d-flex align-items-center mb-4">
                 <hr class="flex-grow-1" />
                 <span class="mx-4">OR</span>
                 <hr class="flex-grow-1" />
-              </div>
+              </div> -->
 
               <!-- Google Sign-Up Button -->
-              <div class="text-center mb-3">
+              <!-- <div class="text-center mb-3">
                 <button @click="signInWithGoogle" class="btn google-btn w-100">
                   <img
                     src="../assets/images/google.png"
@@ -198,7 +198,7 @@
                   />
                   Sign up with Google
                 </button>
-              </div>
+              </div> -->
             </div>
             <!-- End of Register Form -->
           </div>
@@ -218,13 +218,15 @@ import { useRouter } from "vue-router";
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
 
-const config = useRuntimeConfig();
-const supabase = createClient(
-  config.public.supabaseUrl,
-  config.public.supabaseKey
-);
+// const config = useRuntimeConfig();
+// const supabase = createClient(
+//   config.public.supabaseUrl,
+//   config.public.supabaseKey
+// );
 
+const client = useSupabaseClient();
 const router = useRouter();
+const user = useSupabaseUser();
 
 // Login form data
 const loginEmail = ref("");
@@ -237,16 +239,23 @@ const registerPassword = ref("");
 const registerRepeatPassword = ref("");
 const signupError = ref("");
 
+watchEffect(() => {
+  if (user.value) {
+    router.push("/");
+  }
+});
+
 // Handle Sign In
 const handleSignIn = async () => {
   loginError.value = "";
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error } = await client.auth.signInWithPassword({
     email: loginEmail.value,
     password: loginPassword.value,
   });
   if (error) {
     loginError.value = error.message;
   } else {
+    console.log(user.value);
     router.push("/"); // Redirect to home page after successful sign-in
   }
 };
@@ -260,7 +269,7 @@ const handleSignUp = async () => {
     return;
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { error } = await client.auth.signUp({
     email: registerEmail.value,
     password: registerPassword.value,
   });
@@ -276,17 +285,6 @@ const handleSignUp = async () => {
     registerPassword.value = "";
     registerRepeatPassword.value = "";
   }
-};
-
-// Function to handle Google Sign-In
-const signInWithGoogle = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-  });
-  if (error) {
-    alert("Error during Google sign-in: " + error.message);
-  }
-  // Supabase will handle the redirect after authentication
 };
 </script>
 

@@ -274,13 +274,12 @@
   display: flex;
   /* justify-content: space-around;  */
   justify-content: space-evenly;
-  align-items: flex-end; 
+  align-items: flex-end;
   margin-bottom: 20px;
-   /* Centers the cards with equal spacing */
+  /* Centers the cards with equal spacing */
   gap: 30px; /* Adjust spacing as needed */
   margin-left: 10px;
   margin-right: 10px;
-  
 }
 
 .first-place {
@@ -378,6 +377,7 @@ const supabase = createClient(
   config.public.supabaseUrl,
   config.public.supabaseKey
 );
+
 const games = ref([]);
 const isLoading = ref(true);
 const leaderboard = ref([]); // Initialize leaderboard as a ref
@@ -389,10 +389,15 @@ function getBarHeight(index) {
     case 1:
       return "230px"; // Second highest for 2nd place
     case 2:
-      return "200px"; // Lowest for 3rd place
+      return "200px"; // Lowest for 3rd placeF
     default:
       return "100px";
   }
+}
+
+async function getCurrentUser() {
+  const user = useSupabaseUser();
+  console.log(user.value);
 }
 
 async function fetchGames() {
@@ -603,5 +608,6 @@ async function fetchThumbnail(game) {
 onMounted(() => {
   fetchGames();
   fetchLeaderboard();
+  getCurrentUser();
 });
 </script>
