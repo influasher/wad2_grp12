@@ -107,54 +107,52 @@
         </template>
 
         <!-- Show actual content when loaded -->
-        <div v-else class="row g-4">
+        <div
+          class="col-md-3"
+          v-for="folder in flashcardFolders"
+          :key="folder.name"
+        >
           <div
-            class="col-md-3"
-            v-for="folder in flashcardFolders"
-            :key="folder.name"
+            class="card custom-card flashcard position-relative card-container"
           >
-            <div
-              class="card custom-card flashcard position-relative card-container"
+            <!-- Card content wrapped in NuxtLink -->
+            <NuxtLink
+              :to="{
+                path: '/flashcard',
+                query: { name: folder.name, mode: 'review' },
+              }"
+              style="text-decoration: none; color: inherit"
             >
-              <!-- Card content wrapped in NuxtLink -->
-              <NuxtLink
-                :to="{
-                  path: '/flashcard',
-                  query: { name: folder.name, mode: 'review' },
-                }"
-                style="text-decoration: none; color: inherit"
-              >
-                <div class="card-body">
-                  <h5 class="card-title">{{ folder.name }}</h5>
-                  <p class="card-text text-muted">
-                    {{ folder.totalCards }} cards
-                  </p>
-                </div>
-              </NuxtLink>
+              <div class="card-body">
+                <h5 class="card-title">{{ folder.name }}</h5>
+                <p class="card-text text-muted">
+                  {{ folder.totalCards }} cards
+                </p>
+              </div>
+            </NuxtLink>
 
-              <!-- Delete button -->
-              <button
-                class="delete-btn"
-                @click.prevent="handleFlashcardDelete(folder.name)"
-                title="Delete folder"
+            <!-- Delete button -->
+            <button
+              class="delete-btn"
+              @click.prevent="handleFlashcardDelete(folder.name)"
+              title="Delete folder"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M3 6h18" />
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                </svg>
-              </button>
-            </div>
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -432,39 +430,69 @@ onMounted(() => {
   padding: 20px;
 }
 
+/* Grid container for cards */
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card base styles */
 .custom-card {
   background-color: #ffffff;
   border: 0.5px solid #e4e3e3;
   border-radius: 8px;
   transition: transform 0.2s, box-shadow 0.2s;
-  overflow: auto;
-  height: auto;
-  padding: 0;
+  min-width: 280px; /* Minimum width for cards */
+  height: 100%;
 }
 
-.custom-card::-webkit-scrollbar {
-  display: none;
+/* Upload card specific styles */
+.upload-card {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 
-.custom-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+.upload-card .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Card content styles */
+.card-body {
+  padding: 1.25rem;
 }
 
 .card-title {
   font-weight: bold;
   color: #333;
+  margin-bottom: 0.5rem;
 }
 
 .card-text {
   color: #666;
+  margin-bottom: 0.5rem;
 }
 
+/* Card hover effects */
+.custom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Container for card positioning */
 .card-container {
   position: relative;
-  overflow: visible;
+  height: 100%;
 }
 
+/* Delete button styles */
 .delete-btn {
   position: absolute;
   bottom: 8px;
@@ -496,16 +524,14 @@ onMounted(() => {
   transform: scale(1.1);
 }
 
-.card-body {
-  padding-bottom: 2.5rem;
-}
-
+/* Note card specific styles */
 .note-card .card-title {
   color: #374151;
   font-weight: 600;
   position: relative;
   padding-left: 24px;
 }
+
 .note-card .card-title::before {
   content: "";
   position: absolute;
@@ -519,6 +545,7 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 
+/* Flashcard specific styles */
 .flashcard:hover {
   transform: translateY(-3px);
   box-shadow: 0 16px 32px rgba(139, 110, 243, 0.25);
@@ -550,6 +577,7 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 
+/* Preview container styles */
 .preview-container {
   position: relative;
   width: 100%;
@@ -574,7 +602,7 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0, 0.2, 0.4, 0.6) 30%, transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 30%, transparent);
   padding: 20px;
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
@@ -598,5 +626,23 @@ onMounted(() => {
 .note-card .preview-overlay .card-title,
 .note-card .preview-overlay .card-text {
   color: white;
+}
+
+/* Section title styles */
+.section-title {
+  margin-bottom: 1rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .home-page {
+    padding: 10px;
+  }
+
+  .row {
+    gap: 1rem;
+  }
 }
 </style>
