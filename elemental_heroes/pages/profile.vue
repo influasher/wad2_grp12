@@ -26,6 +26,8 @@
     />
   </div>
 
+  <div class = "content">
+
   <div class="profile" v-if="profile">
     <div class="profile-left">
       <div class="avatar-section">
@@ -108,7 +110,30 @@
         <button @click="cancelEdit" class="cancel-btn">Cancel</button>
       </div>
     </div>
+
+
   </div>
+
+  <div v-if="isLoading" class="game-skeleton">
+    <CarouselSkeleton />
+  </div>
+<div v-else class="games-container">
+  <h3 class="game-title" >Recently Played Games</h3>
+  <div v-for="(game, index) in games" :key="game.id" class="card text-center mb-4">
+  <img :src="game.publicUrl" alt="Game thumbnail" class="card-img-top" />
+  <div class="card-body">
+    <h5 class="card-title">{{ game.title }}</h5>
+    <p class="card-text" :class="{ 'truncate-text': !game.showFullDescription }">
+      {{ game.description }}
+    </p>
+    <button @click="toggleDescription(index)" class="btn btn-link">
+      {{ game.showFullDescription ? "Show Less" : "Show More" }}
+    </button>
+    <p class="text-muted mt-2" v-if="uploadStatus">{{ uploadStatus }}</p>
+  </div>
+</div>
+</div>
+</div>
 </template>
 
 <script lang="js" setup>
@@ -116,6 +141,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { useRuntimeConfig } from '#app';
 import { ref, onMounted } from 'vue';
+import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
 
 const config = useRuntimeConfig()
 const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey)
@@ -124,6 +150,8 @@ const avatar_url = ref(null)
 const background_url = ref(null)
 const isUploadingAvatar = ref(null)
 const isUploadingBackground = ref(null)
+const isLoading = ref(true);
+const games = ref([])
 
 const fileInput = ref(null);
 const backgroundInput = ref(null);
@@ -201,6 +229,7 @@ function triggerFileInput() {
 
 function triggerBackgroundInput() {
   backgroundInput.value && backgroundInput.value.click();
+  console.log("hi")
 }
 
 async function updateFirstName(firstName) {
@@ -320,9 +349,53 @@ async function updateBackgroundImage(event) {
   }
 }
 
+async function fetchGames() {
+  try {
+    isLoading.value = true;
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const { data, error } = await supabase
+      .from("games")
+      .select("id, title, description, thumbnail_url");
+
+    console.log(data);
+
+    if (error) throw error;
+    games.value = data.map(game => ({
+      ...game,
+      showFullDescription: false
+    }));
+
+    games.value = data;
+    await Promise.all(games.value.map(fetchThumbnail));
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+function toggleDescription(index) {
+  if (games.value[index]) {
+    games.value[index].showFullDescription = !games.value[index].showFullDescription;
+  }
+}
+
+
+async function fetchThumbnail(game) {
+  const { data, error } = await supabase.storage
+    .from("files_wad2")
+    .getPublicUrl(game.thumbnail_url);
+
+  if (!error) {
+    game.publicUrl = data.publicUrl;
+  }
+}
 
 onMounted(() => {
-  getProfile()
+  getProfile();
+  fetchGames();
 })
 </script>
 
@@ -340,7 +413,7 @@ onMounted(() => {
   height: auto; 
 }
 
-.profile {
+/* .profile {
   position: relative;
   top: -30vh; 
   margin: 0 auto;
@@ -353,6 +426,19 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+} */
+
+.profile {
+  position: relative;
+  top: -10vh; /* Adjust to control profile overlap */
+  margin: 0 auto;
+  width: 90%;
+  max-width: 800px;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 2; /* Ensure profile card is above games */
 }
 
 .profile-left {
@@ -551,7 +637,7 @@ onMounted(() => {
   background-color: #b2a9ec;
 }
 
-.background-img {
+/* .background-img {
   position: relative;
   width: 100%;
   max-height: 600px;
@@ -560,6 +646,18 @@ onMounted(() => {
 
 .background-img img {
   width: 100%;
+} */
+
+.background-img {
+  width: 100%;
+  max-height: 50vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.background-img img {
+  width: 100%;
+  height: auto;
 }
 
 .edit-background-icon {
@@ -575,6 +673,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  z-index: 10;
 }
 
 .edit-background-icon:hover {
@@ -647,6 +746,69 @@ onMounted(() => {
 .friend-btn:active {
   transform: scale(0.95);
 }
+
+.content {
+  position: relative;
+  margin-top: -20vh; /* Adjust this to control overlap */
+  padding-top: 20vh; /* Keeps space above profile for overlap */
+}
+
+.games-container, .game-skeleton {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+  margin-top: 0vh; /* Adjust to control games overlap */
+  z-index: 1;
+}
+.card {
+  width: 250px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.card-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.text-muted {
+  font-size: 0.8em;
+  color: #777;
+}
+
+.truncate-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limits the text to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-title {
+  text-align: center;
+  width:100%;
+  font-weight: bold;
+}
+
 
 @media (max-width: 768px) {
   .profile {
