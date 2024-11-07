@@ -151,6 +151,14 @@ const friends = ref([
   { name: 'Daniel', avatar: '../assets/images/account-avatar-profile-user-3-svgrepo-com.svg', status: 'online' },
 ]);
 
+function checkScreenWidth() {
+  isSidebarClosed.value = window.innerWidth <= 768; // Set closed if screen width <= 768px
+}
+
+onMounted(() => {
+  checkScreenWidth(); // Set initial state based on screen width
+  window.addEventListener("resize", checkScreenWidth); // Add listener for window resize
+});
 
 
 </script>
