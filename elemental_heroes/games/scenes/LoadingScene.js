@@ -39,17 +39,18 @@ import Phaser from 'phaser';
         const scaleX = this.scale.width / bg.width;
         const scaleY = this.scale.height / bg.height;
         const scale = Math.max(scaleX, scaleY); // Use the larger scale factor to ensure it covers the entire canvas
-
+        const fontFam = 'Roboto, "Goudy Bookletter 1911", Times, serif';
         bg.setScale(scale);
         console.log('hi from loading scene')
         this.createMusicToggleButton();
         // Add title text
         this.add.text(this.scale.width * 0.5, this.scale.height * 0.25 , 'Welcome to Elemental Odyssey!', {
-            fontSize: `${this.scale.width * 0.055}px`,
+            fontSize: `${this.scale.width * 0.05}px`,
             color: '#000000',
             // fontStyle: 'strong',
             backgroundColor: '#82a5f1',
-            fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+            fontStyle: 'bold',
+            // fontFamily: fontFam,
             padding: {
                 x: this.scale.width * 0.03, // Padding based on canvas size
                 y: this.scale.height * 0.04
@@ -61,7 +62,8 @@ import Phaser from 'phaser';
             color: '#000000',
             // fontStyle: 'strong',
             backgroundColor: '#56d2d4',
-            fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+            fontStyle: 'bold',
+            // fontFamily: fontFam,
             padding: {
                 x: this.scale.width * 0.03, // Padding based on canvas size
                 y: this.scale.height * 0.04
@@ -85,7 +87,8 @@ import Phaser from 'phaser';
         this.add.text(legitLabButton.x, legitLabButton.y, 'Lab Skills Training', { 
             fontSize: `${this.scale.width * 0.025}px`, 
             color: '#000000',
-            fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif', 
+            fontStyle: 'bold',
+            // fontFamily: fontFam, 
             })
             .setOrigin(0.5);
 
@@ -106,7 +109,8 @@ import Phaser from 'phaser';
         this.add.text(casualGamesButton.x, casualGamesButton.y, 'Curiosity Corner', { 
             fontSize: `${this.scale.width * 0.025}px`, 
             color: '#000000',
-            fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif', 
+            fontStyle: 'bold',
+            // fontFamily: fontFam, 
             })
             .setOrigin(0.5);
 

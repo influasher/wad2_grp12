@@ -303,17 +303,17 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
         const instructionBox = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
             .setOrigin(0.5)
-            .setScale(1.5,0.8);
+            .setScale(1.5,1);
 
     
         // Add instruction text
         const instructionText = this.add.text(this.cameras.main.centerX,
             this.cameras.main.centerY - instructionBox.displayHeight * 0.3, 
-            "Welcome to Chemical Matching!\n\nI am Felix Chemicus, and here's how to play my game:\n1. You have 30 seconds to match all \nthe elements to the card that best \ndescribes the element!\n2. For every correct match, you will \nbe awarded with 10 points.\n3. For every wrong match, you will be \ndeducted 5 points.\n\nPress the Start button when ready!", 
+            "Welcome to Chemical Matching!\n\nI am Felix Chemicus, and here's how to play my game:\n\n1. You have 30 seconds to match all \nthe elements to the card that best \ndescribes the element!\n\n2. For every correct match, you will \nbe awarded with 10 points.\n\n3. For every wrong match, you will be \ndeducted 5 points.\n\nAre you ready?", 
             {
                 fontSize: `${this.scale.width * 0.018}px`,
                 color: '#000',
-                align: 'center',
+                align: 'left',
                 wordWrap: { width: instructionBox.width - 40 }
             }
         ).setOrigin(0.5, 0);
@@ -322,7 +322,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
     
         let buttonScale = 0.25;
-        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 60;
+        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 90;
         // Add start button image
         const startButtonImage = this.add.image(this.cameras.main.centerX, buttonY, 'button')
         .setInteractive()
@@ -330,7 +330,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
         // Add text over the start button
         const startButtonText = this.add.text(this.cameras.main.centerX,
-            buttonY, 'Start Game', {
+            buttonY, "Let's go!", {
             fontSize: `${this.scale.width * 0.025}px`,
             color: '#000',
             align: 'center'

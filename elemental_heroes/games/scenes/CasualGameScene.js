@@ -37,11 +37,13 @@ export class CasualGameScene extends Phaser.Scene {
         });
 
         this.createMusicToggleButton();
+        const fontFam = 'Roboto, "Goudy Bookletter 1911", Times, serif';
         // Title text
         this.add.text(this.scale.width / 2, 50, 'Curiosity Corner', {
             fontSize: '50px',
             color: '#000',
-            fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+            fontStyle: 'bold',
+            // fontFamily: fontFam,
         }).setOrigin(0.5);
 
         // Array of game titles and associated scenes
@@ -89,7 +91,8 @@ export class CasualGameScene extends Phaser.Scene {
             this.add.text(x, y, game.title, {
                 fontSize: `${this.scale.width * 0.03}px`,
                 color: '#000',
-                fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+                fontStyle: 'bold',
+                // fontFamily: fontFam,
                 align: 'center',
             }).setOrigin(0.5);
         });

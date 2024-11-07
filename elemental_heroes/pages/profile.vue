@@ -84,7 +84,9 @@
       <div class="stats">
         <span>{{ profile.games_played }} games</span>
         <span>•</span>
-        <span>MMR: {{ profile.score }}</span>
+        <span>Score: {{ profile.score }}</span>
+        <span>•</span>
+        <span v-if="userRank">Rank: #{{ userRank }}</span>
       </div>
 
       <div class="bio">
@@ -161,6 +163,28 @@ const isEditing = ref(false);
 const editableFirstName = ref("");
 const editableLastName = ref("");
 const editableBio = ref("");
+const userRank = ref(null);  // Reactive variable to store the user's rank
+
+async function fetchLeaderboardAndUserRank(userId) {
+  try {
+    // Fetch leaderboard data sorted by score in descending order
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name, score")
+      .order("score", { ascending: false });
+
+    if (error) throw error;
+
+    // Find the user's rank based on their position in the sorted leaderboard
+    const rank = data.findIndex(profile => profile.id === userId) + 1;
+    userRank.value = rank;  // Store the rank
+
+    return data; // Return leaderboard data if needed for other uses
+  } catch (error) {
+    console.error("Error fetching leaderboard and user rank:", error.message);
+  }
+}
+
 
 async function getProfile() {
   const { data, error } = await supabase.from("profiles").select().eq("id", 1).single();
@@ -393,10 +417,12 @@ async function fetchThumbnail(game) {
   }
 }
 
-onMounted(() => {
-  getProfile();
-  fetchGames();
-})
+onMounted(async () => {
+  await getProfile();
+  await fetchGames();
+  // Hardcode the userId to 1
+  await fetchLeaderboardAndUserRank(1);
+});
 </script>
 
 <style>
