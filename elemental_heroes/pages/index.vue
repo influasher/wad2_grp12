@@ -43,13 +43,22 @@
                     >[Coming Soon]</span
                   >
                 </h3>
-                <p class="card-text">{{ game.description }}</p>
+                <p class="card-text d-none d-md-block">
+                  {{ game.description }}
+                </p>
                 <!-- <button type="button" class="btn btn-primary"   :disabled="!isGamePlayable(game.id)"
                 >Play</button> -->
                 <router-link v-if="isGamePlayable(game.id)" to="/gamelist">
-                  <button type="button" class="btn btn-primary">Play</button>
+                  <button type="button" class="btn btn-primary btn-responsive">
+                    Play
+                  </button>
                 </router-link>
-                <button v-else type="button" class="btn btn-primary" disabled>
+                <button
+                  v-else
+                  type="button"
+                  class="btn btn-primary btn-responsive"
+                  disabled
+                >
                   Play
                 </button>
               </div>
@@ -78,22 +87,23 @@
       </div>
     </div>
 
-
     <div v-if="isLoading" class="leaderboard-skeleton">
-        <CarouselSkeleton />
-      </div>
+      <CarouselSkeleton />
+    </div>
 
     <div v-else class="leaderboard-container">
-      <h3 class="leaderboard-title fs-2 ">Leaderboard</h3>
+      <h3 class="leaderboard-title fs-2">Leaderboard</h3>
       <div class="top-three press-start-2p-regular">
-        <div v-for="(profile, index) in leaderboard.slice(0, 3)" 
-            :key="profile.id" 
-            class="leaderboard-card top-card" 
-            :class="getCardClass(index)"
-            :style="{ height: getBarHeight(index) }">
+        <div
+          v-for="(profile, index) in leaderboard.slice(0, 3)"
+          :key="profile.id"
+          class="leaderboard-card top-card"
+          :class="getCardClass(index)"
+          :style="{ height: getBarHeight(index) }"
+        >
           <div class="rank-number">{{ index + 1 }}</div>
           <div class="avatar">
-            <img :src="profile.avatar || '/assets/images/coolAvatar.png'"  />
+            <img :src="profile.avatar || '/assets/images/coolAvatar.png'" />
           </div>
           <div class="user-info">
             <div class="user-name">
@@ -104,13 +114,19 @@
         </div>
       </div>
       <div class="regular-places press-start-2p-regular">
-        <div v-for="(profile, index) in leaderboard.slice(3)" :key="profile.id" class="leaderboard-card row">
+        <div
+          v-for="(profile, index) in leaderboard.slice(3)"
+          :key="profile.id"
+          class="leaderboard-card row"
+        >
           <div class="rank-number col-4">{{ index + 4 }}</div>
           <div class="avatar col-4">
-            <img :src="profile.avatar || '/assets/images/coolAvatar.png'"  />
+            <img :src="profile.avatar || '/assets/images/coolAvatar.png'" />
           </div>
           <div class="user-info text-end col-4">
-            <div class="user-name">{{ profile.first_name }} {{ profile.last_name }}</div>
+            <div class="user-name">
+              {{ profile.first_name }} {{ profile.last_name }}
+            </div>
             <div class="user-score">{{ profile.score }} pts</div>
           </div>
         </div>
@@ -183,10 +199,22 @@
   padding-bottom: 5%;
 }
 
-.btn {
+.btn-responsive {
   background-color: #8b6ef3;
-  width: 20%;
-  white-space: nowrap; /* Prevents text from wrapping */
+  padding: 0.5rem 2rem;
+  white-space: nowrap;
+  min-width: 100px;
+  max-width: 200px; /* Add this to limit maximum width */
+  width: fit-content; /* Add this to make button fit content */
+  margin-top: 1rem;
+  display: inline-block; /* Add this to maintain button width */
+}
+
+.btn-responsive:disabled {
+  background-color: #8b6ef3;
+  opacity: 0.65;
+  width: fit-content;
+  display: inline-block;
 }
 
 /* Add styles for skeleton container */
@@ -214,7 +242,7 @@
   border-radius: 15px;
 }
 
-.leaderboard-skeleton{
+.leaderboard-skeleton {
   max-width: 800px;
   margin: 0 auto;
   border-radius: 15px;
@@ -241,8 +269,8 @@
 
 .top-three {
   display: flex;
-  justify-content: space-around; 
-  align-items: flex-end; 
+  justify-content: space-around;
+  align-items: flex-end;
   margin-bottom: 20px;
 }
 
@@ -495,14 +523,13 @@ async function fetchGames() {
 //   }
 // }
 
-
 async function fetchLeaderboard() {
   try {
     // Fetch profiles with the avatar URL path included
     const { data, error } = await supabase
-      .from('profiles')
-      .select('id, first_name, last_name, score, avatar_url') // Ensure avatar_url is included
-      .order('score', { ascending: false });
+      .from("profiles")
+      .select("id, first_name, last_name, score, avatar_url") // Ensure avatar_url is included
+      .order("score", { ascending: false });
 
     if (error) throw error;
 
@@ -513,23 +540,24 @@ async function fetchLeaderboard() {
 
         if (profile.avatar_url) {
           // Use the provided avatar URL path to fetch the public URL
-          const { data: avatarData, error: avatarError } = await supabase
-            .storage
-            .from('files_wad2')
-            .getPublicUrl(profile.avatar_url);
+          const { data: avatarData, error: avatarError } =
+            await supabase.storage
+              .from("files_wad2")
+              .getPublicUrl(profile.avatar_url);
 
           // Assign the public URL or fallback to default if there's an error
-          avatarUrl = avatarError || !avatarData.publicUrl
-            ? '/assets/images/coolAvatar.png' // Local path for default avatar
-            : avatarData.publicUrl;
+          avatarUrl =
+            avatarError || !avatarData.publicUrl
+              ? "/assets/images/coolAvatar.png" // Local path for default avatar
+              : avatarData.publicUrl;
         } else {
           // If no avatar URL is provided, use the default avatar
-          avatarUrl = '/assets/images/coolAvatar.png';
+          avatarUrl = "/assets/images/coolAvatar.png";
         }
 
         return {
           ...profile,
-          avatar: avatarUrl // Assign avatar URL to each profile
+          avatar: avatarUrl, // Assign avatar URL to each profile
         };
       })
     );
@@ -537,8 +565,6 @@ async function fetchLeaderboard() {
     console.error("Error fetching leaderboard:", error.message);
   }
 }
-
-
 
 function getCardClass(index) {
   if (index === 0) return "first-place";
