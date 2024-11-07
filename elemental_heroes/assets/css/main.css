@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Tiny5&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Tiny5&display=swap");
 
 /* :root {
     --primary-font: 'Roboto', cursive;
@@ -11,60 +10,60 @@
 } */
 
 body {
-    font-family: var(--primary-font);
+  font-family: var(--primary-font);
 }
 
 /* Or create a specific class */
 .pixel-font {
-    font-family: var(--primary-font);
+  font-family: var(--primary-font);
 }
 
 :root {
-    --primary-font: 'Roboto', cursive;
-    --unity-purple: #8B6EF3;
-    --unity-dark: #1E1E1E;
-    --unity-gray: #F5F5F5;
-    --unity-text: #333333;
-    --unity-hover: #593FFF;
-  }
+  --primary-font: "Roboto", cursive;
+  --unity-purple: #8b6ef3;
+  --unity-dark: #1e1e1e;
+  --unity-gray: #f5f5f5;
+  --unity-text: #333333;
+  --unity-hover: #593fff;
+}
 
-  /* body {
+/* body {
     font-family: 'Inter', sans-serif;
     background-color: var(--unity-gray);
     color: var(--unity-text);
   } */
-  
-  .card {
-    border: none;
-    border-radius: 12px;
-    transition: transform 0.2s;
-  }
-  
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  
-  .btn-primary {
-    background-color: var(--unity-purple);
-    border: none;
-    padding: 0.5rem 1.5rem;
-    border-radius: 8px;
-  }
-  
-  .btn-primary:hover {
-    background-color: var(--unity-hover);
-  }
-  
-  .search-bar {
-    background-color: var(--unity-gray);
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    border: 1px solid #eee;
-  }
-  
-  .section-title {
-    font-weight: 600;
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
+
+.card {
+  border: none;
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background-color: var(--unity-purple);
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+}
+
+.btn-primary:hover {
+  background-color: var(--unity-hover);
+}
+
+.search-bar {
+  background-color: var(--unity-gray);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border: 1px solid #eee;
+}
+
+.section-title {
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
