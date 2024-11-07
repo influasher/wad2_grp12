@@ -78,48 +78,6 @@
 
     <!-- Main content wrapper - Takes remaining width -->
     <div class="content-wrapper d-flex flex-column w-100">
-      <!-- <Navbar expand="lg" background-color="body-tertiary">
-        <Container type="fluid">
-          <NavbarBrand>
-            <img
-              src="/assets/images/chemical-8748832_640.webp"
-              alt="Elemental Heroes Logo"
-              width="30"
-              height="30"
-              class="d-inline-block align-top"
-            />
-          </NavbarBrand>
-          <NavbarToggler /> -->
-          <!-- <button id="sidebarCollapse" @click="toggleSidebar">Toggle Sidebar</button> -->
-
-          <!-- <NavbarCollapse>
-            <NavbarNavList margin="e-auto b-2 b-lg-0">
-              <NavItem>
-                <NavLink active to="/">Home</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink active to="profile">Profile</NavLink>
-              </NavItem>
-              <NavItemDropdown>
-                <NavItemDropdownToggle>Dropdown</NavItemDropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem>Action</DropdownItem>
-                  <DropdownItem to="">Another action</DropdownItem>
-                  <DropdownItemDivider />
-                  <DropdownItem>Something else here</DropdownItem>
-                </DropdownMenu>
-              </NavItemDropdown>
-              <NavItem>
-                <NavLink disabled>Disabled</NavLink>
-              </NavItem>
-            </NavbarNavList>
-            <BForm flex role="search">
-              <BFormInput margin="e-2" type="search" placeholder="Search" />
-              <b-button color="outline-success" type="submit">Search</b-button>
-            </BForm>
-          </NavbarCollapse>
-        </Container>
-      </Navbar> -->
 
       <!-- Main content area -->
       <main class="flex-grow-1">
@@ -338,23 +296,6 @@ onMounted(() => {
   padding: 10px !important;
 }
 
-
-/* .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  height: 72px;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-}
-
-.navbar .container-fluid {
-  height: 100%;
-  display: flex;
-  align-items: center;
-} */
-
 main {
   min-height: calc(100vh - 142px); /* 72px header + 70px footer */
   overflow-y: auto;
@@ -387,39 +328,9 @@ footer p {
     margin-left: 70px;
   }
 
-  /* #sidebar .sidebar-header strong {
-    display: none;
-  } */
-
   #sidebar.closed .sidebar-header h6 {
     display: none;
   }
 
-  /* #sidebar.closed .sidebar-header strong {
-    display: block;
-  }
-
-  #sidebar.closed ul li a {
-    padding: 20px 10px;
-    font-size: 0.85em;
-  }
-
-  #sidebar.closed ul li a i {
-    margin-right: 0;
-    display: block;
-    font-size: 1.8em;
-    margin-bottom: 5px;
-  }
-
-  #sidebar.closed ul ul a {
-    padding: 10px !important;
-  }
-
-  .dropdown-toggle::after {
-    top: auto;
-    bottom: 10px;
-    right: 50%;
-    transform: translateX(50%);
-  } */
 }
 </style>
