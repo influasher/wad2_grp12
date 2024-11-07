@@ -401,22 +401,23 @@ onMounted(() => {
 
 .avatar {
   width: 30vw;
-  height: 30vw;
-  max-width: 150px; /* Constrain max size */
+  height: 30vw; /* Maintain a square aspect ratio to create a circle */
+  max-width: 150px; /* Set a maximum size */
   max-height: 150px;
-  overflow: hidden;
   border: 2px solid #8b6ef3;
-  border-radius: 50%;
+  border-radius: 50%; /* Makes the container circular */
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  position: relative; /* Set relative positioning here */
+  position: relative;
 }
 
 .avatar img {
-  width: 130%;
-  height: 130%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image fills the circle without distortion */
 }
 
 .name {
