@@ -1,6 +1,6 @@
 <template>
   <div class="game-page">
-    <div class="row mb-3 justify-content-center">
+    <div class="row custom-row mb-3 justify-content-center">
       <div class="col-12 d-flex flex-wrap justify-content-center">
         <div v-for="(tag, index) in tags" :key="index" class="mb-2 me-2">
           <button
@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="row justify-content-center">
+    <div class="row custom-row justify-content-center">
       <!-- Game container: Full width on small screens, 10 columns on large screens -->
       <div
         id="game-container"
@@ -37,26 +37,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Topics section: Full width on small screens, 2 columns on large screens -->
-      <!-- <div id="subjects" class="col-12 col-xl-3 d-flex justify-content-center">
-        <div class="card custom-card">
-            <div class="card-body p-4 ">
-              <h3 class="card-title">Topics Covered</h3>
-              <div class="row">
-                <div class="col-6 mb-2" v-for="(tag, index) in tags" :key="index">
-                  <button 
-                    class="btn rounded-pill my-1 w-100 d-flex align-items-center justify-content-start"
-                    :class="tag.colorClass"
-                  >
-                    <i :class="tag.icon" class="me-2" :style="{ color: tag.color }"></i>
-                    {{ tag.label }}
-                  </button>
-                </div>
-              </div>
-            </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -67,7 +47,6 @@ import { useRuntimeConfig } from '#app';
 import CarouselSkeleton from '~/components/CarouselSkeleton.vue';
 const config = useRuntimeConfig()
 const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey)
-// import PhaserGame from 'nuxtjs-phaser/phaserGame.vue';
 
 let gameInstance;
 const loading = ref(true);
@@ -89,27 +68,6 @@ onMounted(async () => {
   nextTick(() => setPhaserFocus());
 });
 
-
-
-
-async function updateScores() {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ score: score.value })
-    .eq('id', id.value);
-    console.log(data)
-
-  if (error) {
-    console.error('Error updating score:', error.message);
-  } else {
-    console.log('Score updated successfully');
-  }
-}
-
-function handleSubmit() {
-  updateScores();
-}
-
 const tags = ref([
   { label: 'Science', colorClass: 'bg-primary bg-gradient' },
   { label: 'Organic', colorClass: 'bg-success bg-gradient' },
@@ -122,6 +80,9 @@ const tags = ref([
 </script>
 
 <style scoped>
+.custom-row {
+  --bs-gutter-x: 0;
+}
 .game-page {
   padding: 10px;
 }
@@ -138,15 +99,6 @@ const tags = ref([
 #subjects {
   margin-top: 10px;
   padding: 20px;
-}
-
-.custom-card {
-  width: 100%;
-  border: 1px solid #1e1e1e;
-}
-
-.custom-card:hover {
-  action: none;
 }
 
 .btn-light {
@@ -168,7 +120,6 @@ const tags = ref([
   width: 60vw;
   height: 500px;
   text-align: center;
-  border: 1px solid #e4e3e3;
 }
 
 .card-body {

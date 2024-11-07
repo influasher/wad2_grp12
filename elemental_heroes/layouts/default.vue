@@ -19,58 +19,66 @@
       </div>
       <a href="/" class="sidebarButton">
         <div class="p-3">
-          <img src="../assets/images/home-svgrepo-com.svg"
-            width="35"
-          />
+          <img src="../assets/images/home-svgrepo-com.svg" width="35" />
           <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
-            >Home</span>
+            >Home</span
+          >
         </div>
       </a>
       <a href="/gamelist" class="sidebarButton">
         <div class="p-3">
-          <img src="../assets/images/gamepad-joystick-svgrepo-com.svg"
+          <img
+            src="../assets/images/gamepad-joystick-svgrepo-com.svg"
             width="35"
           />
           <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
-            >Games</span>
+            >Games</span
+          >
         </div>
       </a>
       <a href="/revision" class="sidebarButton">
         <div class="p-3">
-          <img src="../assets/images/books-svgrepo-com.svg" 
-            width="35" />
+          <img src="../assets/images/books-svgrepo-com.svg" width="35" />
           <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
-            >Revision</span>
+            >Revision</span
+          >
           <!-- </button> -->
         </div>
       </a>
       <a href="/profile" class="sidebarButton">
         <div class="p-3">
-          <img src="../assets/images/user-svgrepo-com.svg" 
-            width="35" 
-            />
+          <img src="../assets/images/user-svgrepo-com.svg" width="35" />
           <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
-            >Profile</span>
+            >Profile</span
+          >
         </div>
       </a>
-      <hr class="mx-3">
-      <span v-if="!isSidebarClosed" class="ms-1 press-start-2p-regular ps-3" style="font-size:11px"
-            >Friends</span>
-      <span v-else style="opacity: 0; font-size:11px"> Friends</span>
-      <div id="friendsList" >
+      <hr class="mx-3" />
+      <span
+        v-if="!isSidebarClosed"
+        class="ms-1 press-start-2p-regular ps-3"
+        style="font-size: 11px"
+        >Friends</span
+      >
+      <span v-else style="opacity: 0; font-size: 11px"> Friends</span>
+      <div id="friendsList">
         <!--here we will render the friends dynamicaally-->
         <div v-for="friend in friends" class="sidebarButton">
-            <div class="p-3">
-              <div class="position-relative">
-                <img :src="friend.avatar" width="35"/>
-                <span
-                  class="position-absolute bottom-0 end-0 p-1 border border-light rounded-circle"
-                  :class="friend.status === 'online' ? 'bg-success' : 'bg-secondary'"
-                  style="opacity: 1">
-                </span>
-              </div>
-              <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
-            >{{ friend.name }}</span>
+          <div class="p-3">
+            <div class="position-relative">
+              <img :src="friend.avatar" width="35" />
+              <span
+                class="position-absolute bottom-0 end-0 p-1 border border-light rounded-circle"
+                :class="
+                  friend.status === 'online' ? 'bg-success' : 'bg-secondary'
+                "
+                style="opacity: 1"
+              >
+              </span>
+            </div>
+            <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular">{{
+              friend.name
+            }}</span>
           </div>
         </div>
       </div>
@@ -78,52 +86,11 @@
 
     <!-- Main content wrapper - Takes remaining width -->
     <div class="content-wrapper d-flex flex-column w-100">
-      <!-- <Navbar expand="lg" background-color="body-tertiary">
-        <Container type="fluid">
-          <NavbarBrand>
-            <img
-              src="/assets/images/chemical-8748832_640.webp"
-              alt="Elemental Heroes Logo"
-              width="30"
-              height="30"
-              class="d-inline-block align-top"
-            />
-          </NavbarBrand>
-          <NavbarToggler /> -->
-          <!-- <button id="sidebarCollapse" @click="toggleSidebar">Toggle Sidebar</button> -->
-
-          <!-- <NavbarCollapse>
-            <NavbarNavList margin="e-auto b-2 b-lg-0">
-              <NavItem>
-                <NavLink active to="/">Home</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink active to="profile">Profile</NavLink>
-              </NavItem>
-              <NavItemDropdown>
-                <NavItemDropdownToggle>Dropdown</NavItemDropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem>Action</DropdownItem>
-                  <DropdownItem to="">Another action</DropdownItem>
-                  <DropdownItemDivider />
-                  <DropdownItem>Something else here</DropdownItem>
-                </DropdownMenu>
-              </NavItemDropdown>
-              <NavItem>
-                <NavLink disabled>Disabled</NavLink>
-              </NavItem>
-            </NavbarNavList>
-            <BForm flex role="search">
-              <BFormInput margin="e-2" type="search" placeholder="Search" />
-              <b-button color="outline-success" type="submit">Search</b-button>
-            </BForm>
-          </NavbarCollapse>
-        </Container>
-      </Navbar> -->
-
       <!-- Main content area -->
       <main class="flex-grow-1">
-        <slot />
+        <!-- <div class="background_wrap"> -->
+          <slot />
+        <!-- </div> -->
       </main>
       <footer class="footer mt-auto py-3 bg-light">
         <div class="container-fluid text-center">
@@ -144,11 +111,31 @@ function toggleSidebar() {
 }
 
 const friends = ref([
-  { name: 'Asher', avatar: '../assets/images/account-avatar-profile-user-12-svgrepo-com.svg', status: 'online' },
-  { name: 'Wesley', avatar: '../assets/images/account-avatar-profile-user-13-svgrepo-com.svg', status: 'offline' },
-  { name: 'Selina', avatar: '../assets/images/account-avatar-profile-user-4-svgrepo-com.svg', status: 'online' },
-  { name: 'Ryan', avatar: '../assets/images/account-avatar-profile-user-6-svgrepo-com.svg', status: 'offline' },
-  { name: 'Daniel', avatar: '../assets/images/account-avatar-profile-user-3-svgrepo-com.svg', status: 'online' },
+  {
+    name: "Asher",
+    avatar: "../assets/images/account-avatar-profile-user-12-svgrepo-com.svg",
+    status: "online",
+  },
+  {
+    name: "Wesley",
+    avatar: "../assets/images/account-avatar-profile-user-13-svgrepo-com.svg",
+    status: "offline",
+  },
+  {
+    name: "Selina",
+    avatar: "../assets/images/account-avatar-profile-user-4-svgrepo-com.svg",
+    status: "online",
+  },
+  {
+    name: "Ryan",
+    avatar: "../assets/images/account-avatar-profile-user-6-svgrepo-com.svg",
+    status: "offline",
+  },
+  {
+    name: "Daniel",
+    avatar: "../assets/images/account-avatar-profile-user-3-svgrepo-com.svg",
+    status: "online",
+  },
 ]);
 
 function checkScreenWidth() {
@@ -159,8 +146,6 @@ onMounted(() => {
   checkScreenWidth(); // Set initial state based on screen width
   window.addEventListener("resize", checkScreenWidth); // Add listener for window resize
 });
-
-
 </script>
 
 <style scoped>
@@ -201,7 +186,7 @@ onMounted(() => {
 .elementalHome {
   color: inherit;
   text-decoration: none;
-  transition: ease 0.3s
+  transition: ease 0.3s;
 }
 
 /* Div with Elemental Heroes */
@@ -252,7 +237,6 @@ onMounted(() => {
   background: none;
 }
 
-
 /* Update the button styles for notActive state */
 #sidebar.closed .sidebar-header button#sidebarCollapse {
   display: block;
@@ -277,7 +261,7 @@ onMounted(() => {
 }
 
 .sidebarButton.active {
-  background-color: #B3A8E7; /* Modify this color for the active state */
+  background-color: #b3a8e7; /* Modify this color for the active state */
 }
 
 .sidebarButton > div {
@@ -287,7 +271,6 @@ onMounted(() => {
   padding: 0;
   transition: padding 0.3s ease;
 }
-
 
 /* Smooth transition for showing/hiding the text */
 .sidebarButton span {
@@ -301,7 +284,7 @@ onMounted(() => {
 }
 
 /* Friends List */
-#friendsList{
+#friendsList {
   overflow-y: auto;
   flex-grow: 1;
 }
@@ -312,7 +295,7 @@ onMounted(() => {
 }
 
 #friendsList:hover::-webkit-scrollbar {
-  display:block;
+  display: block;
 }
 
 #friendsList::-webkit-scrollbar-thumb {
@@ -333,34 +316,37 @@ onMounted(() => {
   margin-left: 70px;
 }
 
-
 #sidebar.closed ul ul a {
   padding: 10px !important;
 }
-
-
-/* .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  height: 72px;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-}
-
-.navbar .container-fluid {
-  height: 100%;
-  display: flex;
-  align-items: center;
-} */
 
 main {
   min-height: calc(100vh - 142px); /* 72px header + 70px footer */
   overflow-y: auto;
   position: relative;
-  padding-bottom: 20px;
 }
+
+/* .background_wrap {
+  position: relative;
+}
+
+.background_wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("../assets/table-with-solutions-microscope-white.jpg") no-repeat center center;
+  background-size: cover;
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.background_wrap > * {
+  position: relative;
+  z-index: 1;
+} */
 
 footer {
   padding: 10px;
@@ -387,39 +373,8 @@ footer p {
     margin-left: 70px;
   }
 
-  /* #sidebar .sidebar-header strong {
-    display: none;
-  } */
-
   #sidebar.closed .sidebar-header h6 {
     display: none;
   }
-
-  /* #sidebar.closed .sidebar-header strong {
-    display: block;
-  }
-
-  #sidebar.closed ul li a {
-    padding: 20px 10px;
-    font-size: 0.85em;
-  }
-
-  #sidebar.closed ul li a i {
-    margin-right: 0;
-    display: block;
-    font-size: 1.8em;
-    margin-bottom: 5px;
-  }
-
-  #sidebar.closed ul ul a {
-    padding: 10px !important;
-  }
-
-  .dropdown-toggle::after {
-    top: auto;
-    bottom: 10px;
-    right: 50%;
-    transform: translateX(50%);
-  } */
 }
 </style>

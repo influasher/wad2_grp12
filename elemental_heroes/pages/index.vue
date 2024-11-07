@@ -244,10 +244,11 @@
 }
 
 .leaderboard-skeleton {
-  max-width: 800px;
-  margin: 0 auto;
+  /* max-width: 800px; */
+  margin: 10px;
+  /* margin: 0 auto; */
   border-radius: 15px;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .leaderboard-title {
@@ -276,7 +277,7 @@
   align-items: flex-end; 
   margin-bottom: 20px;
    /* Centers the cards with equal spacing */
-  gap: 50px; /* Adjust spacing as needed */
+  gap: 30px; /* Adjust spacing as needed */
   margin-left: 10px;
   margin-right: 10px;
   
