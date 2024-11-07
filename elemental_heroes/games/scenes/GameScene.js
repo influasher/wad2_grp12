@@ -28,7 +28,7 @@ export class GameScene extends Phaser.Scene {
             frameHeight: 24 // Set frame height as needed (adjust if different)
         });
 
-        this.load.image('table', '/assets/images/table.png');
+        this.load.image('table', '/assets/images/desk.png');
         this.load.image('clipboard','/assets/images/clipboard.png');
         this.load.image('tick', '/assets/images/tick.png');
         this.load.image('cross', '/assets/images/cross.png');
@@ -349,37 +349,37 @@ export class GameScene extends Phaser.Scene {
         overlay.setDepth(4)
 
         // Add inventory sprite to the center
-                let inventorySlots = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'inventorySlots')
-                .setOrigin(0.5)
-                .setScale(3)
-                .setDepth(5); // Adjust the scale as necessary
+        let inventorySlots = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'inventorySlots')
+        .setOrigin(0.5)
+        .setScale(3)
+        .setDepth(5); // Adjust the scale as necessary
     
-            // Position the items within the inventory slots
-            // Difference between items in columns and rows = 50
-            let slotPositions = [
-                // Row 1
-                { x: -75, y: -75 },
-                { x: -25, y: -75 },
-                { x: 25, y: -75 },
-                { x: 75, y: -75 },
-                // Row 2
-                { x: -75, y: -25 },
-                { x: -25, y: -25 },
-                { x: 25, y: -25 },
-                { x: 75, y: -25 },
-                // Row 3
-                { x: -75, y: 25 },
-                { x: -25, y: 25 },
-                { x: 25, y: 25 },
-                { x: 75, y: 25 },
-                // Row 4
-                { x: -75, y: 75 },
-                { x: -25, y: 75 },
-                { x: 25, y: 75 },
-                { x: 75, y: 75 }
-            ];
-    
-            let inventoryItems = [];
+        // Position the items within the inventory slots
+        // Difference between items in columns and rows = 50
+        let slotPositions = [
+            // Row 1
+            { x: -75, y: -75 },
+            { x: -25, y: -75 },
+            { x: 25, y: -75 },
+            { x: 75, y: -75 },
+            // Row 2
+            { x: -75, y: -25 },
+            { x: -25, y: -25 },
+            { x: 25, y: -25 },
+            { x: 75, y: -25 },
+            // Row 3
+            { x: -75, y: 25 },
+            { x: -25, y: 25 },
+            { x: 25, y: 25 },
+            { x: 75, y: 25 },
+            // Row 4
+            { x: -75, y: 75 },
+            { x: -25, y: 75 },
+            { x: 25, y: 75 },
+            { x: 75, y: 75 }
+        ];
+
+        let inventoryItems = [];
     
             // Loop through teacher's inventory and add items as icons
             this.teacherInventory.forEach((item, index) => {
@@ -415,13 +415,13 @@ export class GameScene extends Phaser.Scene {
     
             // Instruction text telling the user how to close the inventory
             let instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + inventorySlots.displayHeight / 2 + 25, 'Press ESC to close', {
-                fontSize: '15px',
+                fontSize: '20px',
                 color: '#ffffff',
                 padding: { x: 10, y: 10 }
             }).setOrigin(0.5).setDepth(6);
 
-            let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth - 15, this.cameras.main.centerY , 'Click on the items \nyou need to add them \nto your inventory', {
-                fontSize: '15px',
+            let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth + 30, this.cameras.main.centerY , 'Click on the items \nyou need to add them \nto your inventory', {
+                fontSize: '20px',
                 color: '#ffffff',  // White text color
                 padding: { x: 10, y: 10 }
             }).setOrigin(0.5).setDepth(6);
@@ -515,13 +515,13 @@ export class GameScene extends Phaser.Scene {
         
                 // Instruction text telling the user how to close the inventory
                 let instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + inventorySlots.displayHeight / 2 + 25, 'Press ESC to close', {
-                    fontSize: '15px',
+                    fontSize: '20px',
                     color: '#ffffff',
                     padding: { x: 10, y: 10 }
                 }).setOrigin(0.5).setDepth(6);
     
                 let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth - 15, this.cameras.main.centerY , 'Click on the items \nto remove them from \nyour inventory', {
-                    fontSize: '15px',
+                    fontSize: '20px',
                     color: '#ffffff',  // White text color
                     padding: { x: 10, y: 10 }
                 }).setOrigin(0.5).setDepth(6);
@@ -597,7 +597,7 @@ export class GameScene extends Phaser.Scene {
             // Create the clipboard image in the center of the screen
             let clipboard = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
                 .setOrigin(0.5)
-                .setScale(0.50,0.50)
+                .setScale(1,0.75)
                 .setDepth(5);  // Adjust the scale of the clipboard as necessary
         
             // Position variables for checklist items on the clipboard
@@ -611,7 +611,7 @@ export class GameScene extends Phaser.Scene {
             items.forEach((item, index) => {
                 // Create the index and item text
                 let itemText = this.add.text(startX, startY + (index * spacingY), `${index + 1}. ${item}`, {
-                    fontSize: '13px',
+                    fontSize: '20px',
                     color: '#000',
                     align: 'left',
                     padding: { x: 5, y: 5 }
@@ -636,14 +636,14 @@ export class GameScene extends Phaser.Scene {
     
             // Instruction text telling the user how to close the popup
             let instructionText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + clipboard.displayHeight / 2 + 50, 'Press ESC to close', {
-                fontSize: '15px',
+                fontSize: '20px',
                 color: '#ffffff',  // White text color
                 // backgroundColor: '#000000',  // Optional: black background for text
                 padding: { x: 10, y: 10 }
             }).setOrigin(0.5).setDepth(6);
 
             let hint = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + clipboard.displayHeight / 2 + 20, 'Hint: You can get missing items from the teacher\'s table', {
-                fontSize: '15px',
+                fontSize: '20px',
                 color: '#ffffff',  // White text color
                 // backgroundColor: '#000000',  // Optional: black background for text
                 padding: { x: 10, y: 10 }
@@ -683,7 +683,7 @@ export class GameScene extends Phaser.Scene {
         // Function to display the play button
         showPlayButton() {
             console.log('Game button');
-            const buttonScale = 0.1 // Adjust scale as needed
+            const buttonScale = 0.2 // Adjust scale as needed
             const legitLabButton = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY + 100, 'button')
                 .setInteractive().setScale(buttonScale).setDepth(7)
                 .on('pointerdown', () => {
@@ -698,7 +698,7 @@ export class GameScene extends Phaser.Scene {
                 });
 
             const buttonText = this.add.text(legitLabButton.x, legitLabButton.y, 'Start Game', { 
-                fontSize: '10px', 
+                fontSize: '20px', 
                 color: '#000000',
             }).setOrigin(0.5).setDepth(7);
 

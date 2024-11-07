@@ -270,24 +270,24 @@ export class QA extends Phaser.Scene {
         // Add a background box for the instructions
         const instructionBox = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
             .setOrigin(0.5)
-            .setScale(1.5, 0.8);
+            .setScale(1.5, 1);
 
     
         // Add instruction text
         const instructionText = this.add.text(this.cameras.main.centerX,
             this.cameras.main.centerY - instructionBox.displayHeight / 4, 
-            "Welcome to Lab Skills Training [QA]!\n\nI am Felix Chemicus, and here's how to play my game:\n1. Drag and drop NaOH and NH3 bottles \nonto test tubes.\n2. Observe the reactions and note the \nprecipitate formed.\n3. Use the reset button to clear a \ntest tube.\n\nPress the Start button when ready!", 
+            "Welcome to Lab Skills Training [QA]!\n\nI am Felix Chemicus, and here's how to play my game:\n\n1. Drag and drop NaOH and NH3 bottles \nonto test tubes.\n\n2. Observe the reactions and note the \nprecipitate formed.\n\n3. Use the reset button to clear a \ntest tube.\n\nAre you ready?", 
             {
                 fontSize: `${this.scale.width * 0.018}px`,
                 color: '#000',
-                align: 'center',
+                align: 'left',
                 wordWrap: { width: instructionBox.width - 40 }
             }
         ).setOrigin(0.5, 0);
 
     
         let buttonScale = 0.25;
-        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 60;
+        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 90;
         // Add start button image
         const startButtonImage = this.add.image(this.cameras.main.centerX, buttonY, 'button')
         .setInteractive()
@@ -295,7 +295,7 @@ export class QA extends Phaser.Scene {
 
         // Add text over the start button
         const startButtonText = this.add.text(this.cameras.main.centerX,
-            buttonY, 'Start Game', {
+            buttonY, "Let's go!", {
             fontSize: `${this.scale.width * 0.025}px`,
             color: '#000',
             align: 'center'
