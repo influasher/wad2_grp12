@@ -175,9 +175,18 @@ export class GameScene extends Phaser.Scene {
         this.tables = this.physics.add.staticGroup();
         this.createMusicToggleButton();
         // Add the teacher's table at the top of the screen
-        let teacherTable = this.tables.create(this.scale.width / 2, 50, 'table').setScale(2,1).refreshBody();
+        let teacherTable = this.tables.create(this.scale.width / 2, 75, 'table').setScale(2.5,2).refreshBody();
+        const collisionWidth = teacherTable.displayWidth;  // Adjust this value to control the width
+        const collisionHeight = teacherTable.displayHeight * 0.5; // Adjust this value to control the height
+
+        // Set custom collision box within the table image
+        teacherTable.body.setSize(collisionWidth, collisionHeight);
+        teacherTable.body.setOffset(
+            (teacherTable.displayWidth - collisionWidth) / 2, // Center the collision box horizontally
+            teacherTable.displayHeight * 0.1 // Offset vertically to position it at the bottom half (adjust as needed)
+        );
         teacherTable.name = "teacherTable"; // Set the teacher's table name
-        this.add.text(teacherTable.x, teacherTable.y, "Teacher's Table", { fontSize: '16px', color: '#000' }).setOrigin(0.5);
+        this.add.text(teacherTable.x, teacherTable.y - 20, "Teacher's Table", { fontSize: '16px', color: '#fff' }).setOrigin(0.5);
 
         const padding = this.scale.width / 30 ; // Padding from the screen edges
         const xLeft = padding;
@@ -227,13 +236,27 @@ export class GameScene extends Phaser.Scene {
             console.log(tableName)
             const { x, y } = positions[index];
 
-            let table = this.tables.create(x, y, 'table').setScale(1.75).refreshBody();
+            let table = this.tables.create(x, y, 'table').setScale(2).refreshBody();
             console.log(table);
-            table.body.setSize(table.displayWidth, table.displayHeight);
+
+            // Set a custom collision area size
+            const collisionWidth = table.displayWidth;  // Adjust this value to control the width
+            const collisionHeight = table.displayHeight * 0.5; // Adjust this value to control the height
+
+            // Set custom collision box within the table image
+            table.body.setSize(collisionWidth, collisionHeight);
+            table.body.setOffset(
+                (table.displayWidth - collisionWidth) / 2, // Center the collision box horizontally
+                table.displayHeight * 0.1 // Offset vertically to position it at the bottom half (adjust as needed)
+            );
+            // table.body.setSize(table.displayWidth, table.displayHeight);
+            table.setDepth(1); 
             table.name = tableName;
-            this.add.text(x, y, tableName, { fontSize: `${this.scale.width * 0.02}px`, color: '#000' }).setOrigin(0.5);
+            this.add.text(x, y - 20, tableName, { fontSize: `${this.scale.width * 0.02}px`, color: '#fff' }).setOrigin(0.5).setDepth(2);
             // i ++
         });
+
+        this.player.setDepth(2);
 
         let groupLength = this.tables.getLength();
         console.log('Number of items in the group:', groupLength);
@@ -252,7 +275,7 @@ export class GameScene extends Phaser.Scene {
             fill: '#fff',
             backgroundColor: '#000',
             padding: { x: 10, y: 5 }
-        }).setOrigin(0.5).setVisible(false); // Initially hidden
+        }).setOrigin(0.5).setVisible(false).setDepth(3); // Initially hidden
 
         // Add collider to detect when the player collides with a table
         this.physics.add.collider(this.player, this.tables, (player, table) => {
@@ -323,11 +346,13 @@ export class GameScene extends Phaser.Scene {
         let overlay = this.add.graphics();
         overlay.fillStyle(0x000000, 0.70); // Black with 65% opacity
         overlay.fillRect(0, 0, this.scale.width, this.scale.height); // Cover the whole screen
+        overlay.setDepth(4)
 
         // Add inventory sprite to the center
                 let inventorySlots = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'inventorySlots')
                 .setOrigin(0.5)
-                .setScale(3); // Adjust the scale as necessary
+                .setScale(3)
+                .setDepth(5); // Adjust the scale as necessary
     
             // Position the items within the inventory slots
             // Difference between items in columns and rows = 50
@@ -362,7 +387,7 @@ export class GameScene extends Phaser.Scene {
                     let slotPos = slotPositions[index];
     
                     // Create the sprite for the inventory item (adjust the frame index)
-                    let itemIcon = this.add.sprite(this.cameras.main.centerX + slotPos.x, this.cameras.main.centerY + slotPos.y, 'labIcons', this.getFrameIndex(item)).setScale(1.5);
+                    let itemIcon = this.add.sprite(this.cameras.main.centerX + slotPos.x, this.cameras.main.centerY + slotPos.y, 'labIcons', this.getFrameIndex(item)).setScale(1.5).setDepth(6);
                     
                     itemIcon.setInteractive();
     
@@ -393,13 +418,13 @@ export class GameScene extends Phaser.Scene {
                 fontSize: '15px',
                 color: '#ffffff',
                 padding: { x: 10, y: 10 }
-            }).setOrigin(0.5);
+            }).setOrigin(0.5).setDepth(6);
 
             let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth - 15, this.cameras.main.centerY , 'Click on the items \nyou need to add them \nto your inventory', {
                 fontSize: '15px',
                 color: '#ffffff',  // White text color
                 padding: { x: 10, y: 10 }
-            }).setOrigin(0.5);
+            }).setOrigin(0.5).setDepth(6);
     
             // Allow closing the inventory by pressing the Escape key
             let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
@@ -422,11 +447,13 @@ export class GameScene extends Phaser.Scene {
             let overlay = this.add.graphics();
             overlay.fillStyle(0x000000, 0.70); // Black with 65% opacity
             overlay.fillRect(0, 0, this.scale.width, this.scale.height); // Cover the whole screen
+            overlay.setDepth(4)
     
             // Add inventory sprite to the center
                     let inventorySlots = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'inventorySlots')
                     .setOrigin(0.5)
-                    .setScale(3); // Adjust the scale as necessary
+                    .setScale(3)
+                    .setDepth(5); // Adjust the scale as necessary
         
                 // Position the items within the inventory slots
                 // Difference between items in columns and rows = 50
@@ -460,7 +487,7 @@ export class GameScene extends Phaser.Scene {
                     if (index < slotPositions.length) {
                         let slotPos = slotPositions[index];
                         // Create the sprite for the inventory item (adjust the frame index)
-                        let itemIcon = this.add.sprite(this.cameras.main.centerX + slotPos.x, this.cameras.main.centerY + slotPos.y, 'labIcons', this.getFrameIndex(item)).setScale(1.5);
+                        let itemIcon = this.add.sprite(this.cameras.main.centerX + slotPos.x, this.cameras.main.centerY + slotPos.y, 'labIcons', this.getFrameIndex(item)).setScale(1.5).setDepth(6);
                         
                         itemIcon.setInteractive();
         
@@ -491,13 +518,13 @@ export class GameScene extends Phaser.Scene {
                     fontSize: '15px',
                     color: '#ffffff',
                     padding: { x: 10, y: 10 }
-                }).setOrigin(0.5);
+                }).setOrigin(0.5).setDepth(6);
     
                 let hint = this.add.text(this.cameras.main.centerX + inventorySlots.displayWidth - 15, this.cameras.main.centerY , 'Click on the items \nto remove them from \nyour inventory', {
                     fontSize: '15px',
                     color: '#ffffff',  // White text color
                     padding: { x: 10, y: 10 }
-                }).setOrigin(0.5);
+                }).setOrigin(0.5).setDepth(6);
         
                 // Allow closing the inventory by pressing the Escape key
                 let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
@@ -565,11 +592,13 @@ export class GameScene extends Phaser.Scene {
             let overlay = this.add.graphics();
             overlay.fillStyle(0x000000, 0.70);  // Black with 65% opacity
             overlay.fillRect(0, 0, this.scale.width, this.scale.height);  // Cover the whole screen
+            overlay.setDepth(4)
         
             // Create the clipboard image in the center of the screen
             let clipboard = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'clipboard')
                 .setOrigin(0.5)
-                .setScale(0.50,0.50);  // Adjust the scale of the clipboard as necessary
+                .setScale(0.50,0.50)
+                .setDepth(5);  // Adjust the scale of the clipboard as necessary
         
             // Position variables for checklist items on the clipboard
             let startX = this.cameras.main.centerX - clipboard.displayWidth/4;  // Starting X position for the index and item text
@@ -586,7 +615,7 @@ export class GameScene extends Phaser.Scene {
                     color: '#000',
                     align: 'left',
                     padding: { x: 5, y: 5 }
-                }).setOrigin(0);
+                }).setOrigin(0).setDepth(6);
     
                 checklistItems.push(itemText);  // Add to the array to destroy later
     
@@ -595,11 +624,11 @@ export class GameScene extends Phaser.Scene {
                 if (this.inventory.includes(item)) {
                     // Show tick image
                     console.log('Player has ' + item)
-                    icon = this.add.image(iconX, startY + (index * spacingY) + 15, 'tick').setScale(0.2).setOrigin(0.5);
+                    icon = this.add.image(iconX, startY + (index * spacingY) + 15, 'tick').setScale(0.2).setOrigin(0.5).setDepth(6);
                 } else {
                     // Show cross image
                     console.log('Player does not have ' + item)
-                    icon = this.add.image(iconX, startY + (index * spacingY) + 15, 'cross').setScale(0.2).setOrigin(0.5);
+                    icon = this.add.image(iconX, startY + (index * spacingY) + 15, 'cross').setScale(0.2).setOrigin(0.5).setDepth(6);
                 }
     
                 checklistItems.push(icon);  // Add the tick/cross to the array to destroy later
@@ -611,14 +640,14 @@ export class GameScene extends Phaser.Scene {
                 color: '#ffffff',  // White text color
                 // backgroundColor: '#000000',  // Optional: black background for text
                 padding: { x: 10, y: 10 }
-            }).setOrigin(0.5);
+            }).setOrigin(0.5).setDepth(6);
 
             let hint = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + clipboard.displayHeight / 2 + 20, 'Hint: You can get missing items from the teacher\'s table', {
                 fontSize: '15px',
                 color: '#ffffff',  // White text color
                 // backgroundColor: '#000000',  // Optional: black background for text
                 padding: { x: 10, y: 10 }
-            }).setOrigin(0.5);
+            }).setOrigin(0.5).setDepth(6);
 
             this.checkInventoryForChecklist();
             
@@ -646,7 +675,7 @@ export class GameScene extends Phaser.Scene {
                 const hasAllItems = checklist.every(item => this.inventory.includes(item));
 
                 if (hasAllItems) {
-                    this.showPlayButton(); // Show the button if all items are present
+                    this.showPlayButton().setDepth(6); // Show the button if all items are present
                 }
             }
         }
@@ -656,7 +685,7 @@ export class GameScene extends Phaser.Scene {
             console.log('Game button');
             const buttonScale = 0.1 // Adjust scale as needed
             const legitLabButton = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY + 100, 'button')
-                .setInteractive().setScale(buttonScale)
+                .setInteractive().setScale(buttonScale).setDepth(7)
                 .on('pointerdown', () => {
                     this.sound.play('glassClick')
                     console.log(this.currentTable.name);
@@ -671,7 +700,7 @@ export class GameScene extends Phaser.Scene {
             const buttonText = this.add.text(legitLabButton.x, legitLabButton.y, 'Start Game', { 
                 fontSize: '10px', 
                 color: '#000000',
-            }).setOrigin(0.5);
+            }).setOrigin(0.5).setDepth(7);
 
             let escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
             escapeKey.on('down', () => {
