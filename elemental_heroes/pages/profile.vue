@@ -26,116 +26,120 @@
     />
   </div>
 
-  <div class = "content">
-
-  <div class="profile" v-if="profile">
-    <div class="profile-left">
-      <div class="avatar-section">
-        <div class="avatar">
-          <img :src="avatar_url" alt="" />
-          <div class="edit-icon" @click="triggerFileInput">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M12 20h9" />
-              <path
-                d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
-              />
-            </svg>
+  <div class="content">
+    <div class="profile" v-if="profile">
+      <div class="profile-left">
+        <div class="avatar-section">
+          <div class="avatar">
+            <img :src="avatar_url" alt="" />
+            <div class="edit-icon" @click="triggerFileInput">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 20h9" />
+                <path
+                  d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
+                />
+              </svg>
+            </div>
           </div>
+          <input
+            type="file"
+            accept="image/*"
+            @change="updateAvatar"
+            ref="fileInput"
+            class="file-input"
+          />
         </div>
-        <input
-          type="file"
-          accept="image/*"
-          @change="updateAvatar"
-          ref="fileInput"
-          class="file-input"
-        />
+      </div>
+
+      <div class="profile-right">
+        <div class="name">
+          <template v-if="isEditing">
+            <input
+              v-model="editableFirstName"
+              class="name-input"
+              placeholder="First Name"
+            />
+            <input
+              v-model="editableLastName"
+              class="name-input"
+              placeholder="Last Name"
+            />
+          </template>
+          <template v-else>
+            <h1>{{ profile.first_name }} {{ profile.last_name }}</h1>
+          </template>
+        </div>
+
+        <div class="stats">
+          <span>{{ profile.games_played }} games</span>
+          <span>•</span>
+          <span>Score: {{ profile.score }}</span>
+          <span>•</span>
+          <span v-if="userRank">Rank: #{{ userRank }}</span>
+        </div>
+
+        <div class="bio">
+          <template v-if="isEditing">
+            <textarea
+              v-model="editableBio"
+              class="bio-input"
+              placeholder="Your bio"
+            ></textarea>
+          </template>
+          <template v-else>
+            <p>{{ profile.bio }}</p>
+          </template>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button v-if="!isEditing" @click="startEdit" class="edit-profile-btn">
+          Edit Profile
+        </button>
+        <div v-if="isEditing" class="edit-actions">
+          <button @click="saveChanges" class="save-btn">Save</button>
+          <button @click="cancelEdit" class="cancel-btn">Cancel</button>
+        </div>
       </div>
     </div>
 
-    <div class="profile-right">
-      <div class="name">
-        <template v-if="isEditing">
-          <input
-            v-model="editableFirstName"
-            class="name-input"
-            placeholder="First Name"
-          />
-          <input
-            v-model="editableLastName"
-            class="name-input"
-            placeholder="Last Name"
-          />
-        </template>
-        <template v-else>
-          <h1>{{ profile.first_name }} {{ profile.last_name }}</h1>
-        </template>
-      </div>
-
-      <div class="stats">
-        <span>{{ profile.games_played }} games</span>
-        <span>•</span>
-        <span>Score: {{ profile.score }}</span>
-        <span>•</span>
-        <span v-if="userRank">Rank: #{{ userRank }}</span>
-      </div>
-
-      <div class="bio">
-        <template v-if="isEditing">
-          <textarea
-            v-model="editableBio"
-            class="bio-input"
-            placeholder="Your bio"
-          ></textarea>
-        </template>
-        <template v-else>
-          <p>{{ profile.bio }}</p>
-        </template>
+    <div v-if="isLoading" class="game-skeleton">
+      <CarouselSkeleton />
+    </div>
+    <div v-else class="games-container">
+      <h3 class="game-title">Recently Played Games</h3>
+      <div
+        v-for="(game, index) in games"
+        :key="game.id"
+        class="card text-center mb-4"
+      >
+        <img :src="game.publicUrl" alt="Game thumbnail" class="card-img-top" />
+        <div class="card-body">
+          <h5 class="card-title">{{ game.title }}</h5>
+          <p
+            class="card-text"
+            :class="{ 'truncate-text': !game.showFullDescription }"
+          >
+            {{ game.description }}
+          </p>
+          <button @click="toggleDescription(index)" class="btn btn-link">
+            {{ game.showFullDescription ? "Show Less" : "Show More" }}
+          </button>
+          <p class="text-muted mt-2" v-if="uploadStatus">{{ uploadStatus }}</p>
+        </div>
       </div>
     </div>
-
-    <div class="action-buttons">
-      <button v-if="!isEditing" @click="startEdit" class="edit-profile-btn">
-        Edit Profile
-      </button>
-      <div v-if="isEditing" class="edit-actions">
-        <button @click="saveChanges" class="save-btn">Save</button>
-        <button @click="cancelEdit" class="cancel-btn">Cancel</button>
-      </div>
-    </div>
-
-
   </div>
-
-  <div v-if="isLoading" class="game-skeleton">
-    <CarouselSkeleton />
-  </div>
-<div v-else class="games-container">
-  <h3 class="game-title" >Recently Played Games</h3>
-  <div v-for="(game, index) in games" :key="game.id" class="card text-center mb-4">
-  <img :src="game.publicUrl" alt="Game thumbnail" class="card-img-top" />
-  <div class="card-body">
-    <h5 class="card-title">{{ game.title }}</h5>
-    <p class="card-text" :class="{ 'truncate-text': !game.showFullDescription }">
-      {{ game.description }}
-    </p>
-    <button @click="toggleDescription(index)" class="btn btn-link">
-      {{ game.showFullDescription ? "Show Less" : "Show More" }}
-    </button>
-    <p class="text-muted mt-2" v-if="uploadStatus">{{ uploadStatus }}</p>
-  </div>
-</div>
-</div>
-</div>
 </template>
 
 <script lang="js" setup>
@@ -154,6 +158,10 @@ const isUploadingAvatar = ref(null)
 const isUploadingBackground = ref(null)
 const isLoading = ref(true);
 const games = ref([])
+
+//use this to retrieve user
+const user = useSupabaseUser()
+const id = user.value.id
 
 const fileInput = ref(null);
 const backgroundInput = ref(null);
@@ -192,10 +200,29 @@ async function getProfile() {
     console.error('Error fetching profile:', error.message);
   } else {
     profile.value = data;
+    console.log(id)
+
     getBackground();
     getAvatar();
+
   }
 }
+
+//use this for auth enabled app
+async function getProfile2() {
+  const { data, error } = await supabase.from("profiles2").select().eq("id", id).single();
+  if (error) {
+    console.error('Error fetching profile:', error.message);
+  } else {
+    profile.value = data;
+    console.log(id)
+
+    getBackground();
+    getAvatar();
+
+  }
+}
+
 
 // Start editing both name and bio
 function startEdit() {
@@ -236,6 +263,7 @@ async function getAvatar() {
   const { data } = await supabase.storage.from("files_wad2").getPublicUrl(profile.value.avatar_url);
   if (data) {
     avatar_url.value = data.publicUrl;
+    console.log(avatar_url.value)
   }
 }
 
@@ -418,7 +446,7 @@ async function fetchThumbnail(game) {
 }
 
 onMounted(async () => {
-  await getProfile();
+  await getProfile2();
   await fetchGames();
   // Hardcode the userId to 1
   await fetchLeaderboardAndUserRank(1);
@@ -436,7 +464,7 @@ onMounted(async () => {
 
 .background-img img {
   width: 100%;
-  height: auto; 
+  height: auto;
 }
 
 /* .profile {
@@ -597,7 +625,10 @@ onMounted(async () => {
   text-align: center;
 }
 
-.name h1, .bio, .stats, .action-buttons {
+.name h1,
+.bio,
+.stats,
+.action-buttons {
   text-align: center;
 }
 
@@ -620,7 +651,7 @@ onMounted(async () => {
 .edit-icon {
   position: absolute;
   bottom: 5px;
-  left: 50%; 
+  left: 50%;
   transform: translateX(-50%);
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
@@ -779,7 +810,8 @@ onMounted(async () => {
   padding-top: 20vh; /* Keeps space above profile for overlap */
 }
 
-.games-container, .game-skeleton {
+.games-container,
+.game-skeleton {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -831,10 +863,9 @@ onMounted(async () => {
 
 .game-title {
   text-align: center;
-  width:100%;
+  width: 100%;
   font-weight: bold;
 }
-
 
 @media (max-width: 768px) {
   .profile {

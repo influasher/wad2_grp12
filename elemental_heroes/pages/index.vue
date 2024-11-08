@@ -274,13 +274,12 @@
   display: flex;
   /* justify-content: space-around;  */
   justify-content: space-evenly;
-  align-items: flex-end; 
+  align-items: flex-end;
   margin-bottom: 20px;
-   /* Centers the cards with equal spacing */
+  /* Centers the cards with equal spacing */
   gap: 30px; /* Adjust spacing as needed */
   margin-left: 10px;
   margin-right: 10px;
-  
 }
 
 .first-place {
