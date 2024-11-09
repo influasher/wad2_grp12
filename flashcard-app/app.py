@@ -31,8 +31,8 @@ FLASHCARDS_FOLDER = os.path.join(base_dir, "flashcards_generated")
 ALLOWED_EXTENSIONS = {"pdf"}
 
 # Create necessary directories
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(FLASHCARDS_FOLDER, exist_ok=True)
+# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# os.makedirs(FLASHCARDS_FOLDER, exist_ok=True)
 
 # Create Flask app
 app = Flask(
@@ -66,25 +66,17 @@ def allowed_file(filename):
 
 
 def save_flashcards(flashcards, file_id):
-    """Save generated flashcards to a JSON file."""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{file_id}_{timestamp}.json"
-    filepath = os.path.join(app.config["FLASHCARDS_FOLDER"], filename)
-
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(flashcards, f, ensure_ascii=False, indent=2)
-
-    return filename
+    """Convert flashcards to JSON string."""
+    flashcards_json = json.dumps(flashcards, ensure_ascii=False, indent=2)
+    return flashcards_json
 
 
-def extract_text_from_pdf(pdf_path):
-    """Extract text from PDF and return a dictionary with page numbers."""
+def extract_text_from_pdf(file_contents):
+    """Extract text from PDF content and return a dictionary with page numbers."""
     text_by_page = {}
-    with open(pdf_path, "rb") as file:
-        pdf_reader = PyPDF2.PdfReader(file)
-        for page_num in range(len(pdf_reader.pages)):
-            page = pdf_reader.pages[page_num]
-            text_by_page[page_num + 1] = page.extract_text()
+    pdf_reader = PyPDF2.PdfReader(BytesIO(file_contents))
+    for page_num, page in enumerate(pdf_reader.pages, start=1):
+        text_by_page[page_num] = page.extract_text()
     return text_by_page
 
 
@@ -131,59 +123,36 @@ def get_document_context(file_id=None):
 # 2. send filepath of uploads folder into the extract_text_from_pdf
 # 3. after getting document context, delete file from local directory
 def get_document_context_supabase(file_id):
-    """Get the content of all uploaded PDFs or a specific PDF from Supabase storage."""
+    """Get the content of a specific PDF from Supabase storage."""
     context = []
 
-    BUCKET_NAME = "files_wad2"  # Replace with your bucket name
-    FOLDER_NAME = "user_pdfs"  # Replace with your folder name inside the bucket
-
-    # **1. Fetch the PDF file from Supabase Storage**
     try:
         pdf_path = f"user_pdfs/{file_id}.pdf"
-        destination = os.path.join(UPLOAD_FOLDER, f"{file_id}.pdf")
 
         print(f"Attempting to download PDF from Supabase: {pdf_path}")
 
         # Download the PDF file as bytes
-        pdf_content = supabase.storage.from_("files_wad2").download(pdf_path)
+        pdf_response = supabase.storage.from_("files_wad2").download(pdf_path)
+        pdf_content = pdf_response.content
 
         if not pdf_content:
             print(f"PDF file not found in Supabase Storage: {pdf_path}")
             return jsonify({"error": "PDF file not found in Supabase Storage."}), 404
 
-        # Save the PDF content to the local filesystem
-        with open(destination, "wb") as f:
-            f.write(pdf_content)
+        print(f"PDF successfully downloaded from Supabase: {pdf_path}")
 
-        print(f"PDF successfully downloaded and saved to: {destination}")
-
-    except Exception as e:
-        print(f"Error fetching PDF from Supabase: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": f"Error fetching PDF from Supabase: {str(e)}"}), 500
-
-        # **2. Extract text from the fetched PDF content**
-    try:
-        print(f"Extracting text from PDF: {destination}")
-        text_by_page = extract_text_from_pdf(destination)
+        # Extract text from the PDF content
+        print("Extracting text from PDF content.")
+        text_by_page = extract_text_from_pdf(pdf_content)
         print("Text extraction successful.")
         context.append(
             "\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()])
         )
-    except Exception as e:
-        print(f"Error extracting PDF text: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": "Failed to extract text from PDF."}), 500
 
-    # **4. Remove local files**
-    try:
-        print("Removing local files.")
-        os.remove(destination)
-        print("Local files removed successfully.")
     except Exception as e:
-        # Log the error but don't fail the entire process
-        print(f"Error removing local files: {str(e)}")
+        print(f"Error processing PDF from Supabase: {str(e)}")
         traceback.print_exc()
+        return jsonify({"error": f"Error processing PDF from Supabase: {str(e)}"}), 500
 
     return "\n\nNEW DOCUMENT\n\n".join(context)
 
@@ -226,24 +195,11 @@ def generate_flashcards():
         if not file_id:
             return jsonify({"error": "No file ID provided"}), 400
 
-        # Find the PDF file
-        pdf_files = [f for f in os.listdir(UPLOAD_FOLDER) if f"{file_id}" in f]
-        if not pdf_files:
-            return jsonify({"error": "PDF file not found"}), 404
-
-        pdf_path = os.path.join(UPLOAD_FOLDER, pdf_files[0])
-
-        # Extract text with error handling
-        try:
-            text_by_page = extract_text_from_pdf(pdf_path)
-        except Exception as e:
-            print(f"Error extracting PDF text: {str(e)}")
-            return jsonify({"error": "Failed to extract text from PDF"}), 500
+        # Get document context
+        context = get_document_context_supabase(file_id)
 
         # Combine pages with clear separation
-        full_text = "\n\nPAGE BREAK\n\n".join(
-            [f"[Page {page}]\n{text}" for page, text in text_by_page.items()]
-        )
+        full_text = context
 
         try:
             response = client.chat.completions.create(
@@ -272,25 +228,41 @@ def generate_flashcards():
                 formatted_flashcards = []
                 for card in flashcards_data.get("flashcards", []):
                     formatted_card = {
-                        "question": card["question"],
-                        "answer": card["correct_answer"],
+                        "question": card.get("question", "").strip(),
+                        "answer": card.get("correct_answer", "").strip(),
                         "wrong_answers": [
-                            {"text": wrong_answer, "explanation": "Incorrect option"}
-                            for wrong_answer in card["wrong_answers"]
+                            {
+                                "text": wrong_answer.strip(),
+                                "explanation": "Incorrect option",
+                            }
+                            for wrong_answer in card.get("wrong_answers", [])
                         ],
-                        "page": card["page"],
-                        "quote": card.get("quote", ""),
+                        "page": card.get("page", 0),
+                        "quote": card.get("quote", "").strip(),
                         "file_id": file_id,
                     }
                     formatted_flashcards.append(formatted_card)
 
-                # Save flashcards to file
-                saved_filename = save_flashcards(
-                    {"flashcards": formatted_flashcards}, file_id
+                # Save flashcards to Supabase Storage
+                flashcards_json = json.dumps(
+                    {"flashcards": formatted_flashcards}, ensure_ascii=False, indent=2
+                )
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                flashcard_filename = f"{file_id}_{timestamp}.json"
+                upload_path = f"flashcards/{flashcard_filename}"
+
+                supabase.storage.from_("files_wad2").upload(
+                    upload_path,
+                    BytesIO(flashcards_json.encode("utf-8")),
+                    {"content-type": "application/json"},
                 )
 
                 return jsonify(
-                    {"flashcards": formatted_flashcards, "saved_file": saved_filename}
+                    {
+                        "flashcards": formatted_flashcards,
+                        "saved_file": flashcard_filename,
+                        "upload_path": upload_path,
+                    }
                 )
 
             except json.JSONDecodeError as e:
@@ -334,17 +306,22 @@ def upload_pdf():
             return jsonify({"error": "No selected file"}), 400
 
         if file and allowed_file(file.filename):
-            # Generate unique filename
             file_id = str(uuid.uuid4())
             filename = secure_filename(file.filename)
             base_name, extension = os.path.splitext(filename)
             unique_filename = f"{base_name}_{file_id}{extension}"
 
-            file_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
-            file.save(file_path)
+            # Read file contents into memory
+            file_contents = file.read()
 
             # Extract text from PDF
-            text_by_page = extract_text_from_pdf(file_path)
+            text_by_page = extract_text_from_pdf(file_contents)
+
+            # Upload PDF to Supabase Storage
+            upload_path = f"user_pdfs/{unique_filename}"
+            supabase.storage.from_("files_wad2").upload(
+                upload_path, BytesIO(file_contents), {"content-type": "application/pdf"}
+            )
 
             return jsonify(
                 {
@@ -352,6 +329,7 @@ def upload_pdf():
                     "file_id": file_id,
                     "filename": unique_filename,
                     "num_pages": len(text_by_page),
+                    "upload_path": upload_path,
                 }
             )
         else:
@@ -359,6 +337,7 @@ def upload_pdf():
 
     except Exception as e:
         print("Error uploading file:", str(e))
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 
@@ -430,10 +409,11 @@ def chat():
             model="gpt-4o-mini", messages=messages, temperature=0.7, max_tokens=1000
         )
 
-        return jsonify({"response": response.choices[0].message.content})
+        return jsonify({"response": response.choices[0].message.content.strip()})
 
     except Exception as e:
         print("Error in chat:", str(e))
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 
@@ -460,24 +440,32 @@ def upload_pdf_supabase():
             # unique_filename = f"{base_name}_{file_id}{extension}"
 
             # Temporary local save (optional, depending on your workflow)
-            file_path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
-            file.save(file_path)
+            # file_path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
+            # file.save(file_path)
 
             # Extract text from PDF
-            text_by_page = extract_text_from_pdf(file_path)
+            file_contents = file.read()
+
+            text_by_page = extract_text_from_pdf(file_contents)
 
             # Upload to Supabase storage
-            with open(file_path, "rb") as pdf_file:
-                # Upload to 'pdfs' bucket with a unique path
-                upload_path = f"user_pdfs/{file.filename}"
-                supabase.storage.from_("files_wad2").upload(
-                    file=pdf_file,
-                    path=upload_path,
-                    file_options={"content-type": "application/pdf"},
-                )
+            # with open(file_path, "rb") as pdf_file:
+            #     # Upload to 'pdfs' bucket with a unique path
+            #     upload_path = f"user_pdfs/{file.filename}"
+            #     supabase.storage.from_("files_wad2").upload(
+            #         file=pdf_file,
+            #         path=upload_path,
+            #         file_options={"content-type": "application/pdf"},
+            #     )
+
+            # Upload PDF to Supabase Storage
+            upload_path = f"user_pdfs/{file.filename}"
+            supabase.storage.from_("files_wad2").upload(
+                upload_path, BytesIO(file_contents), {"content-type": "application/pdf"}
+            )
 
             # Generate PDF preview (1st page of PDF)
-            generate_preview(file_path, file_id)
+            generate_preview(file_contents, file_id)
 
             # Optional: Remove local file after upload
             # os.remove(file_path)
@@ -496,6 +484,7 @@ def upload_pdf_supabase():
 
     except Exception as e:
         print("Error uploading file:", str(e))
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 
@@ -694,43 +683,32 @@ Always return the response in the exact JSON format specified.""",
     )
 
 
-def generate_preview(filepath, file_id):
-    print(filepath)
-    if "file" not in request.files:
-        return jsonify({"error": "No file provided"})
-
-    file = request.files["file"]
-    if not file.filename.endswith(".pdf"):
-        return jsonify({"error": "File must be a PDF"})
-
+def generate_preview(file_contents, file_id):
     try:
-        # Generate preview using pdf2image
-        print("entered this loop")
-        # images = convert_from_bytes(open(filepath, 'rb').read())
-        preview_path = os.path.join("previews", f"{file_id}.png")
-
-        pdf = pdfium.PdfDocument(filepath)
+        # Generate preview using pdfium
+        pdf = pdfium.PdfDocument(BytesIO(file_contents))
         page = pdf[0]
         image = page.render(scale=4).to_pil()
-        image.save(preview_path)
-        pdf.close()  # Close the PDF document
+
+        # Save image to bytes
+        img_byte_arr = BytesIO()
+        image.save(img_byte_arr, format="PNG")
+        img_byte_arr.seek(0)
 
         # Upload to Supabase
-        with open(preview_path, "rb") as preview_file:
-            preview_name = f"{os.path.splitext(file.filename)[0]}.png"
-            supabase.storage.from_("files_wad2").upload(
-                f"previews/{preview_name}", preview_file
-            )
+        preview_name = f"{file_id}.png"
+        upload_path = f"previews/{preview_name}"
+        supabase.storage.from_("files_wad2").upload(
+            upload_path, img_byte_arr, {"content-type": "image/png"}
+        )
 
-        # Clean up local files
-        os.remove(preview_path)
-        os.remove(filepath)
+        pdf.close()  # Close the PDF document
 
-        return jsonify({"success": True})
+        return {"success": True}
 
     except Exception as e:
         print(str(e))
-        return jsonify({"error": str(e)})
+        return {"error": str(e)}
 
 
 # test api
