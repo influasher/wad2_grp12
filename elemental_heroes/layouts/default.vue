@@ -167,6 +167,19 @@ onMounted(() => {
   overflow: hidden;
 }
 
+.wrapper::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("../assets/chem-bg.jpg") no-repeat center center;
+  background-size: cover;
+  opacity: 0.1;
+  z-index: -1;
+}
+
 /* Sidebar styling */
 #sidebar {
   display: flex;
@@ -334,18 +347,7 @@ main {
   position: relative;
 } */
 
-.wrapper::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url("../assets/chem-bg.jpg") no-repeat center center;
-  background-size: cover;
-  opacity: 0.1;
-  z-index: -1;
-}
+
 
 /* .background_wrap > * {
   position: relative;
