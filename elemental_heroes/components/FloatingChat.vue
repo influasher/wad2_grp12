@@ -72,7 +72,7 @@ const props = defineProps({
   },
   apiEndpoint: {
     type: String,
-    default: "http://122.248.226.78/api/chat",
+    default: "https://elementalbackend.vercel.app/api/chat",
   },
 });
 
