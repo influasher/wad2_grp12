@@ -149,11 +149,14 @@ import { useRuntimeConfig } from '#app';
 import { ref, onMounted } from 'vue';
 import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
 
+import profilePlaceholder from '@/assets/images/profile_placeholder.png';
+import backgroundPlaceholder from '@/assets/images/background_placeholder.png';
+
 const config = useRuntimeConfig()
 const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey)
 const profile = ref(null)
-const avatar_url = ref(null)
-const background_url = ref(null)
+const avatar_url = ref(profilePlaceholder); // Default to placeholder
+const background_url = ref(backgroundPlaceholder); // Default to placeholder
 const isUploadingAvatar = ref(null)
 const isUploadingBackground = ref(null)
 const isLoading = ref(true);
@@ -175,19 +178,17 @@ const userRank = ref(null);  // Reactive variable to store the user's rank
 
 async function fetchLeaderboardAndUserRank(userId) {
   try {
-    // Fetch leaderboard data sorted by score in descending order
     const { data, error } = await supabase
-      .from("profiles")
+      .from("profiles2")
       .select("id, first_name, last_name, score")
       .order("score", { ascending: false });
 
     if (error) throw error;
 
-    // Find the user's rank based on their position in the sorted leaderboard
     const rank = data.findIndex(profile => profile.id === userId) + 1;
-    userRank.value = rank;  // Store the rank
+    userRank.value = rank;
 
-    return data; // Return leaderboard data if needed for other uses
+    return data;
   } catch (error) {
     console.error("Error fetching leaderboard and user rank:", error.message);
   }
@@ -195,16 +196,20 @@ async function fetchLeaderboardAndUserRank(userId) {
 
 
 async function getProfile() {
-  const { data, error } = await supabase.from("profiles").select().eq("id", 1).single();
+  const { data, error } = await supabase.from("profiles2").select().eq("id", user.value.id).single();
   if (error) {
     console.error('Error fetching profile:', error.message);
   } else {
     profile.value = data;
-    console.log(id)
 
-    getBackground();
-    getAvatar();
+    // Set profile and background images from database, with fallback to placeholders
+    avatar_url.value = data.avatar_url
+      ? await supabase.storage.from("files_wad2").getPublicUrl(data.avatar_url).data.publicUrl
+      : profilePlaceholder;
 
+    background_url.value = data.background_url
+      ? await supabase.storage.from("files_wad2").getPublicUrl(data.background_url).data.publicUrl
+      : backgroundPlaceholder;
   }
 }
 
@@ -244,9 +249,9 @@ async function saveChanges() {
   const bio = editableBio.value;
 
   const { error } = await supabase
-    .from("profiles")
+    .from("profiles2")
     .update({ first_name: firstName, last_name: lastName, bio: bio })
-    .eq("id", 1);
+    .eq("id", user.value.id);
 
   if (!error) {
     profile.value.first_name = firstName;
@@ -260,17 +265,34 @@ async function saveChanges() {
 }
 
 async function getAvatar() {
+  // Check if the profile has an avatar URL
+  if (!profile.value.avatar_url) {
+    avatar_url.value = profilePlaceholder; // Set to placeholder if not set
+    return;
+  }
+  
+  // Fetch the avatar image URL from Supabase if it exists
   const { data } = await supabase.storage.from("files_wad2").getPublicUrl(profile.value.avatar_url);
-  if (data) {
+  if (data && data.publicUrl) {
     avatar_url.value = data.publicUrl;
-    console.log(avatar_url.value)
+  } else {
+    avatar_url.value = profilePlaceholder; // Use placeholder on error or null
   }
 }
 
 async function getBackground() {
+  // Check if the profile has a background URL
+  if (!profile.value.background_url) {
+    background_url.value = backgroundPlaceholder; // Set to placeholder if not set
+    return;
+  }
+
+  // Fetch the background image URL from Supabase if it exists
   const { data } = await supabase.storage.from("files_wad2").getPublicUrl(profile.value.background_url);
-  if (data) {
+  if (data && data.publicUrl) {
     background_url.value = data.publicUrl;
+  } else {
+    background_url.value = backgroundPlaceholder; // Use placeholder on error or null
   }
 }
 
@@ -320,45 +342,27 @@ async function updateBio(bio) {
   }
 }
 
+
 async function updateAvatar(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Show confirmation alert
-  if (!confirm('Are you sure you want to update your profile picture?')) {
-    return;
-  }
+  if (!confirm('Are you sure you want to update your profile picture?')) return;
 
   isUploadingAvatar.value = true;
   try {
-    // Get file extension and create filename
-    const fileExt = file.name.split('.').pop().toLowerCase();
-    const fileName = `${file.name}.${fileExt}`; // Keep the same filename to replace existing
+    const fileExt = file.name.split('.').pop();
+    const fileName = `avatars/${user.value.id}.${fileExt}`;
 
-    // Upload new file with upsert option
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('files_wad2')
-      .upload(`avatars/${fileName}`, file, {
-        upsert: true, // This will replace the existing file
-      });
-
+    const { error: uploadError } = await supabase.storage.from('files_wad2').upload(fileName, file, { upsert: true });
     if (uploadError) throw uploadError;
 
-    // Update profile with new avatar_url
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ avatar_url: `avatars/${fileName}` })
-      .eq('id', 1);
-
+    // Update avatar URL in the profiles2 table
+    const { error: updateError } = await supabase.from('profiles2').update({ avatar_url: fileName }).eq('id', user.value.id);
     if (updateError) throw updateError;
 
-    // Fetch the new avatar URL directly from Supabase storage
-    const { data } = await supabase.storage
-      .from('files_wad2')
-      .getPublicUrl(`avatars/${fileName}`);
-    if (data) {
-      avatar_url.value = data.publicUrl; // Immediately update the displayed avatar
-    }
+    const { data } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
+    avatar_url.value = data.publicUrl;
   } catch (error) {
     console.error('Error updating avatar:', error.message);
     alert('Failed to update profile picture. Please try again.');
@@ -371,31 +375,25 @@ async function updateBackgroundImage(event) {
   const file = event.target.files[0];
   if (!file) return;
 
+  if (!confirm('Are you sure you want to update your background image?')) return;
+
   isUploadingBackground.value = true;
   try {
-    const fileExt = file.name.split('.').pop().toLowerCase();
-    const fileName = `${file.name}.${fileExt}`;
+    const fileExt = file.name.split('.').pop();
+    const fileName = `background_images/${user.value.id}.${fileExt}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('files_wad2')
-      .upload(`background_images/${fileName}`, file, { upsert: true });
+    const { error: uploadError } = await supabase.storage.from('files_wad2').upload(fileName, file, { upsert: true });
     if (uploadError) throw uploadError;
 
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ background_url: `background_images/${fileName}` })
-      .eq('id', 1);
+    // Update background URL in the profiles2 table
+    const { error: updateError } = await supabase.from('profiles2').update({ background_url: fileName }).eq('id', user.value.id);
     if (updateError) throw updateError;
 
-    const { data } = await supabase.storage
-      .from('files_wad2')
-      .getPublicUrl(`background_images/${fileName}`);
-    if (data) {
-      background_url.value = data.publicUrl;
-    }
+    const { data } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
+    background_url.value = data.publicUrl;
   } catch (error) {
     console.error('Error updating background:', error.message);
-    alert('Failed to update background picture. Please try again.');
+    alert('Failed to update background image. Please try again.');
   } finally {
     isUploadingBackground.value = false;
   }
@@ -446,10 +444,9 @@ async function fetchThumbnail(game) {
 }
 
 onMounted(async () => {
-  await getProfile2();
+  await getProfile();
   await fetchGames();
-  // Hardcode the userId to 1
-  await fetchLeaderboardAndUserRank(1);
+  await fetchLeaderboardAndUserRank(user.value.id);
 });
 </script>
 
