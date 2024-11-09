@@ -49,7 +49,7 @@ const props = defineProps({
     },
     apiEndpoint: {
         type: String,
-        default: 'http://127.0.0.1:5000/api/chat'
+        default: 'http://122.248.226.78/api/chat'
     }
 });
 
