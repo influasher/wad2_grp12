@@ -87,7 +87,7 @@
       
       <div class="logout-section">
         
-        <div @click="handleLogout" class="sidebarButton">
+        <div @click="handleSignOut" class="sidebarButton">
           <hr>
           <div class="px-3 pb-3 text-center">
           <img src="../assets/images/log-out.svg" width="35" />
@@ -117,6 +117,21 @@
 
 <script setup>
 import { ref } from "vue";
+const client = useSupabaseClient();
+const router = useRouter();
+
+const handleSignOut = async () => {
+  try {
+    const { error } = await client.auth.signOut();
+    if (error) {
+      console.error("Sign-out error:", error.message);
+    } else {
+      router.push("/login"); // Redirect to login page or any desired route after sign-out
+    }
+  } catch (err) {
+    console.error("Unexpected error during sign-out:", err);
+  }
+};
 
 const isSidebarClosed = ref(false);
 
