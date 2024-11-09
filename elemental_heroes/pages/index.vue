@@ -2,7 +2,7 @@
 <template>
   <div class="home-page">
     <!-- Announcements Section -->
-    <div class="announcements">
+    <!-- <div class="announcements">
       <h3>Announcements</h3>
       <p>
         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Suscipit
@@ -10,8 +10,12 @@
         neque, deserunt adipisci, veritatis nam aspernatur. Eos iste expedita
         facere officiis odio.
       </p>
+    </div> -->
+    <div class="my-3 py-3">
+      <h1 id="typed-output" class="press-start-2p-regular"></h1> 
     </div>
-
+  
+    
     <!-- Slideshow of recently played -->
     <div class="slideshow">
       <div v-if="isLoading" class="skeleton-container">
@@ -24,7 +28,6 @@
         class="carousel slide"
         data-bs-ride="carousel"
       >
-        <!-- Your existing carousel code -->
         <div class="carousel-inner">
           <div
             v-for="(game, index) in games"
@@ -359,6 +362,14 @@
   flex-direction: column; /* Stack name and score vertically */
   text-align: left; /* Align text to the left */
 }
+
+#typed-output{
+  width: 100%;
+  margin: 10px;
+  padding: 20px;
+  font-size: 30px;
+  display: inline;
+}
 </style>
 
 <script setup>
@@ -366,6 +377,7 @@ import { ref, onMounted } from "vue";
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
 import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
+import Typed from 'typed.js';
 // import { Chart, registerables } from "chart.js";
 // import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -416,6 +428,15 @@ async function fetchGames() {
     isLoading.value = false;
   }
 }
+
+onMounted(() => {
+  new Typed("#typed-output", {
+    strings: [`Welcome to Elemental Heroes!`, "Hope you have fun!"],
+    typeSpeed: 50,       // Typing speed in milliseconds
+    backSpeed: 50,       // Backspacing speed in milliseconds
+    showCursor: false,   // Hide the cursor
+  });
+});
 
 // async function fetchLeaderboard() {
 //   try {
