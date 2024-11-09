@@ -301,7 +301,7 @@ const uploadPdf = async (event) => {
 
     // 1. Upload the PDF file
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/supabase/upload-pdf",
+      "https://elementalbackend.vercel.app/api/supabase/upload-pdf",
       formData
     );
 

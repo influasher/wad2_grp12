@@ -187,7 +187,7 @@ const generateFlashcards = async () => {
   isGenerating.value = true;
   try {
     const response = await axios.post(
-      "http://122.248.226.78/api/supabase/generate-flashcards",
+      "https://elementalbackend.vercel.app//api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
       }
@@ -213,7 +213,7 @@ const handleGenerateMore = async () => {
   isGenerating.value = true;
   try {
     const response = await axios.post(
-      "http://122.248.226.78/api/supabase/generate-flashcards",
+      "https://elementalbackend.vercel.app/api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
         count: 5,
@@ -288,7 +288,7 @@ const handleAnswerChoice = async (index) => {
   } else {
     try {
       const response = await axios.post(
-        "http://122.248.226.78/api/explain-answer",
+        "https://elementalbackend.vercel.app/api/explain-answer",
         {
           question: currentCard.value.question,
           correct_answer: answers.value.find((a) => a.correct).text,
