@@ -175,7 +175,7 @@ const userRank = ref(null);  // Reactive variable to store the user's rank
 
 async function fetchLeaderboardAndUserRank(userId) {
   try {
-    // Fetch leaderboard data sorted by score in descending order 
+    // Fetch leaderboard data sorted by score in descending order
     const { data, error } = await supabase
       .from("profiles")
       .select("id, first_name, last_name, score")
