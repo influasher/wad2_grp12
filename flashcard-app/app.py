@@ -276,3 +276,9 @@ def chat():
 @app.route("/api/test", methods=["GET"])
 def test():
     return jsonify({"message": "Hello World"})
+
+
+if __name__ == "__main__":
+    if not os.getenv("OPENAI_API_KEY"):
+        print("Warning: OPENAI_API_KEY not found in environment variables!")
+    app.run(debug=True)
