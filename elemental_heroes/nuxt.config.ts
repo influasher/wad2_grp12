@@ -9,8 +9,9 @@ export default defineNuxtConfig({
       supabaseKey: process.env.SUPABASE_KEY,
     },
   },
-
-  modules: ["usebootstrap"],
+  modules: ["usebootstrap", 
+    "@nuxtjs/supabase"
+  ],
   app: {
     head: {
       link: [

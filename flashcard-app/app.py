@@ -721,6 +721,12 @@ def generate_preview(filepath, file_id):
     except Exception as e:
         print(str(e))
         return jsonify({"error": str(e)})
+    
+
+# test api
+@app.route("/api/test", methods=["get"])
+def test():
+    return "Hello World"
 
 
 if __name__ == "__main__":
