@@ -40,13 +40,16 @@ app = Flask(
     template_folder=os.path.join(base_dir, "templates"),
     static_folder=os.path.join(base_dir, "static"),
 )
-# List of allowed origins
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Local development
-    "https://elementalheroes.vercel.app",  # Vercel Deployment
-]
 
-CORS(app, resources={r"/*": {"origins": ALLOWED_ORIGINS}})
+CORS(app)
+
+# List of allowed origins
+# ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # Local development
+#     "https://elementalheroes.vercel.app",  # Vercel Deployment
+# ]
+
+# CORS(app, resources={r"/*": {"origins": ALLOWED_ORIGINS}})
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["FLASHCARDS_FOLDER"] = FLASHCARDS_FOLDER

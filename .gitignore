@@ -28,4 +28,4 @@ env
 venv
 .venv
 
-flashcard-app.tar
+*.tar
