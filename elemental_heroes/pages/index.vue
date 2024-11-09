@@ -417,127 +417,12 @@ async function fetchGames() {
   }
 }
 
-// async function fetchLeaderboard() {
-//   try {
-//     const { data, error } = await supabase
-//       .from("profiles")
-//       .select("id, first_name, last_name, score, games_played")
-//       .order("score", { ascending: false });
-
-//     if (error) throw error;
-//     leaderboard.value = data;
-
-//     renderLeaderboardChart();
-//   } catch (error) {
-//     console.error("Error fetching leaderboard:", error.message);
-//   }
-// }
-
-// function renderLeaderboardChart() {
-//   const ctx = document.getElementById("leaderboardChart").getContext("2d");
-
-//   new Chart(ctx, {
-//     type: "bar",
-//     data: {
-//       labels: leaderboard.value.map(
-//         (profile) => `${profile.first_name} ${profile.last_name}`
-//       ),
-//       datasets: [
-//         {
-//           label: "Score",
-//           data: leaderboard.value.map((profile) => profile.score),
-//           backgroundColor: leaderboard.value.map((_, index) => {
-//             if (index < 3) {
-//               return 'rgba(89, 63, 255, 0.7)'; // Top 3: Green with 0.7 transparency
-//             } else if (index < 5) {
-//               return 'rgba(139, 110, 243, 0.7)'; // Next 2: Yellow with 0.7 transparency
-//             } else {
-//               return 'rgba(178, 169, 236, 0.7)'; // Rest: Red with 0.7 transparency
-//             }
-//           }),
-//           borderColor: leaderboard.value.map((_, index) => {
-//             return index === 1 ? 'rgba(42, 42, 43, 0.7)' : 'transparent'; // Add a black border to the user's bar, transparent for others
-//           }),
-//           borderWidth: leaderboard.value.map((_, index) => {
-//             return index === 1 ? 3 : 0; // Set border width for the user's bar
-//           }),
-//           borderRadius: 10, // Set this to round the corners of the bars
-//           borderSkipped: false, // Ensure rounding applies to all sides
-//         },
-//       ],
-//     },
-//     options: {
-//       indexAxis: "y", // Horizontal bar chart
-//       responsive: true,
-//       scales: {
-//         x: {
-//           display: false, // Hide the x-axis grid lines
-//         },
-//         y: {
-//           grid: {
-//             display: false, // Hide the y-axis grid lines
-//           },
-//           ticks: {
-//             autoSkip: false, // Ensure all labels are shown
-//           },
-//         },
-//       },
-//       plugins: {
-//         legend: {
-//           display: false,
-//         },
-//         datalabels: {
-//           display: true, // Enable data labels
-//           align: 'end',
-//           anchor: 'end',
-//           color: '#000', // Adjust color as needed
-//           font: {
-//             size: 12, // Adjust font size as needed
-//           },
-//         },
-//       },
-//     },
-//     plugins: [ChartDataLabels], // Include the ChartDataLabels plugin
-//   });
-// }
-
-// async function fetchLeaderboard() {
-//   try {
-//     const { data, error } = await supabase
-//       .from('profiles')
-//       .select('id, first_name, last_name, score')
-//       .order('score', { ascending: false });
-
-//     if (error) throw error;
-
-//     leaderboard.value = await Promise.all(
-//       data.map(async (profile) => {
-//         const avatarPath = `avatars/${profile.first_name.toLowerCase()}_${profile.last_name.toLowerCase()}.png`;
-//         const { data: avatarData, error: avatarError } = await supabase
-//           .storage
-//           .from('files_wad2')
-//           .getPublicUrl(avatarPath);
-
-//         if (avatarError) {
-//           console.error('Error fetching avatar:', avatarError.message);
-//           profile.avatar = '/assets/images/defaultAvatar.png'; // Fallback to a default image if there's an error
-//         } else {
-//           profile.avatar = avatarData.publicUrl || '/assets/images/defaultAvatar.png';
-//         }
-//         return profile;
-//       })
-//     );
-
-//   } catch (error) {
-//     console.error('Error fetching leaderboard:', error.message);
-//   }
-// }
 
 async function fetchLeaderboard() {
   try {
     // Fetch profiles with the avatar URL path included
     const { data, error } = await supabase
-      .from("profiles")
+      .from("profiles2")
       .select("id, first_name, last_name, score, avatar_url") // Ensure avatar_url is included
       .order("score", { ascending: false });
 

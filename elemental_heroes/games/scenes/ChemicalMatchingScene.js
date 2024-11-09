@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { updateScores } from '../updateGame.js';
 
+const user = useSupabaseUser()
+const id = user.value.id
+
 export class ChemicalMatchingScene extends Phaser.Scene {
     constructor() {
         super({ key: 'ChemicalMatchingScene' });
@@ -29,6 +32,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
     }
 
     create() {
+        console.log(user.value.id)
         if (this.game.backgroundMusic) {
             this.game.backgroundMusic.stop();  // Stop the music
             this.game.backgroundMusic = null;  // Clear the reference to allow music to restart later
@@ -269,7 +273,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         const exitButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.65, 'exitButton')
         .setInteractive()
         .setDepth(10)
-        .setScale(0.1)  // Adjust the size of the button
+        .setScale(0.2)  // Adjust the size of the button
         .on('pointerdown', () => {
             this.sound.play('glassClick');
             this.scene.start('CasualGameScene');  // Switch back to CasualGameScene when clicked
@@ -281,7 +285,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         const restartButton = this.add.sprite(this.scale.width * 0.5, this.scale.height * 0.75, 'restartButton')
         .setInteractive()
         .setDepth(10)
-        .setScale(0.1)  // Adjust the size of the button
+        .setScale(0.2)  // Adjust the size of the button
         .on('pointerdown', () => {
             this.gameOver = false; // Reset the game over flag
             this.scene.restart();  // Restart the game scene
