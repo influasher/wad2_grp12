@@ -187,7 +187,7 @@ const generateFlashcards = async () => {
   isGenerating.value = true;
   try {
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/supabase/generate-flashcards",
+      "http://122.248.226.78/api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
       }
@@ -213,7 +213,7 @@ const handleGenerateMore = async () => {
   isGenerating.value = true;
   try {
     const response = await axios.post(
-      "http://127.0.0.1:5000/api/supabase/generate-flashcards",
+      "http://122.248.226.78/api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
         count: 5,
@@ -288,7 +288,7 @@ const handleAnswerChoice = async (index) => {
   } else {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/api/explain-answer",
+        "http://122.248.226.78/api/explain-answer",
         {
           question: currentCard.value.question,
           correct_answer: answers.value.find((a) => a.correct).text,
