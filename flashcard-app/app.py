@@ -1,20 +1,17 @@
 # app.py
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import json
 import PyPDF2
-import uuid
-from werkzeug.utils import secure_filename
+from io import BytesIO
+from supabase import create_client, Client
 import traceback
 from datetime import datetime
-from supabase import create_client, Client
-from io import BytesIO
-from pdf2image import convert_from_path, convert_from_bytes
 import pypdfium2 as pdfium
-
+from PIL import Image
 
 # Load environment variables
 load_dotenv()
@@ -22,38 +19,9 @@ load_dotenv()
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Get the absolute path of the current directory
-base_dir = os.path.abspath(os.path.dirname(__file__))
-
-# Configure folders
-UPLOAD_FOLDER = os.path.join(base_dir, "uploads")
-FLASHCARDS_FOLDER = os.path.join(base_dir, "flashcards_generated")
-ALLOWED_EXTENSIONS = {"pdf"}
-
-# Create necessary directories
-# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-# os.makedirs(FLASHCARDS_FOLDER, exist_ok=True)
-
 # Create Flask app
-app = Flask(
-    __name__,
-    template_folder=os.path.join(base_dir, "templates"),
-    static_folder=os.path.join(base_dir, "static"),
-)
-
+app = Flask(__name__)
 CORS(app)
-
-# List of allowed origins
-# ALLOWED_ORIGINS = [
-#     "http://localhost:3000",  # Local development
-#     "https://elementalheroes.vercel.app",  # Vercel Deployment
-# ]
-
-# CORS(app, resources={r"/*": {"origins": ALLOWED_ORIGINS}})
-
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["FLASHCARDS_FOLDER"] = FLASHCARDS_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max file size
 
 # Init Supabase Client
 url: str = os.getenv("SUPABASE_URL")
@@ -61,98 +29,39 @@ key: str = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def save_flashcards(flashcards, file_id):
-    """Convert flashcards to JSON string."""
-    flashcards_json = json.dumps(flashcards, ensure_ascii=False, indent=2)
-    return flashcards_json
-
-
-def extract_text_from_pdf(file_contents):
-    """Extract text from PDF content and return a dictionary with page numbers."""
+def extract_text_from_pdf_bytes(pdf_bytes):
+    """Extract text from PDF bytes and return a dictionary with page numbers."""
     text_by_page = {}
-    pdf_reader = PyPDF2.PdfReader(BytesIO(file_contents))
-    for page_num, page in enumerate(pdf_reader.pages, start=1):
-        text_by_page[page_num] = page.extract_text()
+    pdf_file = BytesIO(pdf_bytes)
+    pdf_reader = PyPDF2.PdfReader(pdf_file)
+    for page_num in range(len(pdf_reader.pages)):
+        page = pdf_reader.pages[page_num]
+        text_by_page[page_num + 1] = page.extract_text()
     return text_by_page
 
 
-def get_document_context(file_id=None):
-    """Get the content of all uploaded PDFs or a specific PDF."""
-    context = []
-
-    if file_id:
-        # Get specific PDF content
-        pdf_files = [f for f in os.listdir(UPLOAD_FOLDER) if f"{file_id}" in f]
-        if pdf_files:
-            pdf_path = os.path.join(UPLOAD_FOLDER, pdf_files[0])
-            # Uses extract_text_from_pdf here
-            text_by_page = extract_text_from_pdf(pdf_path)
-            context.append(
-                "\n".join(
-                    [f"[Page {page}] {text}" for page, text in text_by_page.items()]
-                )
-            )
-    else:
-        # Get all PDF contents
-        for pdf_file in os.listdir(UPLOAD_FOLDER):
-            if pdf_file.endswith(".pdf"):
-                pdf_path = os.path.join(UPLOAD_FOLDER, pdf_file)
-                # Uses extract_text_from_pdf here too
-                text_by_page = extract_text_from_pdf(pdf_path)
-                context.append(
-                    "\n".join(
-                        [f"[Page {page}] {text}" for page, text in text_by_page.items()]
-                    )
-                )
-
-    return "\n\nNEW DOCUMENT\n\n".join(context)
-
-
-# adapted for supabase
-# might need to remove the second condition, assume all chat calls come with the file_id, provide the file_id as context for each message
-# this is so that the api is only calling Supabase to download one file, not all files.
-# this means that the context is only the current file_id
-
-
-# steps
-# 1. download file into uploads folder
-# 2. send filepath of uploads folder into the extract_text_from_pdf
-# 3. after getting document context, delete file from local directory
 def get_document_context_supabase(file_id):
-    """Get the content of a specific PDF from Supabase storage."""
+    """Get the content of a PDF from Supabase storage."""
     context = []
-
     try:
         pdf_path = f"user_pdfs/{file_id}.pdf"
 
-        print(f"Attempting to download PDF from Supabase: {pdf_path}")
-
         # Download the PDF file as bytes
-        pdf_response = supabase.storage.from_("files_wad2").download(pdf_path)
-        pdf_content = pdf_response.content
+        pdf_content = supabase.storage.from_("files_wad2").download(pdf_path)
 
         if not pdf_content:
-            print(f"PDF file not found in Supabase Storage: {pdf_path}")
-            return jsonify({"error": "PDF file not found in Supabase Storage."}), 404
+            return None
 
-        print(f"PDF successfully downloaded from Supabase: {pdf_path}")
-
-        # Extract text from the PDF content
-        print("Extracting text from PDF content.")
-        text_by_page = extract_text_from_pdf(pdf_content)
-        print("Text extraction successful.")
+        # Extract text directly from bytes
+        text_by_page = extract_text_from_pdf_bytes(pdf_content)
         context.append(
             "\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()])
         )
 
     except Exception as e:
-        print(f"Error processing PDF from Supabase: {str(e)}")
+        print(f"Error fetching PDF from Supabase: {str(e)}")
         traceback.print_exc()
-        return jsonify({"error": f"Error processing PDF from Supabase: {str(e)}"}), 500
+        return None
 
     return "\n\nNEW DOCUMENT\n\n".join(context)
 
@@ -188,236 +97,6 @@ def generate_flashcard_prompt(content, file_id):
     """
 
 
-@app.route("/api/generate-flashcards", methods=["POST"])
-def generate_flashcards():
-    try:
-        file_id = request.json.get("file_id")
-        if not file_id:
-            return jsonify({"error": "No file ID provided"}), 400
-
-        # Get document context
-        context = get_document_context_supabase(file_id)
-
-        # Combine pages with clear separation
-        full_text = context
-
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": """You are a helpful assistant that creates educational flashcards. 
-                    Focus on extracting key information from the provided content.
-                    Always return the response in the exact JSON format specified.""",
-                    },
-                    {
-                        "role": "user",
-                        "content": generate_flashcard_prompt(full_text, file_id),
-                    },
-                ],
-                temperature=0.7,
-                max_tokens=2000,
-            )
-
-            flashcards_text = response.choices[0].message.content.strip()
-
-            try:
-                flashcards_data = json.loads(flashcards_text)
-
-                formatted_flashcards = []
-                for card in flashcards_data.get("flashcards", []):
-                    formatted_card = {
-                        "question": card.get("question", "").strip(),
-                        "answer": card.get("correct_answer", "").strip(),
-                        "wrong_answers": [
-                            {
-                                "text": wrong_answer.strip(),
-                                "explanation": "Incorrect option",
-                            }
-                            for wrong_answer in card.get("wrong_answers", [])
-                        ],
-                        "page": card.get("page", 0),
-                        "quote": card.get("quote", "").strip(),
-                        "file_id": file_id,
-                    }
-                    formatted_flashcards.append(formatted_card)
-
-                # Save flashcards to Supabase Storage
-                flashcards_json = json.dumps(
-                    {"flashcards": formatted_flashcards}, ensure_ascii=False, indent=2
-                )
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                flashcard_filename = f"{file_id}_{timestamp}.json"
-                upload_path = f"flashcards/{flashcard_filename}"
-
-                supabase.storage.from_("files_wad2").upload(
-                    upload_path,
-                    BytesIO(flashcards_json.encode("utf-8")),
-                    {"content-type": "application/json"},
-                )
-
-                return jsonify(
-                    {
-                        "flashcards": formatted_flashcards,
-                        "saved_file": flashcard_filename,
-                        "upload_path": upload_path,
-                    }
-                )
-
-            except json.JSONDecodeError as e:
-                print(f"JSON Parse Error: {str(e)}")
-                print(f"Problematic JSON: {flashcards_text}")
-                return jsonify({"error": "Failed to parse flashcards response"}), 500
-
-        except Exception as e:
-            print(f"OpenAI API Error: {str(e)}")
-            traceback.print_exc()
-            return jsonify({"error": "Failed to generate flashcards"}), 500
-
-    except Exception as e:
-        print(f"General Error: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/")
-def home():
-    try:
-        return render_template("index.html")
-    except Exception as e:
-        print("Error rendering template:", str(e))
-        return str(e), 500
-
-
-@app.route("/uploads/<filename>")
-def uploaded_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
-
-
-@app.route("/api/upload-pdf", methods=["POST"])
-def upload_pdf():
-    try:
-        if "file" not in request.files:
-            return jsonify({"error": "No file part"}), 400
-
-        file = request.files["file"]
-        if file.filename == "":
-            return jsonify({"error": "No selected file"}), 400
-
-        if file and allowed_file(file.filename):
-            file_id = str(uuid.uuid4())
-            filename = secure_filename(file.filename)
-            base_name, extension = os.path.splitext(filename)
-            unique_filename = f"{base_name}_{file_id}{extension}"
-
-            # Read file contents into memory
-            file_contents = file.read()
-
-            # Extract text from PDF
-            text_by_page = extract_text_from_pdf(file_contents)
-
-            # Upload PDF to Supabase Storage
-            upload_path = f"user_pdfs/{unique_filename}"
-            supabase.storage.from_("files_wad2").upload(
-                upload_path, BytesIO(file_contents), {"content-type": "application/pdf"}
-            )
-
-            return jsonify(
-                {
-                    "message": "File uploaded successfully",
-                    "file_id": file_id,
-                    "filename": unique_filename,
-                    "num_pages": len(text_by_page),
-                    "upload_path": upload_path,
-                }
-            )
-        else:
-            return jsonify({"error": "File type not allowed"}), 400
-
-    except Exception as e:
-        print("Error uploading file:", str(e))
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/explain-answer", methods=["POST"])
-def explain_answer():
-    try:
-        data = request.json
-        question = data.get("question")
-        correct_answer = data.get("correct_answer")
-        wrong_answer = data.get("wrong_answer")
-
-        prompt = f"""
-        The question was: "{question}"
-        The correct answer is: "{correct_answer}"
-        The student chose: "{wrong_answer}"
-        
-        Provide a brief (1-2 sentences) explanation of why the chosen answer is incorrect.
-        Focus on helping the student understand the key difference between their answer
-        and the correct answer, without revealing the correct answer. Be educational in your explanation.
-        """
-
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a helpful study assistant providing brief, clear explanations for incorrect answers.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.7,
-            max_tokens=100,
-        )
-
-        return jsonify({"explanation": response.choices[0].message.content.strip()})
-
-    except Exception as e:
-        print("Error generating explanation:", str(e))
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/chat", methods=["POST"])
-def chat():
-    try:
-        message = request.json.get("message")
-        file_id = request.json.get("file_id")
-
-        if not message:
-            return jsonify({"error": "No message provided"}), 400
-
-        # Get document context
-        context = get_document_context_supabase(file_id)
-
-        messages = [
-            {
-                "role": "system",
-                "content": """You are a helpful study assistant. 
-            Prioritize using information from the provided document content when answering questions.
-            If the answer can be found in the documents, cite the specific page number.
-            If the question cannot be answered using the document content, provide a general educational response.""",
-            },
-            {
-                "role": "user",
-                "content": f"Document content:\n{context}\n\nQuestion: {message}",
-            },
-        ]
-
-        response = client.chat.completions.create(
-            model="gpt-4o-mini", messages=messages, temperature=0.7, max_tokens=1000
-        )
-
-        return jsonify({"response": response.choices[0].message.content.strip()})
-
-    except Exception as e:
-        print("Error in chat:", str(e))
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
-
-
-# Supabase Routes
 @app.route("/api/supabase/upload-pdf", methods=["POST"])
 def upload_pdf_supabase():
     try:
@@ -425,145 +104,84 @@ def upload_pdf_supabase():
             return jsonify({"error": "No file part"}), 400
 
         file = request.files["file"]
-        if file.filename == "":
-            return jsonify({"error": "No selected file"}), 400
+        if file.filename == "" or not file.filename.endswith(".pdf"):
+            return jsonify({"error": "Invalid file"}), 400
 
-        if file and allowed_file(file.filename):
-            file_id, _ = os.path.splitext(
-                file.filename
-            )  # Extract filename without extension
+        file_id, _ = os.path.splitext(file.filename)
+        file_content = file.read()
 
-            # # Generate unique filename
-            # file_id = str(uuid.uuid4())
-            # filename = secure_filename(file.filename)
-            # base_name, extension = os.path.splitext(filename)
-            # unique_filename = f"{base_name}_{file_id}{extension}"
+        # Extract text from PDF bytes
+        text_by_page = extract_text_from_pdf_bytes(file_content)
 
-            # Temporary local save (optional, depending on your workflow)
-            # file_path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
-            # file.save(file_path)
+        # Upload to Supabase storage
+        upload_path = f"user_pdfs/{file.filename}"
+        supabase.storage.from_("files_wad2").upload(
+            path=upload_path,
+            file=file_content,
+            file_options={"content-type": "application/pdf"},
+        )
 
-            # Extract text from PDF
-            file_contents = file.read()
+        # Generate and upload preview
+        try:
+            pdf = pdfium.PdfDocument(BytesIO(file_content))
+            page = pdf[0]
+            preview_image = page.render(scale=4).to_pil()
+            preview_bytes = BytesIO()
+            preview_image.save(preview_bytes, format="PNG")
+            preview_bytes.seek(0)
 
-            text_by_page = extract_text_from_pdf(file_contents)
-
-            # Upload to Supabase storage
-            # with open(file_path, "rb") as pdf_file:
-            #     # Upload to 'pdfs' bucket with a unique path
-            #     upload_path = f"user_pdfs/{file.filename}"
-            #     supabase.storage.from_("files_wad2").upload(
-            #         file=pdf_file,
-            #         path=upload_path,
-            #         file_options={"content-type": "application/pdf"},
-            #     )
-
-            # Upload PDF to Supabase Storage
-            upload_path = f"user_pdfs/{file.filename}"
+            preview_name = f"{file_id}.png"
             supabase.storage.from_("files_wad2").upload(
-                upload_path, BytesIO(file_contents), {"content-type": "application/pdf"}
+                f"previews/{preview_name}", preview_bytes.getvalue()
             )
+        except Exception as e:
+            print(f"Preview generation error: {str(e)}")
+            # Continue even if preview fails
 
-            # Generate PDF preview (1st page of PDF)
-            generate_preview(file_contents, file_id)
-
-            # Optional: Remove local file after upload
-            # os.remove(file_path)
-
-            return jsonify(
-                {
-                    "message": "File uploaded successfully to Supabase storage",
-                    "file_id": file_id,
-                    # "filename": unique_filename,
-                    "upload_path": upload_path,
-                    "num_pages": len(text_by_page),
-                }
-            )
-        else:
-            return jsonify({"error": "File type not allowed"}), 400
+        return jsonify(
+            {
+                "message": "File uploaded successfully to Supabase storage",
+                "file_id": file_id,
+                "upload_path": upload_path,
+                "num_pages": len(text_by_page),
+            }
+        )
 
     except Exception as e:
         print("Error uploading file:", str(e))
-        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/supabase/generate-flashcards", methods=["POST"])
 def generate_flashcards_supabase():
-    # Validate that the request contains JSON data
     if not request.is_json:
-        print("Invalid input: JSON data expected.")
         return jsonify({"error": "Invalid input: JSON data expected."}), 400
 
     data = request.get_json()
     file_id = data.get("file_id")
 
-    # Validate that file_id is provided
     if not file_id:
-        print("No file ID provided.")
         return jsonify({"error": "No file ID provided."}), 400
 
-    # **1. Fetch the PDF file from Supabase Storage**
     try:
-        pdf_path = f"user_pdfs/{file_id}.pdf"
-        destination = os.path.join(UPLOAD_FOLDER, f"{file_id}.pdf")
+        # Get document context
+        context = get_document_context_supabase(file_id)
+        if not context:
+            return jsonify({"error": "Failed to retrieve document content."}), 500
 
-        print(f"Attempting to download PDF from Supabase: {pdf_path}")
-
-        # Download the PDF file as bytes
-        pdf_content = supabase.storage.from_("files_wad2").download(pdf_path)
-
-        if not pdf_content:
-            print(f"PDF file not found in Supabase Storage: {pdf_path}")
-            return jsonify({"error": "PDF file not found in Supabase Storage."}), 404
-
-        # Save the PDF content to the local filesystem
-        with open(destination, "wb") as f:
-            f.write(pdf_content)
-
-        print(f"PDF successfully downloaded and saved to: {destination}")
-
-    except Exception as e:
-        print(f"Error fetching PDF from Supabase: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": f"Error fetching PDF from Supabase: {str(e)}"}), 500
-
-    # **2. Extract text from the fetched PDF content**
-    try:
-        print(f"Extracting text from PDF: {destination}")
-        text_by_page = extract_text_from_pdf(destination)
-        print("Text extraction successful.")
-    except Exception as e:
-        print(f"Error extracting PDF text: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": "Failed to extract text from PDF."}), 500
-
-    # **3. Combine pages with clear separation**
-    try:
-        full_text = "\n\nPAGE BREAK\n\n".join(
-            [f"[Page {page}]\n{text}" for page, text in text_by_page.items()]
-        )
-        print("Pages combined into full_text successfully.")
-    except Exception as e:
-        print(f"Error combining pages: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": "Failed to combine PDF pages."}), 500
-
-    # **4. Generate flashcards using OpenAI API**
-    try:
-        print("Generating flashcards using OpenAI API.")
+        # Generate flashcards using OpenAI
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
                     "content": """You are a helpful assistant that creates educational flashcards. 
-Focus on extracting key information from the provided content.
-Always return the response in the exact JSON format specified.""",
+                    Focus on extracting key information from the provided content.
+                    Always return the response in the exact JSON format specified.""",
                 },
                 {
                     "role": "user",
-                    "content": generate_flashcard_prompt(full_text, file_id),
+                    "content": generate_flashcard_prompt(context, file_id),
                 },
             ],
             temperature=0.7,
@@ -571,18 +189,9 @@ Always return the response in the exact JSON format specified.""",
         )
 
         flashcards_text = response.choices[0].message.content.strip()
-        print("Flashcards generated successfully.")
-
-    except Exception as e:
-        print(f"OpenAI API Error: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": "Failed to generate flashcards."}), 500
-
-    # **5. Parse and Format Flashcards**
-    try:
-        print("Parsing flashcards JSON response.")
         flashcards_data = json.loads(flashcards_text)
 
+        # Format flashcards
         formatted_flashcards = []
         for card in flashcards_data.get("flashcards", []):
             formatted_card = {
@@ -598,126 +207,72 @@ Always return the response in the exact JSON format specified.""",
             }
             formatted_flashcards.append(formatted_card)
 
-        print(f"Parsed and formatted {len(formatted_flashcards)} flashcards.")
+        # Upload flashcards to Supabase
+        flashcards_json = json.dumps({"flashcards": formatted_flashcards})
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        upload_path = f"flashcards/{file_id}/{timestamp}.json"
 
-    except json.JSONDecodeError as e:
-        print(f"JSON Parse Error: {str(e)}")
-        print(f"Problematic JSON: {flashcards_text}")
-        return jsonify({"error": "Failed to parse flashcards response."}), 500
-    except Exception as e:
-        print(f"Unexpected Error during flashcard parsing: {str(e)}")
-        traceback.print_exc()
-        return (
-            jsonify(
-                {"error": "An unexpected error occurred while processing flashcards."}
-            ),
-            500,
-        )
-
-    # **6. Save flashcards to storage or database**
-    try:
-        print("Saving flashcards to storage.")
-        flashcard_filename = save_flashcards(
-            {"flashcards": formatted_flashcards}, file_id
-        )
-
-        flashcard_filepath = os.path.join(FLASHCARDS_FOLDER, flashcard_filename)
-        print(f"Flashcards saved to: {flashcard_filepath}")
-    except Exception as e:
-        print(f"Error saving flashcards: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": "Failed to save flashcards."}), 500
-
-    # **7. Upload flashcards to Supabase Storage**
-    try:
-        folder_name = file_id
-        flashcard_filename = os.path.basename(flashcard_filepath)
-        folder_prefix = f"{folder_name}/"
-        upload_path = f"flashcards/{folder_prefix}{flashcard_filename}"
-
-        print(f"Uploading flashcards to Supabase Storage at '{upload_path}'.")
-        with open(flashcard_filepath, "rb") as fc_file:
-            upload_response = supabase.storage.from_("files_wad2").upload(
-                upload_path, fc_file
-            )
-
-        if not upload_response:
-            print("Failed to upload flashcards to Supabase Storage.")
-            return (
-                jsonify({"error": "Failed to upload flashcards to Supabase Storage."}),
-                500,
-            )
-
-        print("Flashcards uploaded to Supabase Storage successfully.")
-
-    except Exception as e:
-        print(f"Error uploading flashcards to Supabase: {str(e)}")
-        traceback.print_exc()
-        return (
-            jsonify({"error": "Failed to upload flashcards to Supabase Storage."}),
-            500,
-        )
-
-    # **8. Remove local files**
-    try:
-        print("Removing local files.")
-        os.remove(destination)
-        os.remove(flashcard_filepath)
-        print("Local files removed successfully.")
-    except Exception as e:
-        # Log the error but don't fail the entire process
-        print(f"Error removing local files: {str(e)}")
-        traceback.print_exc()
-
-    # **9. Return Success Response**
-    return (
-        jsonify(
-            {
-                "message": "Flashcards uploaded successfully to Supabase Storage.",
-                "file_id": flashcard_filepath,
-                "filename": flashcard_filepath,
-                "flashcards": formatted_flashcards,
-            }
-        ),
-        200,
-    )
-
-
-def generate_preview(file_contents, file_id):
-    try:
-        # Generate preview using pdfium
-        pdf = pdfium.PdfDocument(BytesIO(file_contents))
-        page = pdf[0]
-        image = page.render(scale=4).to_pil()
-
-        # Save image to bytes
-        img_byte_arr = BytesIO()
-        image.save(img_byte_arr, format="PNG")
-        img_byte_arr.seek(0)
-
-        # Upload to Supabase
-        preview_name = f"{file_id}.png"
-        upload_path = f"previews/{preview_name}"
         supabase.storage.from_("files_wad2").upload(
-            upload_path, img_byte_arr, {"content-type": "image/png"}
+            path=upload_path,
+            file=flashcards_json.encode(),
+            file_options={"content-type": "application/json"},
         )
 
-        pdf.close()  # Close the PDF document
-
-        return {"success": True}
+        return jsonify(
+            {
+                "message": "Flashcards generated and uploaded successfully",
+                "flashcards": formatted_flashcards,
+                "upload_path": upload_path,
+            }
+        )
 
     except Exception as e:
-        print(str(e))
-        return {"error": str(e)}
+        print(f"Error generating flashcards: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    try:
+        message = request.json.get("message")
+        file_id = request.json.get("file_id")
+
+        if not message:
+            return jsonify({"error": "No message provided"}), 400
+
+        # Get document context
+        context = get_document_context_supabase(file_id)
+        if not context:
+            return jsonify({"error": "Failed to retrieve document content"}), 500
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """You are a helpful study assistant. 
+                    Prioritize using information from the provided document content when answering questions.
+                    If the answer can be found in the documents, cite the specific page number.
+                    If the question cannot be answered using the document content, provide a general educational response.""",
+                },
+                {
+                    "role": "user",
+                    "content": f"Document content:\n{context}\n\nQuestion: {message}",
+                },
+            ],
+            temperature=0.7,
+            max_tokens=1000,
+        )
+
+        return jsonify({"response": response.choices[0].message.content})
+
+    except Exception as e:
+        print("Error in chat:", str(e))
+        return jsonify({"error": str(e)}), 500
 
 
 # test api
-@app.route("/api/test", methods=["get"])
+@app.route("/api/test", methods=["GET"])
 def test():
-    return "Hello World"
-
-
-if __name__ == "__main__":
-    if not os.getenv("OPENAI_API_KEY"):
-        print("Warning: OPENAI_API_KEY not found in environment variables!")
-    app.run(debug=True)
+    return jsonify({"message": "Hello World"})
