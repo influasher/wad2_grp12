@@ -187,7 +187,7 @@ const generateFlashcards = async () => {
   isGenerating.value = true;
   try {
     const response = await axios.post(
-      "https://elementalbackend.vercel.app//api/supabase/generate-flashcards",
+      "https://elementalbackend.vercel.app/api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
       }
