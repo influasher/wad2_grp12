@@ -272,6 +272,44 @@ def chat():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/explain-answer", methods=["POST"])
+def explain_answer():
+    try:
+        data = request.json
+        question = data.get("question")
+        correct_answer = data.get("correct_answer")
+        wrong_answer = data.get("wrong_answer")
+
+        prompt = f"""
+        The question was: "{question}"
+        The correct answer is: "{correct_answer}"
+        The student chose: "{wrong_answer}"
+        
+        Provide a brief (1-2 sentences) explanation of why the chosen answer is incorrect.
+        Focus on helping the student understand the key difference between their answer
+        and the correct answer, without revealing the correct answer. Be educational in your explanation.
+        """
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful study assistant providing brief, clear explanations for incorrect answers.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.7,
+            max_tokens=100,
+        )
+
+        return jsonify({"explanation": response.choices[0].message.content.strip()})
+
+    except Exception as e:
+        print("Error generating explanation:", str(e))
+        return jsonify({"error": str(e)}), 500
+
+
 # test api
 @app.route("/api/test", methods=["GET"])
 def test():
