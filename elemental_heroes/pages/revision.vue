@@ -392,16 +392,36 @@ async function getFlashcards() {
         return null;
       }
 
-      // Calculate total flashcards (5 cards per file)
-      const fileCount = files.filter(
-        (file) => !file.name.startsWith(".")
-      ).length;
-      const totalCards = fileCount * 5;
+      // Download and process each file to get actual card count
+      let totalCards = 0;
+      for (const file of files) {
+        if (file.name.startsWith('.')) continue;
+        
+        const { data: fileData, error: downloadError } = await supabase.storage
+          .from("files_wad2")
+          .download(`flashcards/${folder.name}/${file.name}`);
+
+        if (downloadError) {
+          console.error(`Error downloading ${file.name}:`, downloadError);
+          continue;
+        }
+
+        try {
+          const text = await fileData.text();
+          const parsedData = JSON.parse(text);
+          if (parsedData.flashcards && Array.isArray(parsedData.flashcards)) {
+            totalCards += parsedData.flashcards.length;
+          }
+        } catch (error) {
+          console.error(`Error processing file ${file.name}:`, error);
+          continue;
+        }
+      }
 
       return {
         name: folder.name,
         totalCards: totalCards,
-        fileCount: fileCount,
+        fileCount: files.filter(file => !file.name.startsWith('.')).length
       };
     });
 

@@ -11,7 +11,7 @@
         facere officiis odio.
       </p>
     </div> -->
-    <div class="m-3 p-3 text-center col-9 col-sm-12">
+    <div class="p-3 my-3 text-center col-9 col-sm-12">
       <h2 id="typed-output" class="press-start-2p-regular"></h2> 
     </div>
   
