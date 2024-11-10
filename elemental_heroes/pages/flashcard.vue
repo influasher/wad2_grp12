@@ -232,7 +232,7 @@ const handleGenerateMore = async () => {
       "https://elementalbackend.vercel.app/api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
-        count: 5,
+        count: 3,
       }
     );
 
