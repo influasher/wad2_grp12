@@ -357,12 +357,20 @@ async function updateAvatar(event) {
 
     const { data } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
     avatar_url.value = data.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from('profiles2')
+      .update({ avatar_url: fileName })
+      .eq('id', user.value.id);
+    if (updateError) throw updateError;
+
   } catch (error) {
     console.error('Error updating avatar:', error.message);
   } finally {
     isUploadingAvatar.value = false;
   }
 }
+
 
 
 async function updateBackgroundImage(event) {
@@ -379,6 +387,13 @@ async function updateBackgroundImage(event) {
 
     const { data } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
     background_url.value = data.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from('profiles2')
+      .update({ background_url: fileName })
+      .eq('id', user.value.id);
+    if (updateError) throw updateError;
+
   } catch (error) {
     console.error('Error updating background:', error.message);
   } finally {
