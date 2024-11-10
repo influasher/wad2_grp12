@@ -68,7 +68,7 @@ def get_document_context_supabase(file_id):
 
 def generate_flashcard_prompt(content, file_id):
     return f"""
-    Create 5 multiple-choice flashcards from the following content. Each flashcard should follow this exact format:
+    Create 3 multiple-choice flashcards from the following content. Each flashcard should follow this exact format:
     1. A clear, specific question
     2. One correct answer
     3. Three plausible but incorrect answers
