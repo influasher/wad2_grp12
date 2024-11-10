@@ -134,7 +134,7 @@
             <!-- Delete button -->
             <button
               class="delete-btn"
-              @click.prevent="handleFlashcardDelete(folder.name)"
+              @click.prevent="confirmFlashcardDelete(folder.name)"
               title="Delete folder"
             >
               <svg
@@ -175,6 +175,36 @@
         </div>
       </div>
     </div>
+    <!-- Flashcard Delete Confirmation Modal -->
+    <div v-if="showDeleteFlashcardModal" class="modal-overlay">
+      <div class="modal-content">
+        <h4>Confirm Deletion</h4>
+        <p>Are you sure you want to delete "{{ flashcardToDelete }}" and all its flashcards?</p>
+        <div class="modal-buttons">
+          <button @click="proceedWithFlashcardDelete" class="btn btn-danger">Delete</button>
+          <button @click="closeFlashcardModal" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flashcard Success Modal -->
+    <div v-if="showFlashcardSuccessModal" class="modal-overlay">
+      <div class="modal-content">
+        <h4>Success</h4>
+        <p>{{ flashcardModalMessage }}</p>
+        <button @click="closeFlashcardModal" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+    <!-- Deletion Progress Modal -->
+    <div v-if="showDeletionProgressModal" class="modal-overlay">
+      <div class="modal-content">
+        <h4>Deleting {{ flashcardToDelete }}</h4>
+        <div class="progress-bar">
+          <div class="progress" :style="{ width: deletionProgress + '%' }"></div>
+        </div>
+        <p>{{ deletionProgressMessage }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -207,6 +237,86 @@ const modalTitle = ref("");
 const modalMessage = ref("");
 const showDeleteModal = ref(false);
 const itemToDelete = ref("");
+const showDeleteFlashcardModal = ref(false);
+const showFlashcardSuccessModal = ref(false);
+const flashcardToDelete = ref("");
+const flashcardModalMessage = ref("");
+const showDeletionProgressModal = ref(false);
+const deletionProgress = ref(0);
+const deletionProgressMessage = ref("");
+
+// Function to initiate flashcard delete confirmation modal
+const confirmFlashcardDelete = (folderName) => {
+  flashcardToDelete.value = folderName;
+  showDeleteFlashcardModal.value = true;
+};
+
+// Function to proceed with flashcard deletion
+const proceedWithFlashcardDelete = async () => {
+  try {
+    isDeleting.value = true;
+    
+    // Close the delete confirmation modal
+    showDeleteFlashcardModal.value = false;
+
+    // Show the deletion progress modal
+    showDeletionProgressModal.value = true;
+    deletionProgress.value = 0; // Reset progress
+    deletionProgressMessage.value = "Deleting...";
+
+    // List all files in the flashcard folder
+    const { data: files, error: listError } = await supabase.storage
+      .from("files_wad2")
+      .list(`flashcards/${flashcardToDelete.value}`);
+
+    if (listError) throw listError;
+
+    const totalFiles = files.length;
+    let filesDeleted = 0;
+
+    // Delete each file in the folder and update progress
+    for (const file of files) {
+      const { error: deleteError } = await supabase.storage
+        .from("files_wad2")
+        .remove([`flashcards/${flashcardToDelete.value}/${file.name}`]);
+
+      if (deleteError) throw deleteError;
+
+      filesDeleted++;
+      deletionProgress.value = Math.round((filesDeleted / totalFiles) * 100);
+
+      // Update message without percentage
+      deletionProgressMessage.value = "Deleting...";
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+
+    // Complete deletion of the folder
+    await supabase.storage
+      .from("files_wad2")
+      .remove([`flashcards/${flashcardToDelete.value}/.emptyFolderPlaceholder`]);
+
+    // Refresh flashcards list
+    await getFlashcards();
+    flashcardModalMessage.value = `"${flashcardToDelete.value}" deleted successfully.`;
+    showFlashcardSuccessModal.value = true;
+  } catch (error) {
+    console.error("Error deleting flashcard folder:", error);
+    flashcardModalMessage.value = "Error deleting flashcard folder. Please try again.";
+    showFlashcardSuccessModal.value = true;
+  } finally {
+    isDeleting.value = false;
+    showDeletionProgressModal.value = false;
+    deletionProgress.value = 0;
+  }
+};
+
+// Function to close flashcard modals
+const closeFlashcardModal = () => {
+  showDeleteFlashcardModal.value = false;
+  showFlashcardSuccessModal.value = false;
+  flashcardModalMessage.value = "";
+};
 
 // Function to initiate delete confirmation modal
 const confirmDelete = (noteName) => {
@@ -216,7 +326,7 @@ const confirmDelete = (noteName) => {
 
 // Function to proceed with deletion
 const proceedWithDelete = () => {
-  handleNoteDelete(); // Execute delete
+  handleNoteDelete();
 };
 
 // Function to close the delete confirmation modal
@@ -294,10 +404,10 @@ const handleNoteDelete = async () => {
   } catch (error) {
     console.error("Error deleting note:", error);
     modalMessage.value = "Error deleting note. Please try again.";
-    showModal.value = true; // Show error message
+    showModal.value = true;
   } finally {
     isDeleting.value = false;
-    closeDeleteModal(); // Close the delete confirmation modal
+    closeDeleteModal();
   }
 };
 
@@ -737,6 +847,22 @@ onMounted(() => {
 
 .btn-danger:hover {
   background-color: #c82333;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress {
+  height: 100%;
+  background-color: #28a745;
+  width: 0;
+  transition: width 0.2s ease;
 }
 
 /* Media query for smaller screens */
