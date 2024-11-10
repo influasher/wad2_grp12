@@ -6,9 +6,16 @@
     </header>
 
     <main>
-      <!-- Loading Screen -->
+      <!-- Loading Screen (Generating) -->
       <div v-if="isGenerating" class="loading-content">
         <h2>Generating Flashcards</h2>
+        <p>Get ready to revise!</p>
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Loading Screen (Retrieving) -->
+      <div v-else-if="isRetrieving" class="loading-content">
+        <h2>Retrieving Flashcards</h2>
         <p>Get ready to revise!</p>
         <div class="spinner"></div>
       </div>
@@ -20,20 +27,35 @@
             <button
               @click="showPreviousCard"
               :disabled="currentCardIndex === 0"
-            >
+              class="desktop-nav"
+              >
               Previous
+            </button>
+            <button
+              @click="showPreviousCard"
+              :disabled="currentCardIndex === 0"
+              class="mobile-nav"
+              aria-label="Previous card"
+              >
+              <span class="arrow arrow-left">↑</span>
             </button>
             <span
               >Card {{ currentCardIndex + 1 }} of {{ flashcards.length }}</span
             >
             <button
               @click="showNextCard"
-              :disabled="
-                !currentCardAnswered ||
-                currentCardIndex === flashcards.length - 1
-              "
-            >
+              :disabled="!currentCardAnswered || currentCardIndex === flashcards.length - 1"
+              class="desktop-nav"
+              >
               Next
+            </button>
+            <button
+              @click="showNextCard"
+              :disabled="!currentCardAnswered || currentCardIndex === flashcards.length - 1"
+              class="mobile-nav"
+              aria-label="Next card"
+              >
+              <span class="arrow arrow-right">↑</span>
             </button>
           </div>
 
@@ -92,6 +114,7 @@ const supabase = createClient(
 const route = useRoute();
 const fileName = ref(route.query.name || "Untitled");
 const isGenerating = ref(route.query.generating === "true");
+const isRetrieving = ref(false);
 const mode = ref(route.query.mode || "generate");
 
 const flashcards = ref([]);
@@ -106,11 +129,11 @@ const showCompletionPopup = ref(false);
 const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
 
 async function retrieveExistingFlashcards() {
+  isRetrieving.value = true;
   try {
     const flashcardPath = "flashcards/" + fileName.value;
     console.log(`Retrieving flashcards from: ${flashcardPath}`);
 
-    // List all files under the specified folder
     const { data: fileList, error } = await supabase.storage
       .from("files_wad2")
       .list(flashcardPath);
@@ -126,10 +149,8 @@ async function retrieveExistingFlashcards() {
       return;
     }
 
-    // Array to hold promises for downloading and parsing each file
     const downloadPromises = fileList.map(async (file) => {
       try {
-        // Download each flashcard file
         const { data: fileData, error: downloadError } = await supabase.storage
           .from("files_wad2")
           .download(`${flashcardPath}/${file.name}`);
@@ -139,14 +160,11 @@ async function retrieveExistingFlashcards() {
           return [];
         }
 
-        // Read the file data as text
         const text = await fileData.text();
 
         try {
-          // Parse the JSON content
           const parsedData = JSON.parse(text);
 
-          // Validate the data structure
           if (!parsedData.flashcards || !Array.isArray(parsedData.flashcards)) {
             console.error(`Invalid flashcard data structure in ${file.name}`);
             return [];
@@ -163,13 +181,9 @@ async function retrieveExistingFlashcards() {
       }
     });
 
-    // Wait for all download and parse operations to complete
     const flashcardsArrays = await Promise.all(downloadPromises);
-
-    // Combine all flashcards into one array
     const combinedFlashcards = flashcardsArrays.flat();
 
-    // Assign the combined flashcards to the reactive variable
     console.log("Retrieved flashcards:", combinedFlashcards);
     flashcards.value = combinedFlashcards;
 
@@ -180,6 +194,8 @@ async function retrieveExistingFlashcards() {
   } catch (error) {
     console.error("Error in retrieveExistingFlashcards:", error);
     flashcards.value = [];
+  } finally {
+    isRetrieving.value = false;
   }
 }
 
@@ -190,6 +206,7 @@ const generateFlashcards = async () => {
       "https://elementalbackend.vercel.app/api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
+        count: 3,
       }
     );
 
@@ -216,7 +233,7 @@ const handleGenerateMore = async () => {
       "https://elementalbackend.vercel.app/api/supabase/generate-flashcards",
       {
         file_id: fileName.value,
-        count: 5,
+        count: 3,
       }
     );
 
@@ -392,6 +409,7 @@ onMounted(() => {
   background-color: #f0f2f5;
 }
 
+/* Header styles */
 .container header {
   text-align: center;
 }
@@ -401,7 +419,8 @@ onMounted(() => {
   margin-bottom: 30px;
 }
 
-.container .section {
+/* Section styles */
+.section {
   background: white;
   padding: 20px;
   margin-bottom: 30px;
@@ -409,6 +428,7 @@ onMounted(() => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Loading screen styles */
 .loading-content {
   display: flex;
   flex-direction: column;
@@ -431,15 +451,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.container button {
+/* Navigation and action button styles */
+button {
   background-color: var(--button-color);
   color: white;
   border: none;
@@ -449,69 +466,74 @@ onMounted(() => {
   transition: background-color 0.3s;
 }
 
-.container button:hover {
+button:hover:not(:disabled) {
   background-color: var(--button-hover);
 }
 
-.container .flashcard {
-  background: white;
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Flashcard styles */
+.flashcard {
   padding: 20px;
   border-radius: var(--border-radius);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
-.container .flashcard-navigation {
+/* Navigation styles */
+.flashcard-navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.container .answer-choices {
+/* Answer choices styles */
+.answer-choices {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 20px;
-  color: #333;
 }
 
-.container .answer-choice {
+.answer-choice {
   text-align: left;
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 4px;
   background: white;
-  cursor: pointer;
+  color: #333;
   transition: all 0.3s ease;
-  color: var(--text-color);
+  cursor: pointer;
 }
 
-.container .answer-choice:hover {
+.answer-choice:hover:not(:disabled) {
   background: var(--primary-color);
 }
 
-.container .answer-choice.correct {
+.answer-choice.correct {
   background-color: #4caf50;
   color: white;
 }
 
-.container .answer-choice.correct:hover {
+.answer-choice.correct:hover {
   background-color: #4caf50;
-  color: white;
 }
 
-.container .answer-choice.incorrect {
+.answer-choice.incorrect {
   background-color: #f44336;
   color: white;
 }
 
-.container .answer-choice.incorrect:hover {
+.answer-choice.incorrect:hover {
   background-color: #f44336;
-  color: white;
 }
 
-.container .feedback {
+/* Feedback styles */
+.feedback {
   margin-top: 20px;
   padding: 15px;
   border-radius: var(--border-radius);
@@ -519,50 +541,80 @@ onMounted(() => {
   border: 1px solid #dee2e6;
 }
 
-.container .feedback p {
+.feedback p {
   margin: 0;
 }
 
-.container .retry-button {
-  padding: 8px 16px;
-  background-color: var(--button-color);
-  color: white;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.container .retry-button:hover {
-  background-color: var(--button-hover);
-}
-
-.container .source {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f5f5f5;
-  border-radius: var(--border-radius);
-}
-
-.container button[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.container .error-message {
+/* Message styles */
+.error-message {
   color: #f44336;
-  padding: 15px;
   background-color: #ffebee;
-  border-radius: 4px;
+}
+
+.info-message {
+  background-color: #e7f3fe;
+  color: #31708f;
+}
+
+.error-message, .info-message {
+  padding: 15px;
+  border-radius: var(--border-radius);
   margin: 10px 0;
   text-align: center;
 }
 
-.container .info-message {
-  padding: 15px;
-  background-color: #e7f3fe;
-  border-radius: var(--border-radius);
-  margin: 10px 0;
-  text-align: center;
-  color: #31708f;
+/* Navigation button styles */
+.mobile-nav {
+  padding: 8px;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow {
+  font-size: 24px;
+  line-height: 1;
+  display: inline-block;
+  color: white;
+}
+
+.arrow-left {
+  transform: rotate(-90deg);
+}
+
+.arrow-right {
+  transform: rotate(90deg);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .flashcard-navigation {
+    padding: 0 10px;
+    gap: 12px;
+  }
+
+  .flashcard-navigation span {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 769px) {
+  .desktop-nav {
+    display: inline-block;
+  }
+
+  .mobile-nav {
+    display: none;
+  }
 }
 </style>
