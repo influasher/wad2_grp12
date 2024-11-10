@@ -275,7 +275,7 @@ export class QA extends Phaser.Scene {
     
         // Add instruction text
         const instructionText = this.add.text(this.cameras.main.centerX,
-            this.cameras.main.centerY - instructionBox.displayHeight / 4, 
+            this.cameras.main.centerY - instructionBox.displayHeight / 3, 
             "Welcome to Lab Skills Training [QA]!\n\nI am Felix Chemicus, and here's how to play my game:\n\n1. Drag and drop NaOH and NH3 bottles \nonto test tubes.\n\n2. Observe the reactions and note the \nprecipitate formed.\n\n3. Use the reset button to clear a \ntest tube.\n\nAre you ready?", 
             {
                 fontSize: `${this.scale.width * 0.018}px`,

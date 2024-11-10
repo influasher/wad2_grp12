@@ -16,8 +16,9 @@
 
         <!-- Login and Register Forms -->
         <div
-          class="col-12 col-md-8 col-lg-7 col-xl-4 offset-xl-1 d-flex flex-column align-items-center login-register"
+          class="col-12 col-md-8 col-lg-7 col-xl-4 offset-xl-1 d-flex flex-column align-items-center text-center login-register"
         >
+        <h1 class="press-start-2p-regular py-4">Elemental Heroes</h1>
         <div class="card shadow py-2 px-4" style="width: 100%; max-width: 500px;">
           <!-- Tabs for Login and Register -->
           <ul class="nav nav-pills my-4 d-flex" id="pills-tab" role="tablist">
@@ -430,6 +431,12 @@ span {
 .card{
   align-items: center;
   width: 100%;
+}
+
+.press-start-2p-regular {
+  font-family: "Press Start 2P", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 /* Styles for Google Sign-In Button */
