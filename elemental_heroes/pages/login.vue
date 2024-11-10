@@ -18,6 +18,7 @@
         <div
           class="col-md-8 col-lg-7 col-xl-4 offset-xl-1 d-flex flex-column align-items-center login-register"
         >
+        <div class="card shadow py-2 px-5" style="width: 100%; max-width: 500px;">
           <!-- Tabs for Login and Register -->
           <ul class="nav nav-pills my-4 d-flex" id="pills-tab" role="tablist">
             <li class="nav-item flex-fill" role="presentation">
@@ -229,6 +230,7 @@
             <!-- End of Register Form -->
           </div>
           <!-- End of Tab Content -->
+        </div>  <!-- End of Card -->
         </div>
       </div>
     </div>
@@ -348,6 +350,19 @@ const handleSignUp = async () => {
   justify-content: center;
 }
 
+.wrapper::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("../assets/chem-bg.jpg") no-repeat center center;
+  background-size: cover;
+  opacity: 0.1;
+  z-index: -1;
+}
+
 /* Adjust the row to center its content */
 .row-wrapper {
   width: 100%;
@@ -408,6 +423,10 @@ span {
 
 .nav-link:hover {
   color: #593fff;
+}
+
+.card{
+  align-items: center;
 }
 
 /* Styles for Google Sign-In Button */

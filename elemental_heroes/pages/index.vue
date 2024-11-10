@@ -558,7 +558,7 @@ async function fetchLeaderboard() {
   try {
     // Fetch profiles with the avatar URL path included
     const { data, error } = await supabase
-      .from("profiles")
+      .from("profiles2")
       .select("id, first_name, last_name, score, avatar_url") // Ensure avatar_url is included
       .order("score", { ascending: false });
 
