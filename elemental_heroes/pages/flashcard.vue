@@ -6,9 +6,16 @@
     </header>
 
     <main>
-      <!-- Loading Screen -->
+      <!-- Loading Screen (Generating) -->
       <div v-if="isGenerating" class="loading-content">
         <h2>Generating Flashcards</h2>
+        <p>Get ready to revise!</p>
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Loading Screen (Retrieving) -->
+      <div v-else-if="isRetrieving" class="loading-content">
+        <h2>Retrieving Flashcards</h2>
         <p>Get ready to revise!</p>
         <div class="spinner"></div>
       </div>
@@ -107,6 +114,7 @@ const supabase = createClient(
 const route = useRoute();
 const fileName = ref(route.query.name || "Untitled");
 const isGenerating = ref(route.query.generating === "true");
+const isRetrieving = ref(false);
 const mode = ref(route.query.mode || "generate");
 
 const flashcards = ref([]);
@@ -121,11 +129,11 @@ const showCompletionPopup = ref(false);
 const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
 
 async function retrieveExistingFlashcards() {
+  isRetrieving.value = true;
   try {
     const flashcardPath = "flashcards/" + fileName.value;
     console.log(`Retrieving flashcards from: ${flashcardPath}`);
 
-    // List all files under the specified folder
     const { data: fileList, error } = await supabase.storage
       .from("files_wad2")
       .list(flashcardPath);
@@ -141,10 +149,8 @@ async function retrieveExistingFlashcards() {
       return;
     }
 
-    // Array to hold promises for downloading and parsing each file
     const downloadPromises = fileList.map(async (file) => {
       try {
-        // Download each flashcard file
         const { data: fileData, error: downloadError } = await supabase.storage
           .from("files_wad2")
           .download(`${flashcardPath}/${file.name}`);
@@ -154,14 +160,11 @@ async function retrieveExistingFlashcards() {
           return [];
         }
 
-        // Read the file data as text
         const text = await fileData.text();
 
         try {
-          // Parse the JSON content
           const parsedData = JSON.parse(text);
 
-          // Validate the data structure
           if (!parsedData.flashcards || !Array.isArray(parsedData.flashcards)) {
             console.error(`Invalid flashcard data structure in ${file.name}`);
             return [];
@@ -178,13 +181,9 @@ async function retrieveExistingFlashcards() {
       }
     });
 
-    // Wait for all download and parse operations to complete
     const flashcardsArrays = await Promise.all(downloadPromises);
-
-    // Combine all flashcards into one array
     const combinedFlashcards = flashcardsArrays.flat();
 
-    // Assign the combined flashcards to the reactive variable
     console.log("Retrieved flashcards:", combinedFlashcards);
     flashcards.value = combinedFlashcards;
 
@@ -195,6 +194,8 @@ async function retrieveExistingFlashcards() {
   } catch (error) {
     console.error("Error in retrieveExistingFlashcards:", error);
     flashcards.value = [];
+  } finally {
+    isRetrieving.value = false;
   }
 }
 
