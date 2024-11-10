@@ -27,3 +27,5 @@ logs
 env
 venv
 .venv
+
+*.tar

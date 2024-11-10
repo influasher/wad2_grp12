@@ -2,7 +2,7 @@
 <template>
   <div class="home-page">
     <!-- Announcements Section -->
-    <div class="announcements">
+    <!-- <div class="announcements">
       <h3>Announcements</h3>
       <p>
         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Suscipit
@@ -10,8 +10,12 @@
         neque, deserunt adipisci, veritatis nam aspernatur. Eos iste expedita
         facere officiis odio.
       </p>
+    </div> -->
+    <div class="my-3 py-3">
+      <h1 id="typed-output" class="press-start-2p-regular"></h1> 
     </div>
-
+  
+    
     <!-- Slideshow of recently played -->
     <div class="slideshow">
       <div v-if="isLoading" class="skeleton-container">
@@ -24,7 +28,6 @@
         class="carousel slide"
         data-bs-ride="carousel"
       >
-        <!-- Your existing carousel code -->
         <div class="carousel-inner">
           <div
             v-for="(game, index) in games"
@@ -359,6 +362,14 @@
   flex-direction: column; /* Stack name and score vertically */
   text-align: left; /* Align text to the left */
 }
+
+#typed-output{
+  width: 100%;
+  margin: 10px;
+  padding: 20px;
+  font-size: 30px;
+  display: inline;
+}
 </style>
 
 <script setup>
@@ -366,6 +377,7 @@ import { ref, onMounted } from "vue";
 import { createClient } from "@supabase/supabase-js";
 import { useRuntimeConfig } from "#app";
 import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
+import Typed from 'typed.js';
 // import { Chart, registerables } from "chart.js";
 // import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -417,6 +429,130 @@ async function fetchGames() {
   }
 }
 
+onMounted(() => {
+  new Typed("#typed-output", {
+    strings: [`Welcome to Elemental Heroes!`, "Hope you have fun!"],
+    typeSpeed: 50,       // Typing speed in milliseconds
+    backSpeed: 50,       // Backspacing speed in milliseconds
+    showCursor: false,   // Hide the cursor
+  });
+});
+
+// async function fetchLeaderboard() {
+//   try {
+//     const { data, error } = await supabase
+//       .from("profiles")
+//       .select("id, first_name, last_name, score, games_played")
+//       .order("score", { ascending: false });
+
+//     if (error) throw error;
+//     leaderboard.value = data;
+
+//     renderLeaderboardChart();
+//   } catch (error) {
+//     console.error("Error fetching leaderboard:", error.message);
+//   }
+// }
+
+// function renderLeaderboardChart() {
+//   const ctx = document.getElementById("leaderboardChart").getContext("2d");
+
+//   new Chart(ctx, {
+//     type: "bar",
+//     data: {
+//       labels: leaderboard.value.map(
+//         (profile) => `${profile.first_name} ${profile.last_name}`
+//       ),
+//       datasets: [
+//         {
+//           label: "Score",
+//           data: leaderboard.value.map((profile) => profile.score),
+//           backgroundColor: leaderboard.value.map((_, index) => {
+//             if (index < 3) {
+//               return 'rgba(89, 63, 255, 0.7)'; // Top 3: Green with 0.7 transparency
+//             } else if (index < 5) {
+//               return 'rgba(139, 110, 243, 0.7)'; // Next 2: Yellow with 0.7 transparency
+//             } else {
+//               return 'rgba(178, 169, 236, 0.7)'; // Rest: Red with 0.7 transparency
+//             }
+//           }),
+//           borderColor: leaderboard.value.map((_, index) => {
+//             return index === 1 ? 'rgba(42, 42, 43, 0.7)' : 'transparent'; // Add a black border to the user's bar, transparent for others
+//           }),
+//           borderWidth: leaderboard.value.map((_, index) => {
+//             return index === 1 ? 3 : 0; // Set border width for the user's bar
+//           }),
+//           borderRadius: 10, // Set this to round the corners of the bars
+//           borderSkipped: false, // Ensure rounding applies to all sides
+//         },
+//       ],
+//     },
+//     options: {
+//       indexAxis: "y", // Horizontal bar chart
+//       responsive: true,
+//       scales: {
+//         x: {
+//           display: false, // Hide the x-axis grid lines
+//         },
+//         y: {
+//           grid: {
+//             display: false, // Hide the y-axis grid lines
+//           },
+//           ticks: {
+//             autoSkip: false, // Ensure all labels are shown
+//           },
+//         },
+//       },
+//       plugins: {
+//         legend: {
+//           display: false,
+//         },
+//         datalabels: {
+//           display: true, // Enable data labels
+//           align: 'end',
+//           anchor: 'end',
+//           color: '#000', // Adjust color as needed
+//           font: {
+//             size: 12, // Adjust font size as needed
+//           },
+//         },
+//       },
+//     },
+//     plugins: [ChartDataLabels], // Include the ChartDataLabels plugin
+//   });
+// }
+
+// async function fetchLeaderboard() {
+//   try {
+//     const { data, error } = await supabase
+//       .from('profiles')
+//       .select('id, first_name, last_name, score')
+//       .order('score', { ascending: false });
+
+//     if (error) throw error;
+
+//     leaderboard.value = await Promise.all(
+//       data.map(async (profile) => {
+//         const avatarPath = `avatars/${profile.first_name.toLowerCase()}_${profile.last_name.toLowerCase()}.png`;
+//         const { data: avatarData, error: avatarError } = await supabase
+//           .storage
+//           .from('files_wad2')
+//           .getPublicUrl(avatarPath);
+
+//         if (avatarError) {
+//           console.error('Error fetching avatar:', avatarError.message);
+//           profile.avatar = '/assets/images/defaultAvatar.png'; // Fallback to a default image if there's an error
+//         } else {
+//           profile.avatar = avatarData.publicUrl || '/assets/images/defaultAvatar.png';
+//         }
+//         return profile;
+//       })
+//     );
+
+//   } catch (error) {
+//     console.error('Error fetching leaderboard:', error.message);
+//   }
+// }
 
 async function fetchLeaderboard() {
   try {

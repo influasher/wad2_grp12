@@ -1,0 +1,9 @@
+version: '3'
+services:
+  app:
+    image: flashcard-app
+    ports:
+      - "80:5000"    # Assuming your Flask app runs on port 5000
+    env_file:
+      - .env
+    restart: always
