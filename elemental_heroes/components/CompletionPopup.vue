@@ -6,7 +6,7 @@
             <p>You've completed all the flashcards!</p>
             <div class="popup-buttons">
                 <button class="return-button" @click="handleReturn">
-                    Return Home
+                    Return to Revision
                 </button>
                 <button 
                     v-if="mode === 'generate'" 
@@ -51,7 +51,7 @@ defineProps({
 const emit = defineEmits(['restart']);
 
 const handleReturn = () => {
-    router.push('/');
+    router.push('/revision');
 };
 
 const handleRestart = () => {
