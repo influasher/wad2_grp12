@@ -92,7 +92,7 @@
         <div
           v-for="(profile, index) in leaderboard.slice(0, 3)"
           :key="profile.id"
-          class="leaderboard-card top-card text-center"
+          class="leaderboard-card top-card"
           :class="getCardClass(index)"
           :style="{ height: getBarHeight(index) }"
         >
@@ -286,8 +286,6 @@
   overflow: hidden; /* Hides overflow, ensuring a circular crop */
   background-color: #000;
   margin: 0 auto;
-  /* max-width: 50px;
-  aspect-ratio: 1; Ensures the avatar remains square */
 }
 
 .avatar img {
