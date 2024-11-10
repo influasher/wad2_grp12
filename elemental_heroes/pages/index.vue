@@ -289,7 +289,7 @@
   align-items: flex-end;
   margin-bottom: 20px;
   /* Centers the cards with equal spacing */
-  gap: 30px; /* Adjust spacing as needed */
+  gap: 10px; /* Adjust spacing as needed */
   margin-left: 10px;
   margin-right: 10px;
 }
