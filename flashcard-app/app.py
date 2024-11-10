@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -152,6 +152,7 @@ def upload_pdf_supabase():
         return jsonify({"error": str(e)}), 500
 
 
+# Modified streaming flashcards generation endpoint
 @app.route("/api/supabase/generate-flashcards", methods=["POST"])
 def generate_flashcards_supabase():
     if not request.is_json:
@@ -164,67 +165,79 @@ def generate_flashcards_supabase():
         return jsonify({"error": "No file ID provided."}), 400
 
     try:
-        # Get document context
         context = get_document_context_supabase(file_id)
         if not context:
             return jsonify({"error": "Failed to retrieve document content."}), 500
 
-        # Generate flashcards using OpenAI
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": """You are a helpful assistant that creates educational flashcards. 
-                    Focus on extracting key information from the provided content.
-                    Always return the response in the exact JSON format specified.""",
-                },
-                {
-                    "role": "user",
-                    "content": generate_flashcard_prompt(context, file_id),
-                },
-            ],
-            temperature=0.7,
-            max_tokens=2000,
-        )
+        def generate():
+            # First yield the starting message
+            yield f"data: {json.dumps({'status': 'started'})}\n\n"
 
-        flashcards_text = response.choices[0].message.content.strip()
-        flashcards_data = json.loads(flashcards_text)
-
-        # Format flashcards
-        formatted_flashcards = []
-        for card in flashcards_data.get("flashcards", []):
-            formatted_card = {
-                "question": card.get("question", "").strip(),
-                "answer": card.get("correct_answer", "").strip(),
-                "wrong_answers": [
-                    {"text": wrong_answer.strip(), "explanation": "Incorrect option"}
-                    for wrong_answer in card.get("wrong_answers", [])
+            stream = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": """You are a helpful assistant that creates educational flashcards. 
+                        Focus on extracting key information from the provided content.
+                        Always return the response in the exact JSON format specified.""",
+                    },
+                    {
+                        "role": "user",
+                        "content": generate_flashcard_prompt(context, file_id),
+                    },
                 ],
-                "page": card.get("page", 0),
-                "quote": card.get("quote", "").strip(),
-                "file_id": file_id,
-            }
-            formatted_flashcards.append(formatted_card)
+                temperature=0.7,
+                max_tokens=2000,
+                stream=True,
+            )
 
-        # Upload flashcards to Supabase
-        flashcards_json = json.dumps({"flashcards": formatted_flashcards})
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        upload_path = f"flashcards/{file_id}/{timestamp}.json"
+            full_response = ""
+            for chunk in stream:
+                if chunk.choices[0].delta.content:
+                    content = chunk.choices[0].delta.content
+                    full_response += content
+                    yield f"data: {json.dumps({'content': content})}\n\n"
 
-        supabase.storage.from_("files_wad2").upload(
-            path=upload_path,
-            file=flashcards_json.encode(),
-            file_options={"content-type": "application/json"},
-        )
+            # Process the complete response
+            try:
+                flashcards_data = json.loads(full_response)
+                formatted_flashcards = []
+                for card in flashcards_data.get("flashcards", []):
+                    formatted_card = {
+                        "question": card.get("question", "").strip(),
+                        "answer": card.get("correct_answer", "").strip(),
+                        "wrong_answers": [
+                            {
+                                "text": wrong_answer.strip(),
+                                "explanation": "Incorrect option",
+                            }
+                            for wrong_answer in card.get("wrong_answers", [])
+                        ],
+                        "page": card.get("page", 0),
+                        "quote": card.get("quote", "").strip(),
+                        "file_id": file_id,
+                    }
+                    formatted_flashcards.append(formatted_card)
 
-        return jsonify(
-            {
-                "message": "Flashcards generated and uploaded successfully",
-                "flashcards": formatted_flashcards,
-                "upload_path": upload_path,
-            }
-        )
+                # Upload to Supabase
+                flashcards_json = json.dumps({"flashcards": formatted_flashcards})
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                upload_path = f"flashcards/{file_id}/{timestamp}.json"
+
+                supabase.storage.from_("files_wad2").upload(
+                    path=upload_path,
+                    file=flashcards_json.encode(),
+                    file_options={"content-type": "application/json"},
+                )
+
+                yield f"data: {json.dumps({'status': 'completed', 'flashcards': formatted_flashcards, 'upload_path': upload_path})}\n\n"
+            except Exception as e:
+                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+            yield "data: [DONE]\n\n"
+
+        return Response(stream_with_context(generate()), mimetype="text/event-stream")
 
     except Exception as e:
         print(f"Error generating flashcards: {str(e)}")
