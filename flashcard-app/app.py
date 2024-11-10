@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -20,37 +21,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Create Flask app
 app = Flask(__name__)
-
-# Configure CORS with specific origins and options
-CORS(
-    app,
-    resources={
-        r"/api/*": {
-            "origins": [
-                "https://elementalheroes.vercel.app",
-                "http://localhost:3000",  # For local development
-            ],
-            "methods": ["GET", "POST", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
-            "expose_headers": ["Content-Range", "X-Content-Range"],
-            "supports_credentials": True,
-            "max_age": 120,
-        }
-    },
-)
-
-
-# Add CORS headers to all responses
-@app.after_request
-def after_request(response):
-    response.headers.add(
-        "Access-Control-Allow-Origin", "https://elementalheroes.vercel.app"
-    )
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
-    response.headers.add("Access-Control-Allow-Credentials", "true")
-    return response
-
+CORS(app)
 
 # Init Supabase Client
 url: str = os.getenv("SUPABASE_URL")
@@ -61,15 +32,11 @@ supabase: Client = create_client(url, key)
 def extract_text_from_pdf_bytes(pdf_bytes):
     """Extract text from PDF bytes and return a dictionary with page numbers."""
     text_by_page = {}
-    try:
-        pdf_file = BytesIO(pdf_bytes)
-        pdf_reader = PyPDF2.PdfReader(pdf_file)
-        for page_num in range(len(pdf_reader.pages)):
-            page = pdf_reader.pages[page_num]
-            text_by_page[page_num + 1] = page.extract_text()
-    except Exception as e:
-        print(f"Error extracting text from PDF: {str(e)}")
-        raise
+    pdf_file = BytesIO(pdf_bytes)
+    pdf_reader = PyPDF2.PdfReader(pdf_file)
+    for page_num in range(len(pdf_reader.pages)):
+        page = pdf_reader.pages[page_num]
+        text_by_page[page_num + 1] = page.extract_text()
     return text_by_page
 
 
@@ -78,11 +45,14 @@ def get_document_context_supabase(file_id):
     context = []
     try:
         pdf_path = f"user_pdfs/{file_id}.pdf"
+
+        # Download the PDF file as bytes
         pdf_content = supabase.storage.from_("files_wad2").download(pdf_path)
 
         if not pdf_content:
             return None
 
+        # Extract text directly from bytes
         text_by_page = extract_text_from_pdf_bytes(pdf_content)
         context.append(
             "\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()])
@@ -127,11 +97,8 @@ def generate_flashcard_prompt(content, file_id):
     """
 
 
-@app.route("/api/supabase/upload-pdf", methods=["POST", "OPTIONS"])
+@app.route("/api/supabase/upload-pdf", methods=["POST"])
 def upload_pdf_supabase():
-    if request.method == "OPTIONS":
-        return jsonify({"status": "ok"}), 200
-
     try:
         if "file" not in request.files:
             return jsonify({"error": "No file part"}), 400
@@ -185,11 +152,8 @@ def upload_pdf_supabase():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/supabase/generate-flashcards", methods=["POST", "OPTIONS"])
+@app.route("/api/supabase/generate-flashcards", methods=["POST"])
 def generate_flashcards_supabase():
-    if request.method == "OPTIONS":
-        return jsonify({"status": "ok"}), 200
-
     if not request.is_json:
         return jsonify({"error": "Invalid input: JSON data expected."}), 400
 
@@ -207,7 +171,7 @@ def generate_flashcards_supabase():
 
         # Generate flashcards using OpenAI
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # Updated from gpt-4o-mini
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
@@ -268,11 +232,8 @@ def generate_flashcards_supabase():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/chat", methods=["POST", "OPTIONS"])
+@app.route("/api/chat", methods=["POST"])
 def chat():
-    if request.method == "OPTIONS":
-        return jsonify({"status": "ok"}), 200
-
     try:
         message = request.json.get("message")
         file_id = request.json.get("file_id")
@@ -286,7 +247,7 @@ def chat():
             return jsonify({"error": "Failed to retrieve document content"}), 500
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # Updated from gpt-4o-mini
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
@@ -311,11 +272,8 @@ def chat():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/explain-answer", methods=["POST", "OPTIONS"])
+@app.route("/api/explain-answer", methods=["POST"])
 def explain_answer():
-    if request.method == "OPTIONS":
-        return jsonify({"status": "ok"}), 200
-
     try:
         data = request.json
         question = data.get("question")
@@ -333,7 +291,7 @@ def explain_answer():
         """
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # Updated from gpt-4o-mini
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
@@ -352,10 +310,9 @@ def explain_answer():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/test", methods=["GET", "OPTIONS"])
+# test api
+@app.route("/api/test", methods=["GET"])
 def test():
-    if request.method == "OPTIONS":
-        return jsonify({"status": "ok"}), 200
     return jsonify({"message": "Hello World"})
 
 
