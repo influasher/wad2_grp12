@@ -13,7 +13,7 @@
                     class="generate-button" 
                     @click="onGenerateMore"
                 >
-                    Generate 5 More Cards
+                    Generate More
                 </button>
                 <button 
                     v-else-if="mode === 'review'" 
