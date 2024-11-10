@@ -70,7 +70,7 @@
             <!-- Add delete button -->
             <button
               class="delete-btn"
-              @click.prevent="handleNoteDelete(note.name)"
+              @click.prevent="confirmDelete(note.name)"
               title="Delete note"
             >
               <svg
@@ -157,6 +157,24 @@
         </div>
       </div>
     </div>
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal-content">
+        <h4>{{ modalTitle }}</h4>
+        <p>{{ modalMessage }}</p>
+        <button @click="closeModal" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="modal-overlay">
+      <div class="modal-content">
+        <h4>Confirm Deletion</h4>
+        <p>Are you sure you want to delete "{{ itemToDelete }}"?</p>
+        <div class="modal-buttons">
+          <button @click="proceedWithDelete" class="btn btn-danger">Delete</button>
+          <button @click="closeDeleteModal" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -184,6 +202,27 @@ const uploadBtnText = ref("Upload PDF");
 const uploading = ref(false);
 const flashcardFolders = ref([]);
 const isDeleting = ref(false);
+const showModal = ref(false);
+const modalTitle = ref("");
+const modalMessage = ref("");
+const showDeleteModal = ref(false);
+const itemToDelete = ref("");
+
+// Function to initiate delete confirmation modal
+const confirmDelete = (noteName) => {
+  itemToDelete.value = noteName;
+  showDeleteModal.value = true;
+};
+
+// Function to proceed with deletion
+const proceedWithDelete = () => {
+  handleNoteDelete(); // Execute delete
+};
+
+// Function to close the delete confirmation modal
+const closeDeleteModal = () => {
+  showDeleteModal.value = false;
+};
 
 const handleFlashcardDelete = async (folderName) => {
   const confirmed = confirm(
@@ -230,37 +269,35 @@ const handleFlashcardDelete = async (folderName) => {
   }
 };
 
-const handleNoteDelete = async (noteName) => {
-  const confirmed = confirm(`Are you sure you want to delete "${noteName}"?`);
-  if (!confirmed) return;
-
+const handleNoteDelete = async () => {
   try {
     isDeleting.value = true;
 
-    // Delete the PDF file
+    // Delete the PDF file and preview
     const { error: deletePDFError } = await supabase.storage
       .from("files_wad2")
-      .remove([`user_pdfs/${noteName}.pdf`]);
+      .remove([`user_pdfs/${itemToDelete.value}.pdf`]);
 
-    // Delete PDF Preview file
     const { error: deletePreviewError } = await supabase.storage
       .from("files_wad2")
-      .remove([`previews/${noteName}.png`]);
+      .remove([`previews/${itemToDelete.value}.png`]);
 
-    if (deletePDFError) throw deletePDFError;
-
-    if (deletePreviewError) {
-      throw deletePreviewError;
-    }
+    if (deletePDFError || deletePreviewError) throw deletePDFError || deletePreviewError;
 
     // Refresh the notes list
     await getNotes();
-    alert("Note deleted successfully");
+    
+    // Update modal title and message with the specific note name
+    modalTitle.value = "PDF Deletion Successful";
+    modalMessage.value = `"${itemToDelete.value}" deleted successfully.`;
+    showModal.value = true;
   } catch (error) {
     console.error("Error deleting note:", error);
-    alert("Error deleting note. Please try again.");
+    modalMessage.value = "Error deleting note. Please try again.";
+    showModal.value = true; // Show error message
   } finally {
     isDeleting.value = false;
+    closeDeleteModal(); // Close the delete confirmation modal
   }
 };
 
@@ -286,7 +323,8 @@ const uploadPdf = async (event) => {
   event.stopPropagation();
 
   if (!selectedFile.value) {
-    alert("Please select a PDF file first.");
+    modalMessage.value = "Please select a PDF file first."; // Message to prompt file selection
+    showModal.value = true; // Open the modal
     return;
   }
 
@@ -299,15 +337,17 @@ const uploadPdf = async (event) => {
     uploadBtnText.value = "Uploading...";
     uploadStatus.value = "Uploading PDF...";
 
-    // 1. Upload the PDF file
+    // Upload the PDF file
     const response = await axios.post(
       "https://elementalbackend.vercel.app/api/supabase/upload-pdf",
       formData
     );
 
-    // Success handling
+    // Show the success message in the modal
     uploadStatus.value = "";
-    alert(`PDF uploaded successfully! ${response.data.num_pages} pages found.`);
+    modalTitle.value = "PDF Upload Successful"; // Set title for upload success
+    modalMessage.value = `${response.data.num_pages} pages found.`;
+    showModal.value = true; // Open the modal
 
     // Reset and refresh
     selectedFile.value = null;
@@ -315,10 +355,17 @@ const uploadPdf = async (event) => {
   } catch (error) {
     console.error("Error uploading PDF:", error);
     uploadStatus.value = "Error uploading PDF. Please try again.";
+    modalMessage.value = "Error uploading PDF. Please try again.";
+    showModal.value = true; // Open the modal to show the error
   } finally {
     uploading.value = false;
     uploadBtnText.value = "Upload PDF";
   }
+};
+
+// Function to close the modal
+const closeModal = () => {
+  showModal.value = false;
 };
 
 // Modify getNotes function to include preview URLs
@@ -654,6 +701,42 @@ onMounted(() => {
   margin-bottom: 1rem;
   color: #374151;
   font-weight: 600;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 300px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
 }
 
 /* Media query for smaller screens */
