@@ -347,8 +347,6 @@ async function updateAvatar(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  if (!confirm('Are you sure you want to update your profile picture?')) return;
-
   isUploadingAvatar.value = true;
   try {
     const fileExt = file.name.split('.').pop();
@@ -357,25 +355,27 @@ async function updateAvatar(event) {
     const { error: uploadError } = await supabase.storage.from('files_wad2').upload(fileName, file, { upsert: true });
     if (uploadError) throw uploadError;
 
-    // Update avatar URL in the profiles2 table
-    const { error: updateError } = await supabase.from('profiles2').update({ avatar_url: fileName }).eq('id', user.value.id);
-    if (updateError) throw updateError;
-
     const { data } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
     avatar_url.value = data.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from('profiles2')
+      .update({ avatar_url: fileName })
+      .eq('id', user.value.id);
+    if (updateError) throw updateError;
+
   } catch (error) {
     console.error('Error updating avatar:', error.message);
-    alert('Failed to update profile picture. Please try again.');
   } finally {
     isUploadingAvatar.value = false;
   }
 }
 
+
+
 async function updateBackgroundImage(event) {
   const file = event.target.files[0];
   if (!file) return;
-
-  if (!confirm('Are you sure you want to update your background image?')) return;
 
   isUploadingBackground.value = true;
   try {
@@ -385,19 +385,22 @@ async function updateBackgroundImage(event) {
     const { error: uploadError } = await supabase.storage.from('files_wad2').upload(fileName, file, { upsert: true });
     if (uploadError) throw uploadError;
 
-    // Update background URL in the profiles2 table
-    const { error: updateError } = await supabase.from('profiles2').update({ background_url: fileName }).eq('id', user.value.id);
-    if (updateError) throw updateError;
-
     const { data } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
     background_url.value = data.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from('profiles2')
+      .update({ background_url: fileName })
+      .eq('id', user.value.id);
+    if (updateError) throw updateError;
+
   } catch (error) {
     console.error('Error updating background:', error.message);
-    alert('Failed to update background image. Please try again.');
   } finally {
     isUploadingBackground.value = false;
   }
 }
+
 
 async function fetchGames() {
   try {
