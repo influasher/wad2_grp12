@@ -11,13 +11,13 @@
         facere officiis odio.
       </p>
     </div> -->
-    <div class="my-3 py-3">
-      <h1 id="typed-output" class="press-start-2p-regular"></h1> 
+    <div class="m-3 p-3 text-center col-9 col-sm-12">
+      <h2 id="typed-output" class="press-start-2p-regular"></h2> 
     </div>
   
     
     <!-- Slideshow of recently played -->
-    <div class="slideshow">
+    <div class="col-10 col-sm-12">
       <div v-if="isLoading" class="skeleton-container">
         <CarouselSkeleton />
       </div>
@@ -25,7 +25,7 @@
       <div
         v-else
         id="carouselExampleAutoplaying"
-        class="carousel slide"
+        class="carousel_slide"
         data-bs-ride="carousel"
       >
         <div class="carousel-inner">
@@ -89,7 +89,7 @@
         </button>
       </div>
     </div>
-
+    <div class="col-10 col-sm-12">
     <div v-if="isLoading" class="leaderboard-skeleton">
       <CarouselSkeleton />
     </div>
@@ -136,6 +136,7 @@
       </div>
     </div>
   </div>
+  </div>
 </template>
 
 <style lang="css" scoped>
@@ -153,7 +154,7 @@
   align-items: center;
   padding-bottom: 20px; /* Add some bottom padding */
 }
-.announcements {
+/* .announcements {
   display: block;
   background-color: #f5f5f5;
   max-width: 100%;
@@ -166,9 +167,9 @@
   p {
     text-align: center;
   }
-}
+} */
 
-.slideshow {
+.carousel_slide{
   justify-content: center;
   margin: 10px;
 }
@@ -223,13 +224,7 @@
 /* Add styles for skeleton container */
 .skeleton-container {
   width: 100%;
-  margin: 0 auto;
-}
-
-.leaderboard {
-  /* max-width: 600px; */
-  margin: 0 auto;
-  padding: 10px;
+  margin: 10px;
 }
 
 .list-group-item {
@@ -365,8 +360,8 @@
 
 #typed-output{
   width: 100%;
-  margin: 10px;
-  padding: 20px;
+  margin: auto;
+  padding: 10px;
   font-size: 30px;
   display: inline;
 }
@@ -431,7 +426,7 @@ async function fetchGames() {
 
 onMounted(() => {
   new Typed("#typed-output", {
-    strings: [`Welcome to Elemental Heroes!`, "Hope you have fun!"],
+    strings: ["Welcome to Elemental Heroes!", "Hope you have fun!"],
     typeSpeed: 50,       // Typing speed in milliseconds
     backSpeed: 50,       // Backspacing speed in milliseconds
     showCursor: false,   // Hide the cursor

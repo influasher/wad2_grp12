@@ -444,6 +444,7 @@ onMounted(() => {
   border-radius: 8px;
   transition: transform 0.2s, box-shadow 0.2s;
   min-width: 280px; /* Minimum width for cards */
+  width: 100%;
   height: 100%;
 }
 

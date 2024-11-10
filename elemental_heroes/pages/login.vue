@@ -341,6 +341,7 @@ const handleSignUp = async () => {
   align-items: center;
   justify-content: center;
   min-height: 100vh; /* Full viewport height */
+  transition: ease 0.3s;
 }
 
 /* Center the main container */
@@ -373,6 +374,7 @@ const handleSignUp = async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: ease 0.3s;
 }
 
 /* Adjust the image size */
