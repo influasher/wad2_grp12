@@ -25,7 +25,7 @@
       <div
         v-else
         id="carouselExampleAutoplaying"
-        class="carousel_slide"
+        class="carousel slide carousel_slide"
         data-bs-ride="carousel"
       >
         <div class="carousel-inner">

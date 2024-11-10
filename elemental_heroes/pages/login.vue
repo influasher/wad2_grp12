@@ -16,9 +16,10 @@
 
         <!-- Login and Register Forms -->
         <div
-          class="col-md-8 col-lg-7 col-xl-4 offset-xl-1 d-flex flex-column align-items-center login-register"
+          class="col-12 col-md-8 col-lg-7 col-xl-4 offset-xl-1 d-flex flex-column align-items-center text-center login-register"
         >
-        <div class="card shadow py-2 px-5" style="width: 100%; max-width: 500px;">
+        <h1 class="press-start-2p-regular py-4">Elemental Heroes</h1>
+        <div class="card shadow py-2 px-4" style="width: 100%; max-width: 500px;">
           <!-- Tabs for Login and Register -->
           <ul class="nav nav-pills my-4 d-flex" id="pills-tab" role="tablist">
             <li class="nav-item flex-fill" role="presentation">
@@ -396,11 +397,11 @@ const handleSignUp = async () => {
 }
 
 .tab-content {
-  width: 350px;
+  width: 100%;
 }
 
 .nav {
-  width: 350px;
+  width: 100%;
 }
 
 span {
@@ -429,10 +430,17 @@ span {
 
 .card{
   align-items: center;
+  width: 100%;
+}
+
+.press-start-2p-regular {
+  font-family: "Press Start 2P", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 /* Styles for Google Sign-In Button */
-.google-btn {
+/* .google-btn {
   background-color: #fff;
   color: #444;
   border: 1px solid #ccc;
@@ -451,5 +459,5 @@ span {
   width: 20px;
   height: 20px;
   margin-right: 8px;
-}
+} */
 </style>
