@@ -285,7 +285,7 @@
   border-radius: 50%;
   overflow: hidden; /* Hides overflow, ensuring a circular crop */
   background-color: #000;
-  margin: auto;
+  margin: 0 auto;
   /* max-width: 50px;
   aspect-ratio: 1; Ensures the avatar remains square */
 }
