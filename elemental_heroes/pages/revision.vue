@@ -860,7 +860,7 @@ onMounted(() => {
 
 .progress {
   height: 100%;
-  background-color: #28a745;
+  background-color: #8b6ef3;
   width: 0;
   transition: width 0.2s ease;
 }
