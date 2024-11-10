@@ -207,16 +207,17 @@ async function retrieveExistingFlashcards() {
 
 const generateFlashcards = async () => {
   isGenerating.value = true;
+  const progressMessage = ref("Starting flashcard generation...");
   let accumulatedContent = "";
 
   try {
-    // Use fetch instead of axios for better streaming support
     const response = await fetch(
       "https://elementalbackend.vercel.app/api/supabase/generate-flashcards",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "text/event-stream",
         },
         body: JSON.stringify({
           file_id: fileName.value,
@@ -225,7 +226,10 @@ const generateFlashcards = async () => {
       }
     );
 
-    // Create a reader for the stream
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
 
@@ -233,41 +237,67 @@ const generateFlashcards = async () => {
       const { done, value } = await reader.read();
       if (done) break;
 
-      // Decode the chunk and split into lines
       const chunk = decoder.decode(value);
       const lines = chunk.split("\n");
 
       for (const line of lines) {
         if (line.startsWith("data: ")) {
-          try {
-            const data = JSON.parse(line.slice(6));
+          const eventData = line.slice(6);
 
-            // Handle different types of messages
-            if (data.status === "started") {
-              console.log("Started generating flashcards...");
-            } else if (data.content) {
-              // Accumulate the streaming content if needed
-              accumulatedContent += data.content;
-              // You might want to show a progress indicator here
-            } else if (data.status === "completed" && data.flashcards) {
-              flashcards.value = data.flashcards;
-              currentCardIndex.value = 0;
-              prepareCurrentCard();
-              console.log("Flashcards generation completed!");
-            } else if (data.error) {
-              throw new Error(data.error);
+          // Skip if it's the done message
+          if (eventData === "[DONE]") continue;
+
+          try {
+            const data = JSON.parse(eventData);
+            console.log("Received data:", data); // For debugging
+
+            // Update progress message
+            if (data.message) {
+              progressMessage.value = data.message;
+            }
+
+            // Handle different status types
+            switch (data.status) {
+              case "started":
+              case "processing":
+              case "generating":
+              case "formatting":
+              case "uploading":
+                console.log(data.message);
+                break;
+
+              case "completed":
+                if (data.flashcards && Array.isArray(data.flashcards)) {
+                  flashcards.value = data.flashcards;
+                  currentCardIndex.value = 0;
+                  prepareCurrentCard();
+                  console.log("Flashcards loaded successfully");
+                } else {
+                  console.error("Invalid flashcard data format:", data);
+                  throw new Error("Invalid flashcard data received");
+                }
+                break;
+
+              case "error":
+                console.error("Error from server:", data.message);
+                throw new Error(data.message);
+                break;
             }
           } catch (e) {
-            if (line.slice(6) !== "[DONE]") {
-              console.error("Error parsing streaming data:", e);
-            }
+            console.error(
+              "Error parsing streaming data:",
+              e,
+              "Raw data:",
+              eventData
+            );
+            throw new Error("Error processing server response");
           }
         }
       }
     }
   } catch (error) {
     console.error("Error generating flashcards:", error);
-    alert("Error generating flashcards. Please try again.");
+    alert(`Error generating flashcards: ${error.message}`);
   } finally {
     isGenerating.value = false;
   }

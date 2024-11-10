@@ -152,7 +152,6 @@ def upload_pdf_supabase():
         return jsonify({"error": str(e)}), 500
 
 
-# Modified streaming flashcards generation endpoint
 @app.route("/api/supabase/generate-flashcards", methods=["POST"])
 def generate_flashcards_supabase():
     if not request.is_json:
@@ -170,9 +169,10 @@ def generate_flashcards_supabase():
             return jsonify({"error": "Failed to retrieve document content."}), 500
 
         def generate():
-            # First yield the starting message
-            yield f"data: {json.dumps({'status': 'started'})}\n\n"
+            # Send initial status
+            yield f"data: {json.dumps({'status': 'started', 'message': 'Starting flashcard generation'})}\n\n"
 
+            accumulated_response = ""
             stream = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
@@ -192,17 +192,22 @@ def generate_flashcards_supabase():
                 stream=True,
             )
 
-            full_response = ""
+            yield f"data: {json.dumps({'status': 'processing', 'message': 'Processing OpenAI response'})}\n\n"
+
             for chunk in stream:
                 if chunk.choices[0].delta.content:
                     content = chunk.choices[0].delta.content
-                    full_response += content
-                    yield f"data: {json.dumps({'content': content})}\n\n"
+                    accumulated_response += content
+                    # Send progress update
+                    yield f"data: {json.dumps({'status': 'generating', 'message': 'Generating flashcards...'})}\n\n"
 
-            # Process the complete response
             try:
-                flashcards_data = json.loads(full_response)
+                # Parse the complete response
+                flashcards_data = json.loads(accumulated_response)
                 formatted_flashcards = []
+
+                yield f"data: {json.dumps({'status': 'formatting', 'message': 'Formatting flashcards'})}\n\n"
+
                 for card in flashcards_data.get("flashcards", []):
                     formatted_card = {
                         "question": card.get("question", "").strip(),
@@ -225,15 +230,26 @@ def generate_flashcards_supabase():
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 upload_path = f"flashcards/{file_id}/{timestamp}.json"
 
+                yield f"data: {json.dumps({'status': 'uploading', 'message': 'Uploading to Supabase'})}\n\n"
+
                 supabase.storage.from_("files_wad2").upload(
                     path=upload_path,
                     file=flashcards_json.encode(),
                     file_options={"content-type": "application/json"},
                 )
 
-                yield f"data: {json.dumps({'status': 'completed', 'flashcards': formatted_flashcards, 'upload_path': upload_path})}\n\n"
+                # Send the final response with the formatted flashcards
+                yield f"data: {json.dumps({
+                    'status': 'completed',
+                    'message': 'Flashcards generated successfully',
+                    'flashcards': formatted_flashcards,
+                    'upload_path': upload_path
+                })}\n\n"
+
+            except json.JSONDecodeError as e:
+                yield f"data: {json.dumps({'status': 'error', 'message': f'Error parsing OpenAI response: {str(e)}', 'raw_response': accumulated_response})}\n\n"
             except Exception as e:
-                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+                yield f"data: {json.dumps({'status': 'error', 'message': f'Error processing flashcards: {str(e)}'})}\n\n"
 
             yield "data: [DONE]\n\n"
 
