@@ -39,6 +39,25 @@
       ></iframe>
     </div>
     <FloatingChat :fileId="noteName" />
+    <div v-if="showDeleteModal" class="modal-overlay">
+      <div class="modal-content">
+        <h4>Confirm Deletion</h4>
+        <p>Are you sure you want to delete "{{ noteName }}"?</p>
+        <div class="modal-buttons">
+          <button @click="proceedWithDelete" class="btn btn-danger">Delete</button>
+          <button @click="closeModal" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div v-if="showSuccessModal" class="modal-overlay">
+      <div class="modal-content">
+        <h4>Success</h4>
+        <p>{{ modalMessage }}</p>
+        <button @click="closeModal" class="btn btn-primary">OK</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -57,6 +76,10 @@ const route = useRoute();
 const router = useRouter();
 const noteName = route.query.name;
 const noteUrl = ref(null);
+const showDeleteModal = ref(false);
+const showSuccessModal = ref(false);
+const modalMessage = ref("");
+
 
 async function getPDF() {
   const { data, error } = await supabase.storage
@@ -68,35 +91,42 @@ async function getPDF() {
   }
 }
 
-async function handleDelete() {
-  try {
-    // Show confirmation dialog
-    if (!confirm("Are you sure you want to delete this note?")) {
-      return;
-    }
+function handleDelete() {
+  showDeleteModal.value = true; // Opens the delete confirmation modal
+}
 
+async function proceedWithDelete() {
+  try {
     // Delete the PDF file
     const { error: deletePDFError } = await supabase.storage
       .from("files_wad2")
       .remove([`user_pdfs/${noteName}.pdf`]);
 
-    // Delete PDF Preview file
+    // Delete PDF preview file
     const { error: deletePreviewError } = await supabase.storage
       .from("files_wad2")
       .remove([`previews/${noteName}.png`]);
 
-    if (deletePDFError) throw deletePDFError;
+    if (deletePDFError || deletePreviewError) throw deletePDFError || deletePreviewError;
 
-    if (deletePreviewError) {
-      throw deletePreviewError;
-    }
-
-    // If deletion is successful, navigate back to the previous page or home
-    alert("Note deleted successfully");
-    router.push("/revision"); // Adjust this route according to your navigation needs
+    // Show success modal with custom message
+    modalMessage.value = `"${noteName}" deleted successfully.`;
+    showSuccessModal.value = true;
   } catch (error) {
     console.error("Error deleting note:", error);
-    alert("Failed to delete note. Please try again.");
+    modalMessage.value = "Failed to delete note. Please try again.";
+    showSuccessModal.value = true;
+  } finally {
+    showDeleteModal.value = false; // Close delete confirmation modal
+  }
+}
+
+function closeModal() {
+  if (showSuccessModal.value) {
+    showSuccessModal.value = false;
+    router.push("/revision"); // Redirects to revision page
+  } else {
+    showDeleteModal.value = false;
   }
 }
 
@@ -144,6 +174,42 @@ onMounted(() => {
   width: 80%;
   height: 100vh; /* Sets height to 70% of the viewport height */
   border: none;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 300px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
 }
 
 @media (max-width: 768px) {
