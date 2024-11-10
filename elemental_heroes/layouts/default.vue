@@ -64,7 +64,8 @@
       <div id="friendsList">
         <!--here we will render the friends dynamicaally-->
         <div v-for="friend in friends" class="sidebarButton">
-          <div class="p-3">
+          <div class="p-3" data-bs-toggle="tooltip" data-bs-placement="bottom" :data-bs-title="
+            friend.status === 'online' ? 'Online' : 'Last seen 5 minutes ago'">
             <div class="position-relative">
               <img :src="friend.avatar" width="35" />
               <span
@@ -79,6 +80,19 @@
             <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular">{{
               friend.name
             }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- Logout Button -->
+      
+      <div class="logout-section">
+        
+        <div @click="handleSignOut" class="sidebarButton">
+          <hr>
+          <div class="px-3 pb-3 text-center">
+          <img src="../assets/images/log-out.svg" width="35" />
+          <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
+            >Logout</span>
           </div>
         </div>
       </div>
@@ -103,6 +117,21 @@
 
 <script setup>
 import { ref } from "vue";
+const client = useSupabaseClient();
+const router = useRouter();
+
+const handleSignOut = async () => {
+  try {
+    const { error } = await client.auth.signOut();
+    if (error) {
+      console.error("Sign-out error:", error.message);
+    } else {
+      router.push("/login"); // Redirect to login page or any desired route after sign-out
+    }
+  } catch (err) {
+    console.error("Unexpected error during sign-out:", err);
+  }
+};
 
 const isSidebarClosed = ref(false);
 
@@ -137,6 +166,13 @@ const friends = ref([
     status: "online",
   },
 ]);
+
+onMounted(() => {
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach(tooltipTriggerEl => {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+})
 
 function checkScreenWidth() {
   isSidebarClosed.value = window.innerWidth <= 768; // Set closed if screen width <= 768px
@@ -277,10 +313,6 @@ onMounted(() => {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.sidebarButton.active {
-  background-color: #b3a8e7; /* Modify this color for the active state */
-}
-
 .sidebarButton > div {
   display: flex;
   align-items: center;
@@ -319,6 +351,12 @@ onMounted(() => {
   background-color: #b2a9ec; /* Optional: customize scrollbar color */
   border-radius: 4px;
 }
+
+#sidebar.closed .logoutButton span {
+  opacity: 0; /* Hide text in compact view */
+  transition: opacity 0.3s ease 0.1s; /* Delay to allow sidebar to resize first */
+}
+
 
 /* Content wrapper styling */
 .content-wrapper {
