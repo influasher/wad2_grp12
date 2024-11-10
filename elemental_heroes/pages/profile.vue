@@ -453,7 +453,7 @@ onMounted(async () => {
 });
 </script>
 
-<style>
+<style scoped>
 .background-img {
   width: 100%;
   max-height: 50vh;
