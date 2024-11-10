@@ -1,23 +1,13 @@
 <!-- pages/index.vue -->
 <template>
   <div class="home-page">
-    <!-- Announcements Section -->
-    <!-- <div class="announcements">
-      <h3>Announcements</h3>
-      <p>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Suscipit
-        molestias nostrum corporis voluptates quae laborum quos enim, voluptatem
-        neque, deserunt adipisci, veritatis nam aspernatur. Eos iste expedita
-        facere officiis odio.
-      </p>
-    </div> -->
-    <div class="p-3 my-3 text-center col-9 col-sm-12">
+
+    <div class="p-3 my-2 text-center typewriter">
       <h2 id="typed-output" class="press-start-2p-regular"></h2> 
     </div>
   
     
-    <!-- Slideshow of recently played -->
-    <div class="col-10 col-sm-12">
+
       <div v-if="isLoading" class="skeleton-container">
         <CarouselSkeleton />
       </div>
@@ -49,8 +39,6 @@
                 <p class="card-text d-none d-md-block">
                   {{ game.description }}
                 </p>
-                <!-- <button type="button" class="btn btn-primary"   :disabled="!isGamePlayable(game.id)"
-                >Play</button> -->
                 <router-link v-if="isGamePlayable(game.id)" to="/gamelist">
                   <button type="button" class="btn btn-primary btn-responsive">
                     Play
@@ -68,7 +56,6 @@
             </div>
           </div>
         </div>
-        <!-- Carousel controls -->
         <button
           class="carousel-control-prev"
           type="button"
@@ -88,23 +75,20 @@
           <span class="visually-hidden">Next</span>
         </button>
       </div>
-    </div>
 
-
-    <div class="col-10 col-sm-12">
+    <div class="leaderboard">
     <div v-if="isLoading" class="leaderboard-skeleton">
       <CarouselSkeleton />
     </div>
 
     <div v-else class="leaderboard-container">
-      <h3 class="leaderboard-title fs-5 press-start-2p-regular">Leaderboard</h3>
+      <h3 class="leaderboard-title press-start-2p-regular">Leaderboard</h3>
       <div v-if="leaderboard.length">
-        <!-- Find the current user's rank and display message -->
         <p v-if="currentUserRank" class="message">
           {{ getEncouragementMessage(currentUserRank, currentUserFirstName) }}
         </p>
       </div> 
-      <div class="top-three press-start-2p-regular">
+      <div class="top-three press-start-2p-regular row">
         <div
           v-for="(profile, index) in leaderboard.slice(0, 3)"
           :key="profile.id"
@@ -144,7 +128,7 @@
       </div>
     </div>
   </div>
-  </div>
+</div> 
 </template>
 
 <style lang="css" scoped>
@@ -162,29 +146,15 @@
   align-items: center;
   padding-bottom: 20px; /* Add some bottom padding */
 }
-/* .announcements {
-  display: block;
-  background-color: #f5f5f5;
-  max-width: 100%;
-  padding: 10px;
-  margin: 10px;
-  h3 {
-    text-align: center;
-  }
-
-  p {
-    text-align: center;
-  }
-} */
 
 .carousel_slide{
   justify-content: center;
-  margin: 10px;
+  padding: 10px;
+  width: 100%;
 }
 
 .carousel-item img {
   width: 100%;
-  /* height: 260px; */
   display: inline-block;
   position: relative;
   overflow: hidden;
@@ -192,10 +162,10 @@
 
 .card {
   width: 100%;
-  max-height: 70vh; /* Use viewport height instead of fixed pixels */
+  max-height: 70vh;
   display: inline-block;
   position: relative;
-  overflow: hidden; /*This will crop off image portions that overflow the container*/
+  overflow: hidden;
 }
 
 .card-img-overlay {
@@ -216,7 +186,7 @@
   padding: 0.5rem 2rem;
   white-space: nowrap;
   min-width: 100px;
-  max-width: 200px; /* Add this to limit maximum width */
+  max-width: 200px; 
   width: fit-content; /* Add this to make button fit content */
   margin-top: 1rem;
   display: inline-block; /* Add this to maintain button width */
@@ -232,66 +202,55 @@
 /* Add styles for skeleton container */
 .skeleton-container {
   width: 100%;
-  margin: 10px;
+  padding: 10px;
 }
 
-.list-group-item {
-  background-color: #f9f9f9;
-  text-align: center;
+.leaderboard{
+  padding: 10px;
+  width: 100%;
 }
 
 .leaderboard-container {
-  /* max-width: 800px; */
-  margin: 10px;
-  /* margin: 0 auto; */
-  padding: 20px;
+  width: 100%;
+  padding: 10px;
   background-color: #f5f5f5;
   border-radius: 15px;
 }
 
 .leaderboard-skeleton {
-  /* max-width: 800px; */
-  margin: 10px;
-  /* margin: 0 auto; */
+  width: 100%;
   border-radius: 15px;
-  /* padding: 20px; */
 }
 
 .leaderboard-title {
-  /* display: flex; */
   text-align: center;
-  font-size: 24px;
   padding-bottom: 20px;
-  /* justify-content: center; */
+  padding-top: 20px;
   margin: auto;
 }
 
 .message{
   text-align: center;
-  font-size: 15px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .top-card {
-  width: 30%; /* Each top card takes 30% of the width */
-  background-color: #ffffff;
+  width: 30%;
   border-radius: 15px;
-  padding: 15px;
+  padding: 10px;
   text-align: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   word-wrap: break-word; /* Ensure long names wrap to the next line */
 }
 
 .top-three {
-  /* max-width: 800px; */
   display: flex;
-  /* justify-content: space-around;  */
   justify-content: space-evenly;
   align-items: flex-end;
   margin-bottom: 20px;
-  /* Centers the cards with equal spacing */
-  gap: 10px; /* Adjust spacing as needed */
-  margin-left: 10px;
-  margin-right: 10px;
+  gap: 10px;
+  padding: 10px;
 }
 
 .first-place {
@@ -309,14 +268,6 @@
   order: 3; /* Position third place on the right */
 }
 
-/* Add custom heights for visualization */
-.top-card {
-  flex: 1;
-  border-radius: 15px;
-  padding: 15px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
 
 .rank-number {
   font-size: 24px;
@@ -330,7 +281,6 @@
   align-items: center;
   width: 50px; /* Adjust as needed */
   height: 50px; /* Adjust as needed */
-  margin: 0 auto; /* Center the avatar container itself */
   border: 2px solid #8b6ef3;
   border-radius: 50%;
   overflow: hidden; /* Hides overflow, ensuring a circular crop */
@@ -351,6 +301,7 @@
   white-space: nowrap; /* Prevents text overflow */
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 12px;
 }
 
 .user-score {
@@ -361,7 +312,7 @@
 .regular-places .leaderboard-card {
   display: flex;
   align-items: center; /* Vertically center the items */
-  justify-content: flex-start; /* Align items to the start */
+  justify-content: flex-start; 
   padding: 10px 15px;
   margin-bottom: 10px;
   background-color: #cecae7;
@@ -381,10 +332,8 @@
 
 #typed-output{
   width: 100%;
-  margin: auto;
   padding: 10px;
-  font-size: 30px;
-  display: inline;
+  font-size: 25px;
 }
 </style>
 

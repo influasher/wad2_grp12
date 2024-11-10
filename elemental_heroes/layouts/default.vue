@@ -371,10 +371,6 @@ onMounted(() => {
   margin-left: 70px;
 }
 
-#sidebar.closed ul ul a {
-  padding: 10px !important;
-}
-
 main {
   min-height: calc(100vh - 142px); /* 72px header + 70px footer */
   overflow-y: auto;
