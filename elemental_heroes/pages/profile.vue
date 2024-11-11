@@ -149,7 +149,7 @@ import { useRuntimeConfig } from '#app';
 import { ref, onMounted } from 'vue';
 import CarouselSkeleton from "~/components/CarouselSkeleton.vue";
 
-import profilePlaceholder from '@/assets/images/profile_placeholder.png';
+import profilePlaceholder from '@/assets/images/coolAvatar.png';
 import backgroundPlaceholder from '@/assets/images/background_placeholder.png';
 
 const config = useRuntimeConfig()
