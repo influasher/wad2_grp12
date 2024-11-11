@@ -102,11 +102,19 @@
       @restart="handleRestart"
     />
   </div>
+  <!-- Error Modal -->
+  <div v-if="showErrorModal" class="modal-overlay">
+    <div class="modal-content">
+      <h4>Error</h4>
+      <p>{{ errorMessage }}</p>
+      <button @click="closeErrorModal" class="btn btn-primary">OK</button>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import FloatingChat from "@/components/FloatingChat.vue";
 import CompletionPopup from "@/components/CompletionPopup.vue";
@@ -118,6 +126,7 @@ const supabase = createClient(
   config.public.supabaseKey
 );
 const route = useRoute();
+const router = useRouter();
 const fileName = ref(route.query.name || "Untitled");
 const isGenerating = ref(route.query.generating === "true");
 const isRetrieving = ref(false);
@@ -133,6 +142,15 @@ const answers = ref([]);
 const showCompletionPopup = ref(false);
 
 const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
+// Reactive variables for the error modal
+const showErrorModal = ref(false);
+const errorMessage = ref("");
+
+// Function to close the modal and redirect to the revision page
+const closeErrorModal = () => {
+  showErrorModal.value = false;
+  router.push("/revision");
+};
 
 async function retrieveExistingFlashcards() {
   isRetrieving.value = true;
@@ -244,19 +262,15 @@ const generateFlashcards = async () => {
         if (line.startsWith("data: ")) {
           const eventData = line.slice(6);
 
-          // Skip if it's the done message
           if (eventData === "[DONE]") continue;
 
           try {
             const data = JSON.parse(eventData);
-            console.log("Received data:", data); // For debugging
 
-            // Update progress message
             if (data.message) {
               progressMessage.value = data.message;
             }
 
-            // Handle different status types
             switch (data.status) {
               case "started":
               case "processing":
@@ -271,38 +285,30 @@ const generateFlashcards = async () => {
                   flashcards.value = data.flashcards;
                   currentCardIndex.value = 0;
                   prepareCurrentCard();
-                  console.log("Flashcards loaded successfully");
                 } else {
-                  console.error("Invalid flashcard data format:", data);
                   throw new Error("Invalid flashcard data received");
                 }
                 break;
 
               case "error":
-                console.error("Error from server:", data.message);
                 throw new Error(data.message);
-                break;
             }
           } catch (e) {
-            console.error(
-              "Error parsing streaming data:",
-              e,
-              "Raw data:",
-              eventData
-            );
             throw new Error("Error processing server response");
           }
         }
       }
     }
   } catch (error) {
-    console.error("Error generating flashcards:", error);
-    alert(`Error generating flashcards: ${error.message}`);
+    errorMessage.value = `Error generating flashcards: ${error.message}`;
+    showErrorModal.value = true;
   } finally {
     isGenerating.value = false;
   }
 };
 
+
+// Update handleGenerateMore to use the error modal on error
 const handleGenerateMore = async () => {
   showCompletionPopup.value = false;
   isGenerating.value = true;
@@ -342,19 +348,15 @@ const handleGenerateMore = async () => {
         if (line.startsWith("data: ")) {
           const eventData = line.slice(6);
 
-          // Skip if it's the done message
           if (eventData === "[DONE]") continue;
 
           try {
             const data = JSON.parse(eventData);
-            console.log("Received data:", data);
 
-            // Update progress message
             if (data.message) {
               progressMessage.value = data.message;
             }
 
-            // Handle different status types
             switch (data.status) {
               case "started":
               case "processing":
@@ -369,33 +371,23 @@ const handleGenerateMore = async () => {
                   flashcards.value = data.flashcards;
                   currentCardIndex.value = 0;
                   prepareCurrentCard();
-                  console.log("Additional flashcards loaded successfully");
                 } else {
-                  console.error("Invalid flashcard data format:", data);
                   throw new Error("Invalid flashcard data received");
                 }
                 break;
 
               case "error":
-                console.error("Error from server:", data.message);
                 throw new Error(data.message);
-                break;
             }
           } catch (e) {
-            console.error(
-              "Error parsing streaming data:",
-              e,
-              "Raw data:",
-              eventData
-            );
             throw new Error("Error processing server response");
           }
         }
       }
     }
   } catch (error) {
-    console.error("Error generating more flashcards:", error);
-    alert(`Error generating more flashcards: ${error.message}`);
+    errorMessage.value = `Error generating more flashcards: ${error.message}`;
+    showErrorModal.value = true;
   } finally {
     isGenerating.value = false;
   }
@@ -742,6 +734,26 @@ button:disabled {
 
 .arrow-right {
   transform: rotate(90deg);
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 300px;
+  text-align: center;
 }
 
 /* Responsive styles */
