@@ -406,7 +406,7 @@ onMounted(async () => {
   await getFirstName();
 
   new Typed("#typed-output", {
-    strings: [`Welcome to Elemental Heroes, ${firstName.value}!`],
+    strings: [`Welcome to Elemental Heroes ${firstName.value}!`],
     typeSpeed: 50,
     backSpeed: 50,
     showCursor: false,
