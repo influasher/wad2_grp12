@@ -476,6 +476,7 @@ const uploadPdf = async (event) => {
 // Function to close the modal
 const closeModal = () => {
   showModal.value = false;
+  router.go(0);
 };
 
 // Modify getNotes function to include preview URLs
