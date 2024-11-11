@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
+      title: 'Elemental Heroes',
       link: [
         {
           rel: "stylesheet",
