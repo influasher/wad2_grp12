@@ -102,7 +102,7 @@
           </div>
           <div class="user-info">
             <div class="user-name">
-              {{ profile.first_name }} {{ profile.last_name }}
+              {{ profile.first_name }}
             </div>
             <div class="user-score">{{ profile.score }} pts</div>
           </div>
@@ -418,7 +418,7 @@ async function fetchLeaderboard() {
     // Fetch profiles with the avatar URL path included
     const { data, error } = await supabase
       .from("profiles2")
-      .select("id, first_name, last_name, score, avatar_url") // Ensure avatar_url is included
+      .select("id, first_name, score, avatar_url") // Ensure avatar_url is included
       .order("score", { ascending: false });
 
     if (error) throw error;

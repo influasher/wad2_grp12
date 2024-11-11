@@ -4,19 +4,25 @@
       <div
         class="row d-flex justify-content-center align-items-center h-100 row-wrapper"
       >
-        <!-- Optional Image -->
-        <div
+        
+        <!-- <div
           class="col-md-9 col-lg-7 col-xl-4 d-flex flex-column align-items-center"
+        > -->
+        <div
+          class="col-12 col-md-6 col-lg-5 d-flex align-items-center justify-content-center"
         >
           <img
             src="../assets/images/chemical-8748832_640.webp"
-            class="img-fluid"
+            class="responsive-img"
           />
         </div>
 
         <!-- Login and Register Forms -->
-        <div
+        <!-- <div
           class="col-12 col-md-8 col-lg-7 col-xl-4 offset-xl-1 d-flex flex-column align-items-center text-center login-register"
+        > -->
+        <div
+          class="col-12 col-md-6 col-lg-5 d-flex flex-column align-items-center text-center login-register"
         >
         <h1 class="press-start-2p-regular py-4">Elemental Heroes</h1>
         <div class="card shadow py-2 px-4" style="width: 100%; max-width: 500px;">
@@ -343,6 +349,22 @@ const handleSignUp = async () => {
   justify-content: center;
   min-height: 100vh; /* Full viewport height */
   transition: ease 0.3s;
+}
+/* Responsive adjustments for the image */
+.responsive-img {
+  max-width: 80%; /* Default max width for medium screens */
+  height: auto;
+}
+
+/* Scale down image further on small screens around 400px */
+@media (max-width: 768px) {
+  .responsive-img {
+    max-width: 40%; /* Adjust to fit the layout on small screens */
+  }
+
+  .login-register {
+    padding-top: 20px;
+  }
 }
 
 /* Center the main container */

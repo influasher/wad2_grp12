@@ -186,7 +186,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
                 this.correctMatches++;
                 this.resultText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Correct!', {
                     fontSize: `${this.scale.width * 0.05}px`,
-                    color: '#00ff00',
+                    color: '#036603',
                     fontFamily: 'Georgia, serif',
                 }).setOrigin(0.5);
                 
@@ -326,7 +326,7 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
     
         let buttonScale = 0.25;
-        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight / 2 - 90;
+        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight * 0.3;
         // Add start button image
         const startButtonImage = this.add.image(this.cameras.main.centerX, buttonY, 'button')
         .setInteractive()

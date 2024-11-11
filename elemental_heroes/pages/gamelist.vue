@@ -5,7 +5,7 @@
         <div v-for="(tag, index) in tags" :key="index" class="mb-2 me-2">
           <button
             class="btn rounded-pill my-1"
-            :class="`${tag.colorClass} text-white`"
+            :class="`${tag.colorClass} text-white`" disabled
           >
             <span>{{ tag.label }}</span>
           </button>
@@ -104,6 +104,12 @@ const tags = ref([
   margin-top: 10px;
   padding: 20px;
 }
+
+button:disabled {
+  opacity: 1 !important; 
+  pointer-events: none;
+}
+
 
 .btn-light {
   background-color: #f9f9f9;
