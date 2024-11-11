@@ -114,7 +114,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import FloatingChat from "@/components/FloatingChat.vue";
 import CompletionPopup from "@/components/CompletionPopup.vue";
@@ -126,6 +126,7 @@ const supabase = createClient(
   config.public.supabaseKey
 );
 const route = useRoute();
+const router = useRouter();
 const fileName = ref(route.query.name || "Untitled");
 const isGenerating = ref(route.query.generating === "true");
 const isRetrieving = ref(false);
