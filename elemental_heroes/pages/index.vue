@@ -268,7 +268,7 @@
 
 .message{
   text-align: center;
-  font-size: 15px;
+  font-size: 20px;
 }
 
 .top-card {
@@ -405,7 +405,18 @@ const supabase = createClient(
 );
 const games = ref([]);
 const isLoading = ref(true);
-const leaderboard = ref([]); // Initialize leaderboard as a ref
+const leaderboard = ref([]);
+const firstName = ref("");
+
+async function getFirstName() {
+  const { data, error } = await supabase.from("profiles2").select("first_name").eq("id", user.value.id).single();
+  
+  if (error) {
+    console.error("Error fetching first name:", error.message);
+  } else {
+    firstName.value = data.first_name;
+  }
+}
 
 function getBarHeight(index) {
   switch (index) {
@@ -443,12 +454,14 @@ async function fetchGames() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await getFirstName();
+
   new Typed("#typed-output", {
-    strings: ["Welcome to Elemental Heroes!", "Hope you have fun!"],
-    typeSpeed: 50,       // Typing speed in milliseconds
-    backSpeed: 50,       // Backspacing speed in milliseconds
-    showCursor: false,   // Hide the cursor
+    strings: [`Welcome to Elemental Heroes, ${firstName.value}!`],
+    typeSpeed: 50,
+    backSpeed: 50,
+    showCursor: false,
   });
 });
 
