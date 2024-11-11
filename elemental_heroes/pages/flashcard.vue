@@ -28,7 +28,7 @@
               @click="showPreviousCard"
               :disabled="currentCardIndex === 0"
               class="desktop-nav"
-              >
+            >
               Previous
             </button>
             <button
@@ -36,7 +36,7 @@
               :disabled="currentCardIndex === 0"
               class="mobile-nav"
               aria-label="Previous card"
-              >
+            >
               <span class="arrow arrow-left">↑</span>
             </button>
             <span
@@ -44,17 +44,23 @@
             >
             <button
               @click="showNextCard"
-              :disabled="!currentCardAnswered || currentCardIndex === flashcards.length - 1"
+              :disabled="
+                !currentCardAnswered ||
+                currentCardIndex === flashcards.length - 1
+              "
               class="desktop-nav"
-              >
+            >
               Next
             </button>
             <button
               @click="showNextCard"
-              :disabled="!currentCardAnswered || currentCardIndex === flashcards.length - 1"
+              :disabled="
+                !currentCardAnswered ||
+                currentCardIndex === flashcards.length - 1
+              "
               class="mobile-nav"
               aria-label="Next card"
-              >
+            >
               <span class="arrow arrow-right">↑</span>
             </button>
           </div>
@@ -201,25 +207,97 @@ async function retrieveExistingFlashcards() {
 
 const generateFlashcards = async () => {
   isGenerating.value = true;
+  const progressMessage = ref("Starting flashcard generation...");
+  let accumulatedContent = "";
+
   try {
-    const response = await axios.post(
+    const response = await fetch(
       "https://elementalbackend.vercel.app/api/supabase/generate-flashcards",
       {
-        file_id: fileName.value,
-        count: 3,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          file_id: fileName.value,
+          count: 3,
+        }),
       }
     );
 
-    if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
-      flashcards.value = response.data.flashcards;
-      currentCardIndex.value = 0;
-      prepareCurrentCard();
-    } else {
-      throw new Error("Invalid flashcard data format");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split("\n");
+
+      for (const line of lines) {
+        if (line.startsWith("data: ")) {
+          const eventData = line.slice(6);
+
+          // Skip if it's the done message
+          if (eventData === "[DONE]") continue;
+
+          try {
+            const data = JSON.parse(eventData);
+            console.log("Received data:", data); // For debugging
+
+            // Update progress message
+            if (data.message) {
+              progressMessage.value = data.message;
+            }
+
+            // Handle different status types
+            switch (data.status) {
+              case "started":
+              case "processing":
+              case "generating":
+              case "formatting":
+              case "uploading":
+                console.log(data.message);
+                break;
+
+              case "completed":
+                if (data.flashcards && Array.isArray(data.flashcards)) {
+                  flashcards.value = data.flashcards;
+                  currentCardIndex.value = 0;
+                  prepareCurrentCard();
+                  console.log("Flashcards loaded successfully");
+                } else {
+                  console.error("Invalid flashcard data format:", data);
+                  throw new Error("Invalid flashcard data received");
+                }
+                break;
+
+              case "error":
+                console.error("Error from server:", data.message);
+                throw new Error(data.message);
+                break;
+            }
+          } catch (e) {
+            console.error(
+              "Error parsing streaming data:",
+              e,
+              "Raw data:",
+              eventData
+            );
+            throw new Error("Error processing server response");
+          }
+        }
+      }
     }
   } catch (error) {
     console.error("Error generating flashcards:", error);
-    alert("Error generating flashcards. Please try again.");
+    alert(`Error generating flashcards: ${error.message}`);
   } finally {
     isGenerating.value = false;
   }
@@ -228,23 +306,96 @@ const generateFlashcards = async () => {
 const handleGenerateMore = async () => {
   showCompletionPopup.value = false;
   isGenerating.value = true;
+  const progressMessage = ref("Generating more flashcards...");
+
   try {
-    const response = await axios.post(
+    const response = await fetch(
       "https://elementalbackend.vercel.app/api/supabase/generate-flashcards",
       {
-        file_id: fileName.value,
-        count: 3,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          file_id: fileName.value,
+          count: 3,
+        }),
       }
     );
 
-    if (response.data.flashcards && Array.isArray(response.data.flashcards)) {
-      flashcards.value = response.data.flashcards;
-      currentCardIndex.value = 0;
-      prepareCurrentCard();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split("\n");
+
+      for (const line of lines) {
+        if (line.startsWith("data: ")) {
+          const eventData = line.slice(6);
+
+          // Skip if it's the done message
+          if (eventData === "[DONE]") continue;
+
+          try {
+            const data = JSON.parse(eventData);
+            console.log("Received data:", data);
+
+            // Update progress message
+            if (data.message) {
+              progressMessage.value = data.message;
+            }
+
+            // Handle different status types
+            switch (data.status) {
+              case "started":
+              case "processing":
+              case "generating":
+              case "formatting":
+              case "uploading":
+                console.log(data.message);
+                break;
+
+              case "completed":
+                if (data.flashcards && Array.isArray(data.flashcards)) {
+                  flashcards.value = data.flashcards;
+                  currentCardIndex.value = 0;
+                  prepareCurrentCard();
+                  console.log("Additional flashcards loaded successfully");
+                } else {
+                  console.error("Invalid flashcard data format:", data);
+                  throw new Error("Invalid flashcard data received");
+                }
+                break;
+
+              case "error":
+                console.error("Error from server:", data.message);
+                throw new Error(data.message);
+                break;
+            }
+          } catch (e) {
+            console.error(
+              "Error parsing streaming data:",
+              e,
+              "Raw data:",
+              eventData
+            );
+            throw new Error("Error processing server response");
+          }
+        }
+      }
     }
   } catch (error) {
     console.error("Error generating more flashcards:", error);
-    alert("Error generating more flashcards. Please try again.");
+    alert(`Error generating more flashcards: ${error.message}`);
   } finally {
     isGenerating.value = false;
   }
@@ -451,8 +602,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Navigation and action button styles */
@@ -556,7 +711,8 @@ button:disabled {
   color: #31708f;
 }
 
-.error-message, .info-message {
+.error-message,
+.info-message {
   padding: 15px;
   border-radius: var(--border-radius);
   margin: 10px 0;
