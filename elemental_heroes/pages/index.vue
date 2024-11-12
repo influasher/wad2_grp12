@@ -32,9 +32,9 @@
               >
                 <h3 class="card-title">
                   {{ game.title
-                  }}<span v-if="!isGamePlayable(game.id)" class="ms-2"
-                    >[Coming Soon]</span
-                  >
+                  }}
+                  <!-- <span v-if="!isGamePlayable(game.id)" class="ms-2"
+                    >[Coming Soon]</span> -->
                 </h3>
                 <p class="card-text d-none d-md-block">
                   {{ game.description }}
@@ -50,7 +50,7 @@
                   class="btn btn-primary btn-responsive"
                   disabled
                 >
-                  Play
+                  Coming Soon
                 </button>
               </div>
             </div>
