@@ -325,8 +325,8 @@ export class ChemicalMatchingScene extends Phaser.Scene {
 
 
     
-        let buttonScale = 0.25;
-        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight * 0.3;
+        let buttonScale = 0.2;
+        const buttonY = this.cameras.main.centerY + instructionBox.displayHeight * 0.35;
         // Add start button image
         const startButtonImage = this.add.image(this.cameras.main.centerX, buttonY, 'button')
         .setInteractive()
