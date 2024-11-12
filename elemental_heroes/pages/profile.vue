@@ -351,13 +351,17 @@ async function updateAvatar(event) {
   try {
     const fileExt = file.name.split('.').pop();
     const fileName = `avatars/${user.value.id}.${fileExt}`;
-
+    
+    // Upload the file with Supabase Storage
     const { error: uploadError } = await supabase.storage.from('files_wad2').upload(fileName, file, { upsert: true });
     if (uploadError) throw uploadError;
 
-    const { data } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
-    avatar_url.value = data.publicUrl;
+    // Get the public URL and update the avatar URL with a cache-busting timestamp
+    const { data, error: urlError } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
+    if (urlError || !data) throw urlError || new Error("Failed to get public URL");
+    avatar_url.value = `${data.publicUrl}?t=${new Date().getTime()}`; // Add cache-busting timestamp
 
+    // Update the profile with the new image file name
     const { error: updateError } = await supabase
       .from('profiles2')
       .update({ avatar_url: fileName })
@@ -371,8 +375,6 @@ async function updateAvatar(event) {
   }
 }
 
-
-
 async function updateBackgroundImage(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -381,13 +383,17 @@ async function updateBackgroundImage(event) {
   try {
     const fileExt = file.name.split('.').pop();
     const fileName = `background_images/${user.value.id}.${fileExt}`;
-
+    
+    // Upload the background image file
     const { error: uploadError } = await supabase.storage.from('files_wad2').upload(fileName, file, { upsert: true });
     if (uploadError) throw uploadError;
 
-    const { data } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
-    background_url.value = data.publicUrl;
+    // Get the public URL and update the background URL with a cache-busting timestamp
+    const { data, error: urlError } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
+    if (urlError || !data) throw urlError || new Error("Failed to get public URL");
+    background_url.value = `${data.publicUrl}?t=${new Date().getTime()}`; // Add cache-busting timestamp
 
+    // Update the profile with the new background image file name
     const { error: updateError } = await supabase
       .from('profiles2')
       .update({ background_url: fileName })
@@ -395,12 +401,11 @@ async function updateBackgroundImage(event) {
     if (updateError) throw updateError;
 
   } catch (error) {
-    console.error('Error updating background:', error.message);
+    console.error('Error updating background image:', error.message);
   } finally {
     isUploadingBackground.value = false;
   }
 }
-
 
 async function fetchGames() {
   try {
@@ -719,7 +724,7 @@ onMounted(async () => {
 
 .edit-background-icon {
   position: absolute;
-  bottom: 10px;
+  top: 10px;
   right: 10px;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
@@ -887,6 +892,14 @@ onMounted(async () => {
   .cancel-btn {
     padding: 4px 8px;
     font-size: 0.9em;
+  }
+}
+
+@media (max-width: 1120px) {
+  .edit-background-icon {
+    top: 10px;
+    right: 10px;
+    bottom: auto;
   }
 }
 </style>
