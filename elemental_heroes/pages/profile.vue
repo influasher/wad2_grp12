@@ -723,7 +723,7 @@ onMounted(async () => {
 }
 
 .edit-background-icon {
-  position: fixed;
+  position: absolute;
   top: 10px;
   right: 10px;
   background-color: rgba(0, 0, 0, 0.6);
@@ -735,7 +735,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 10;
 }
 
 .edit-background-icon:hover {
