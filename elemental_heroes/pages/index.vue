@@ -296,16 +296,23 @@
 
 .user-name {
   font-weight: bold;
+  margin-top: 5px;
   margin-bottom: 5px;
   white-space: nowrap; /* Prevents text overflow */
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
   font-size: 12px;
 }
 
 .user-score {
   font-size: 14px;
   color: #666;
+}
+
+@media (max-width: 480px) {
+  .user-score, .user-name {
+    font-size: 2vw; /* Set a minimum size for small screens */
+  }
 }
 
 .regular-places .leaderboard-card {
