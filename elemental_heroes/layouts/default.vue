@@ -87,7 +87,7 @@
       
       <div class="logout-section">
         
-        <div @click="handleSignOut" class="sidebarButton">
+        <div @click="handleSignOut" class="sidebarButton" style="cursor: pointer">
           <hr>
           <div class="px-3 pb-3 text-center">
           <img src="../assets/images/log-out.svg" width="35" />

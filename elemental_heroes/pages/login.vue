@@ -102,24 +102,6 @@
                 <!-- Error Message -->
                 <p v-if="loginError" class="error-message">{{ loginError }}</p>
               </form>
-              <!-- OR Divider -->
-              <!-- <div class="d-flex align-items-center mb-4">
-                <hr class="flex-grow-1" />
-                <span class="mx-4">OR</span>
-                <hr class="flex-grow-1" />
-              </div> -->
-
-              <!-- Google Sign-In Button -->
-              <!-- <div class="text-center mb-3">
-                <button @click="signInWithGoogle" class="btn google-btn w-100">
-                  <img
-                    src="../assets/images/google.png"
-                    alt="Google Logo"
-                    class="google-logo"
-                  />
-                  Sign in with Google
-                </button>
-              </div> -->
             </div>
 
             <!-- End of Login Form -->
@@ -134,19 +116,19 @@
               <form @submit.prevent="handleSignUp">
                 <!-- First Name input -->
                 <div class="mb-4">
-                  <label for="firstName" class="form-label">First Name</label>
+                  <label for="firstName" class="form-label">Username</label>
                   <input
                     v-model="firstName"
                     type="text"
                     id="firstName"
                     class="form-control"
-                    placeholder="Enter your first name"
+                    placeholder="Enter your username"
                     required
                   />
                 </div>
 
                 <!-- Last Name input -->
-                <div class="mb-4">
+                <!-- <div class="mb-4">
                   <label for="lastName" class="form-label">Last Name</label>
                   <input
                     v-model="lastName"
@@ -156,7 +138,7 @@
                     placeholder="Enter your last name"
                     required
                   />
-                </div>
+                </div> -->
 
                 <!-- Email input -->
                 <div class="mb-4">
@@ -214,25 +196,6 @@
                   {{ signupError }}
                 </p>
               </form>
-
-              <!-- OR Divider -->
-              <!-- <div class="d-flex align-items-center mb-4">
-                <hr class="flex-grow-1" />
-                <span class="mx-4">OR</span>
-                <hr class="flex-grow-1" />
-              </div> -->
-
-              <!-- Google Sign-Up Button -->
-              <!-- <div class="text-center mb-3">
-                <button @click="signInWithGoogle" class="btn google-btn w-100">
-                  <img
-                    src="../assets/images/google-logo.png"
-                    alt="Google Logo"
-                    class="google-logo"
-                  />
-                  Sign up with Google
-                </button>
-              </div> -->
             </div>
             <!-- End of Register Form -->
           </div>
@@ -330,15 +293,6 @@ const handleSignUp = async () => {
   }
 };
 
-// Function to handle Google Sign-In/Sign-Up
-// const signInWithGoogle = async () => {
-//   const { error } = await client.auth.signInWithOAuth({
-//     provider: "google",
-//   });
-//   if (error) {
-//     alert("Error during Google authentication: " + error.message);
-//   }
-// };
 </script>
 
 <style scoped>
@@ -461,25 +415,4 @@ span {
   font-style: normal;
 }
 
-/* Styles for Google Sign-In Button */
-/* .google-btn {
-  background-color: #fff;
-  color: #444;
-  border: 1px solid #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  text-decoration: none;
-}
-
-.google-btn:hover {
-  background-color: #f7f7f7;
-}
-
-.google-logo {
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-} */
 </style>
