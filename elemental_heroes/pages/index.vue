@@ -32,9 +32,9 @@
               >
                 <h3 class="card-title">
                   {{ game.title
-                  }}<span v-if="!isGamePlayable(game.id)" class="ms-2"
-                    >[Coming Soon]</span
-                  >
+                  }}
+                  <!-- <span v-if="!isGamePlayable(game.id)" class="ms-2"
+                    >[Coming Soon]</span> -->
                 </h3>
                 <p class="card-text d-none d-md-block">
                   {{ game.description }}
@@ -50,7 +50,7 @@
                   class="btn btn-primary btn-responsive"
                   disabled
                 >
-                  Play
+                  Coming Soon
                 </button>
               </div>
             </div>
@@ -406,7 +406,7 @@ onMounted(async () => {
   await getFirstName();
 
   new Typed("#typed-output", {
-    strings: [`Welcome to Elemental Heroes, ${firstName.value}!`],
+    strings: [`Welcome to Elemental Heroes ${firstName.value}!`],
     typeSpeed: 50,
     backSpeed: 50,
     showCursor: false,
