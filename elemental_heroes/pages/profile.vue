@@ -718,8 +718,8 @@ onMounted(async () => {
 }
 
 .edit-background-icon {
-  position: absolute;
-  bottom: 10px;
+  position: fixed;
+  top: 10px;
   right: 10px;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
@@ -730,7 +730,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 10;
+  z-index: 1000;
 }
 
 .edit-background-icon:hover {
@@ -887,6 +887,14 @@ onMounted(async () => {
   .cancel-btn {
     padding: 4px 8px;
     font-size: 0.9em;
+  }
+}
+
+@media (max-width: 1120px) {
+  .edit-background-icon {
+    top: 10px;
+    right: 10px;
+    bottom: auto;
   }
 }
 </style>
