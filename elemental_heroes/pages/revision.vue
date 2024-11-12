@@ -438,10 +438,31 @@ const uploadPdf = async (event) => {
     return;
   }
 
-  const formData = new FormData();
-  formData.append("file", selectedFile.value);
-
+  // Check for duplicate file
   try {
+    const fileNameWithoutExtension = selectedFile.value.name.replace(/\.[^/.]+$/, "");
+    
+    // List all files in user_pdfs to check for duplicates
+    const { data: existingFiles, error: listError } = await supabase.storage
+      .from("files_wad2")
+      .list("user_pdfs");
+    
+    if (listError) throw listError;
+    
+    // Check if the selected file name already exists
+    const isDuplicate = existingFiles.some(file => file.name.replace(/\.[^/.]+$/, "") === fileNameWithoutExtension);
+    
+    if (isDuplicate) {
+      modalTitle.value = "Duplicate File Error";
+      modalMessage.value = "This file already exists. Duplicate files cannot be uploaded.";
+      showModal.value = true;
+      return;
+    }
+
+    // If no duplicates, proceed with upload
+    const formData = new FormData();
+    formData.append("file", selectedFile.value);
+
     // Start upload process
     uploading.value = true;
     uploadBtnText.value = "Uploading...";
