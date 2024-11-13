@@ -334,51 +334,6 @@ const closeDeleteModal = () => {
   showDeleteModal.value = false;
 };
 
-const handleFlashcardDelete = async (folderName) => {
-  const confirmed = confirm(
-    `Are you sure you want to delete "${folderName}" and all its flashcards?`
-  );
-  if (!confirmed) return;
-
-  try {
-    isDeleting.value = true;
-
-    // First, list all files in the folder
-    const { data: files, error: listError } = await supabase.storage
-      .from("files_wad2")
-      .list(`flashcards/${folderName}`);
-
-    if (listError) throw listError;
-
-    // Delete all files in the folder
-    for (const file of files) {
-      const { error: deleteError } = await supabase.storage
-        .from("files_wad2")
-        .remove([`flashcards/${folderName}/${file.name}`]);
-
-      if (deleteError) throw deleteError;
-    }
-
-    // Delete the empty folder (if your storage supports it)
-    const { error: folderError } = await supabase.storage
-      .from("files_wad2")
-      .remove([`flashcards/${folderName}/.emptyFolderPlaceholder`]);
-
-    if (folderError && !folderError.message.includes("Object not found")) {
-      throw folderError;
-    }
-
-    // Refresh the flashcards list
-    await getFlashcards();
-    alert("Flashcards deleted successfully");
-  } catch (error) {
-    console.error("Error deleting folder:", error);
-    alert("Error deleting folder. Please try again.");
-  } finally {
-    isDeleting.value = false;
-  }
-};
-
 const handleNoteDelete = async () => {
   try {
     isDeleting.value = true;

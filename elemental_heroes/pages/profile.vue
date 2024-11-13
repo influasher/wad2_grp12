@@ -213,22 +213,6 @@ async function getProfile() {
   }
 }
 
-//use this for auth enabled app
-async function getProfile2() {
-  const { data, error } = await supabase.from("profiles2").select().eq("id", id).single();
-  if (error) {
-    console.error('Error fetching profile:', error.message);
-  } else {
-    profile.value = data;
-    console.log(id)
-
-    getBackground();
-    getAvatar();
-
-  }
-}
-
-
 // Start editing both name and bio
 function startEdit() {
   isEditing.value = true;
@@ -305,43 +289,6 @@ function triggerBackgroundInput() {
   backgroundInput.value && backgroundInput.value.click();
   console.log("hi")
 }
-
-async function updateFirstName(firstName) {
-  //hardcoded to id=1 for now
-  const { data, error } = await supabase.from("profiles").update({ first_name: firstName }).eq("id", 1);
-
-  if (data) {
-    console.log(data)
-
-  } else {
-    console.log(error)
-  }
-}
-
-async function updateLastName(lastName) {
-  //hardcoded to id=1 for now
-  const { data, error } = await supabase.from("profiles").update({ last_name: lastName }).eq("id", 1);
-
-  if (data) {
-    console.log(data)
-
-  } else {
-    console.log(error)
-  }
-}
-
-async function updateBio(bio) {
-  //hardcoded to id=1 for now
-  const { data, error } = await supabase.from("profiles").update({ bio: bio }).eq("id", 1);
-
-  if (data) {
-    console.log(data)
-
-  } else {
-    console.log(error)
-  }
-}
-
 
 async function updateAvatar(event) {
   const file = event.target.files[0];
