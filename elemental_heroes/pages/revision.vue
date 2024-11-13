@@ -456,6 +456,7 @@ const uploadPdf = async (event) => {
       modalTitle.value = "Duplicate File Error";
       modalMessage.value = "This file already exists. Duplicate files cannot be uploaded.";
       showModal.value = true;
+      selectedFile.value = null;
       return;
     }
 
@@ -485,9 +486,12 @@ const uploadPdf = async (event) => {
     getNotes();
   } catch (error) {
     console.error("Error uploading PDF:", error);
-    uploadStatus.value = "Error uploading PDF. Please try again.";
+    modalTitle.value = "";
+    uploadStatus.value = "";
     modalMessage.value = "Error uploading PDF. Please try again.";
     showModal.value = true; // Open the modal to show the error
+    selectedFile.value = null;
+
   } finally {
     uploading.value = false;
     uploadBtnText.value = "Upload PDF";
@@ -661,6 +665,10 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+
+button:disabled{
+  background-color: #9989FB;
 }
 
 /* Card content styles */
