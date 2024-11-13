@@ -56,7 +56,7 @@ cd elemental-heroes
 
 2. **Environmental Variables:**
 
-Do reach out to use if you need the Supabase URL or Key
+Create a .env file within the frontend directory. Do reach out to us if you need the Supabase URL or Key
 
 ```env
 SUPABASE_URL=<your-supabase-project-url>
@@ -82,7 +82,7 @@ cd flashcard-app
 
 2. **Environmental Variables:**
 
-Do reach out to use if you need the Supabase URL or Key
+Create a .env file within the backend directory. Do reach out to us if you need the Supabase and OpenAI keys. 
 
 ```env
 OPENAI_API_KEY=<your-openai-api-key>
