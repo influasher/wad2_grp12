@@ -7,6 +7,7 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
+- [Installation and Running](#installation-and-running)
 
 ## Features
 
@@ -49,7 +50,7 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 1. **Clone the Repository:**
 
 ```bash
-git clone [https://github.com/influasher/wad2_grp12](https://github.com/influasher/wad2_grp12)
+git clone https://github.com/influasher/wad2_grp12
 cd elemental-heroes
 ```
 
