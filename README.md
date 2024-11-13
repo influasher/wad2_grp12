@@ -1,5 +1,4 @@
-﻿
-# Elemental Heroes
+﻿# Elemental Heroes
 
 Elemental Heroes is an interactive web platform designed to enhance learning through engaging games and tools. It integrates educational flashcards generated from user-uploaded PDFs, interactive games built with Phaser.js, and a study assistant chat powered by OpenAI.
 
@@ -27,7 +26,7 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 - **Backend**:
   - Python Flask
   - OpenAI API
-  - Supabase (for storage and database)
+  - Supabase (for auth, storage and database)
 - **Other Dependencies**:
   - Axios
   - PyPDF2 (for PDF text extraction)
@@ -42,3 +41,34 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 - **pip** package manager
 - **Supabase Account** (with project URL and API key)
 - **OpenAI API Key**
+
+## Installation and Running
+
+**Frontend**
+
+1. **Clone the Repository:**
+
+   ```bash
+   git clone [https://github.com/influasher/wad2_grp12](https://github.com/influasher/wad2_grp12)
+   cd elemental-heroes
+   ```
+
+2. **Environmental Variables:**
+
+Do reach out to use if you need the Supabase URL or Key
+
+```
+
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_anon_key
+
+```
+
+3. **Install Dependencies**
+
+```bash
+ npm install
+ npm run dev
+```
+
+Your frontend should be running on localhost! 
