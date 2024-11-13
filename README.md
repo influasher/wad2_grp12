@@ -58,7 +58,7 @@ cd elemental-heroes
 
 Do reach out to use if you need the Supabase URL or Key
 
-```
+```env
 SUPABASE_URL=<your-supabase-project-url>
 SUPABASE_KEY=<your-supabase-anon-key>
 ```
