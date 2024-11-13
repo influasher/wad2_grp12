@@ -48,28 +48,26 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 
 1. **Clone the Repository:**
 
-   ```bash
-   git clone [https://github.com/influasher/wad2_grp12](https://github.com/influasher/wad2_grp12)
-   cd elemental-heroes
-   ```
+```bash
+git clone [https://github.com/influasher/wad2_grp12](https://github.com/influasher/wad2_grp12)
+cd elemental-heroes
+```
 
 2. **Environmental Variables:**
 
 Do reach out to use if you need the Supabase URL or Key
 
-    ```
-
-    SUPABASE_URL=<your-supabase-project-url>
-    SUPABASE_KEY=<your-supabase-anon-key>
-
-    ```
+```
+SUPABASE_URL=<your-supabase-project-url>
+SUPABASE_KEY=<your-supabase-anon-key>
+```
 
 3. **Install Dependencies**
 
-    ```bash
-    npm install
-    npm run dev
-    ```
+```bash
+npm install
+npm run dev
+```
 
 Your frontend should be running on localhost!
 
@@ -77,37 +75,37 @@ Your frontend should be running on localhost!
 
 1. **Navigate into directory**
 
-   ```bash
-   cd flashcard-app
-   ```
+```bash
+cd flashcard-app
+```
 
 2. **Environmental Variables:**
 
 Do reach out to use if you need the Supabase URL or Key
 
-    ```
-    OPENAI_API_KEY=<your-openai-api-key>
-    SUPABASE_URL=<your-supabase-project-url>
-    SUPABASE_KEY=<your-supabase-anon-key>
-    ```
+```env
+OPENAI_API_KEY=<your-openai-api-key>
+SUPABASE_URL=<your-supabase-project-url>
+SUPABASE_KEY=<your-supabase-anon-key>
+```
 
 3. **Set up virtual environment**
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate # or venv\Scripts\activate on Windows
-    ```
+```bash
+python -m venv venv
+source venv/bin/activate # or venv\Scripts\activate on Windows
+```
 
 3. **Install Dependencies**
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+```bash
+pip install -r requirements.txt
+```
 
 4. **Run the Flask server**
 
-    ```bash
-    python app.py
-    ```
-    
+```bash
+python app.py
+```
+
 Your backend should be running on localhost!
