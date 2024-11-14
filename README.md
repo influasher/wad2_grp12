@@ -110,3 +110,10 @@ python app.py
 ```
 
 Your backend should be running on localhost!
+
+5. ** Login Credentials **
+
+You can use the following account to test our application, or create your own at the register page.
+
+Username: felix@gmail.com
+Password: Password1

@@ -13,24 +13,19 @@ from datetime import datetime
 import pypdfium2 as pdfium
 from PIL import Image
 
-# Load environment variables
 load_dotenv()
 
-# Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Create Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Init Supabase Client
 url: str = os.getenv("SUPABASE_URL")
 key: str = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 
 def extract_text_from_pdf_bytes(pdf_bytes):
-    """Extract text from PDF bytes and return a dictionary with page numbers."""
     text_by_page = {}
     pdf_file = BytesIO(pdf_bytes)
     pdf_reader = PyPDF2.PdfReader(pdf_file)
@@ -41,18 +36,15 @@ def extract_text_from_pdf_bytes(pdf_bytes):
 
 
 def get_document_context_supabase(file_id):
-    """Get the content of a PDF from Supabase storage."""
     context = []
     try:
         pdf_path = f"user_pdfs/{file_id}.pdf"
 
-        # Download the PDF file as bytes
         pdf_content = supabase.storage.from_("files_wad2").download(pdf_path)
 
         if not pdf_content:
             return None
 
-        # Extract text directly from bytes
         text_by_page = extract_text_from_pdf_bytes(pdf_content)
         context.append(
             "\n".join([f"[Page {page}] {text}" for page, text in text_by_page.items()])
@@ -110,10 +102,8 @@ def upload_pdf_supabase():
         file_id, _ = os.path.splitext(file.filename)
         file_content = file.read()
 
-        # Extract text from PDF bytes
         text_by_page = extract_text_from_pdf_bytes(file_content)
 
-        # Upload to Supabase storage
         upload_path = f"user_pdfs/{file.filename}"
         supabase.storage.from_("files_wad2").upload(
             path=upload_path,
@@ -121,7 +111,6 @@ def upload_pdf_supabase():
             file_options={"content-type": "application/pdf"},
         )
 
-        # Generate and upload preview
         try:
             pdf = pdfium.PdfDocument(BytesIO(file_content))
             page = pdf[0]
@@ -136,7 +125,6 @@ def upload_pdf_supabase():
             )
         except Exception as e:
             print(f"Preview generation error: {str(e)}")
-            # Continue even if preview fails
 
         return jsonify(
             {
@@ -169,7 +157,6 @@ def generate_flashcards_supabase():
             return jsonify({"error": "Failed to retrieve document content."}), 500
 
         def generate():
-            # Send initial status
             yield f"data: {json.dumps({'status': 'started', 'message': 'Starting flashcard generation'})}\n\n"
 
             accumulated_response = ""
@@ -198,11 +185,9 @@ def generate_flashcards_supabase():
                 if chunk.choices[0].delta.content:
                     content = chunk.choices[0].delta.content
                     accumulated_response += content
-                    # Send progress update
                     yield f"data: {json.dumps({'status': 'generating', 'message': 'Generating flashcards...'})}\n\n"
 
             try:
-                # Parse the complete response
                 flashcards_data = json.loads(accumulated_response)
                 formatted_flashcards = []
 
@@ -225,7 +210,6 @@ def generate_flashcards_supabase():
                     }
                     formatted_flashcards.append(formatted_card)
 
-                # Upload to Supabase
                 flashcards_json = json.dumps({"flashcards": formatted_flashcards})
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 upload_path = f"flashcards/{file_id}/{timestamp}.json"
@@ -238,7 +222,6 @@ def generate_flashcards_supabase():
                     file_options={"content-type": "application/json"},
                 )
 
-                # Send the final response with the formatted flashcards
                 yield f"data: {json.dumps({
                     'status': 'completed',
                     'message': 'Flashcards generated successfully',
@@ -270,7 +253,6 @@ def chat():
         if not message:
             return jsonify({"error": "No message provided"}), 400
 
-        # Get document context
         context = get_document_context_supabase(file_id)
         if not context:
             return jsonify({"error": "Failed to retrieve document content"}), 500
