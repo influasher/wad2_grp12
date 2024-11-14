@@ -6,21 +6,18 @@
     </header>
 
     <main>
-      <!-- Loading Screen (Generating) -->
       <div v-if="isGenerating" class="loading-content">
         <h2>Generating Flashcards</h2>
         <p>Get ready to revise!</p>
         <div class="spinner"></div>
       </div>
 
-      <!-- Loading Screen (Retrieving) -->
       <div v-else-if="isRetrieving" class="loading-content">
         <h2>Retrieving Flashcards</h2>
         <p>Get ready to revise!</p>
         <div class="spinner"></div>
       </div>
 
-      <!-- Flashcard Content -->
       <div v-else class="section flashcard-content">
         <div v-if="flashcards.length">
           <div class="flashcard-navigation">
@@ -142,11 +139,9 @@ const answers = ref([]);
 const showCompletionPopup = ref(false);
 
 const currentCard = computed(() => flashcards.value[currentCardIndex.value]);
-// Reactive variables for the error modal
 const showErrorModal = ref(false);
 const errorMessage = ref("");
 
-// Function to close the modal and redirect to the revision page
 const closeErrorModal = () => {
   showErrorModal.value = false;
   router.push("/revision");
@@ -306,7 +301,6 @@ const generateFlashcards = async () => {
     isGenerating.value = false;
   }
 };
-
 
 // Update handleGenerateMore to use the error modal on error
 const handleGenerateMore = async () => {
@@ -522,10 +516,6 @@ onMounted(() => {
   if (mode.value === "review") {
     console.log("Initiating flashcard retrieval");
     retrieveExistingFlashcards();
-    // } else if (isGenerating.value) {
-    //   console.log("Initiating flashcard generation");
-    //   generateFlashcards();
-    // }
   } else if (mode.value === "generate") {
     console.log("Initiating flashcard generation");
     generateFlashcards();

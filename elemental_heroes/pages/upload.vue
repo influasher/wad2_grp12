@@ -316,7 +316,6 @@ const sendMessage = async () => {
 </script>
 
 <style scoped>
-/* Define component-specific variables */
 .container {
   --primary-color: #6c5dd3;
   --secondary-color: #f5f5f5;
@@ -324,7 +323,6 @@ const sendMessage = async () => {
   --border-radius: 8px;
 }
 
-/* Apply styles only within this component */
 .container {
   max-width: 1200px;
   margin: 0 auto;

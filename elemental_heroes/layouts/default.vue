@@ -62,10 +62,15 @@
       >
       <span v-else style="opacity: 0; font-size: 11px"> Friends</span>
       <div id="friendsList">
-        <!--here we will render the friends dynamicaally-->
         <div v-for="friend in friends" class="sidebarButton">
-          <div class="p-3" data-bs-toggle="tooltip" data-bs-placement="bottom" :data-bs-title="
-            friend.status === 'online' ? 'Online' : 'Last seen 5 minutes ago'">
+          <div
+            class="p-3"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            :data-bs-title="
+              friend.status === 'online' ? 'Online' : 'Last seen 5 minutes ago'
+            "
+          >
             <div class="position-relative">
               <img :src="friend.avatar" width="35" />
               <span
@@ -84,15 +89,19 @@
         </div>
       </div>
       <!-- Logout Button -->
-      
+
       <div class="logout-section">
-        
-        <div @click="handleSignOut" class="sidebarButton" style="cursor: pointer">
-          <hr>
+        <div
+          @click="handleSignOut"
+          class="sidebarButton"
+          style="cursor: pointer"
+        >
+          <hr />
           <div class="px-3 pb-3 text-center">
-          <img src="../assets/images/log-out.svg" width="35" />
-          <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
-            >Logout</span>
+            <img src="../assets/images/log-out.svg" width="35" />
+            <span v-if="!isSidebarClosed" class="ms-3 press-start-2p-regular"
+              >Logout</span
+            >
           </div>
         </div>
       </div>
@@ -103,7 +112,7 @@
       <!-- Main content area -->
       <main class="flex-grow-1">
         <!-- <div class="background_wrap"> -->
-          <slot />
+        <slot />
         <!-- </div> -->
       </main>
       <footer class="footer mt-auto py-3 bg-light">
@@ -168,11 +177,13 @@ const friends = ref([
 ]);
 
 onMounted(() => {
-  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    tooltipTriggerList.forEach(tooltipTriggerEl => {
-      new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-})
+  const tooltipTriggerList = document.querySelectorAll(
+    '[data-bs-toggle="tooltip"]'
+  );
+  tooltipTriggerList.forEach((tooltipTriggerEl) => {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+});
 
 function checkScreenWidth() {
   isSidebarClosed.value = window.innerWidth <= 768; // Set closed if screen width <= 768px
@@ -193,7 +204,6 @@ onMounted(() => {
   font-style: normal;
 }
 
-/* Basic structure styling */
 .wrapper {
   display: flex;
   align-items: stretch;
@@ -216,7 +226,6 @@ onMounted(() => {
   z-index: -1;
 }
 
-/* Sidebar styling */
 #sidebar {
   display: flex;
   flex-direction: column;
@@ -242,7 +251,6 @@ onMounted(() => {
   transition: ease 0.3s;
 }
 
-/* Div with Elemental Heroes */
 #sidebar .sidebar-header {
   display: flex;
   justify-content: space-between;
@@ -256,15 +264,11 @@ onMounted(() => {
 #sidebar .sidebar-header h6 {
   position: absolute;
   top: 50%;
-  /* Center vertically */
   transform: translateY(-50%);
-  /* Fine-tune vertical position */
   margin: 0;
   padding-top: 10px;
   opacity: 1;
   transition: opacity 0.5s ease;
-
-  /* Adjust this value to move the text down */
 }
 
 #sidebar.closed .sidebar-header {
@@ -277,8 +281,8 @@ onMounted(() => {
 
 #sidebar.closed .sidebar-header h6 {
   display: none;
-  opacity: 0; /* Hide text in compact view */
-  transition: opacity 0.3s ease 0.1s; /* Delay to allow sidebar to resize first */
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s;
 }
 
 #sidebar .sidebar-header button#sidebarCollapse {
@@ -290,14 +294,12 @@ onMounted(() => {
   background: none;
 }
 
-/* Update the button styles for notActive state */
 #sidebar.closed .sidebar-header button#sidebarCollapse {
   display: block;
   margin: 0 auto;
   left: 0;
 }
 
-/* Buttons such as home, game, revision */
 .sidebarButton {
   color: inherit;
   text-decoration: none;
@@ -321,18 +323,16 @@ onMounted(() => {
   transition: padding 0.3s ease;
 }
 
-/* Smooth transition for showing/hiding the text */
 .sidebarButton span {
   opacity: 1;
   transition: opacity 0.3s ease;
 }
 
 #sidebar.closed .sidebarButton span {
-  opacity: 0; /* Hide text in compact view */
-  transition: opacity 0.3s ease 0.1s; /* Delay to allow sidebar to resize first */
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s;
 }
 
-/* Friends List */
 #friendsList {
   overflow-y: auto;
   flex-grow: 1;
@@ -348,17 +348,15 @@ onMounted(() => {
 }
 
 #friendsList::-webkit-scrollbar-thumb {
-  background-color: #b2a9ec; /* Optional: customize scrollbar color */
+  background-color: #b2a9ec;
   border-radius: 4px;
 }
 
 #sidebar.closed .logoutButton span {
-  opacity: 0; /* Hide text in compact view */
-  transition: opacity 0.3s ease 0.1s; /* Delay to allow sidebar to resize first */
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s;
 }
 
-
-/* Content wrapper styling */
 .content-wrapper {
   margin-left: 250px;
   transition: all 0.3s;
@@ -372,21 +370,10 @@ onMounted(() => {
 }
 
 main {
-  min-height: calc(100vh - 142px); /* 72px header + 70px footer */
+  min-height: calc(100vh - 142px);
   overflow-y: auto;
   position: relative;
 }
-
-/* .background_wrap {
-  position: relative;
-} */
-
-
-
-/* .background_wrap > * {
-  position: relative;
-  z-index: 1;
-} */
 
 footer {
   padding: 10px;

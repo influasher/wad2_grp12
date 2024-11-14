@@ -155,8 +155,8 @@ import backgroundPlaceholder from '@/assets/images/background_placeholder.png';
 const config = useRuntimeConfig()
 const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey)
 const profile = ref(null)
-const avatar_url = ref(profilePlaceholder); // Default to placeholder
-const background_url = ref(backgroundPlaceholder); // Default to placeholder
+const avatar_url = ref(profilePlaceholder);
+const background_url = ref(backgroundPlaceholder);
 const isUploadingAvatar = ref(null)
 const isUploadingBackground = ref(null)
 const isLoading = ref(true);
@@ -174,7 +174,7 @@ const isEditing = ref(false);
 const editableFirstName = ref("");
 const editableLastName = ref("");
 const editableBio = ref("");
-const userRank = ref(null);  // Reactive variable to store the user's rank
+const userRank = ref(null);
 
 async function fetchLeaderboardAndUserRank(userId) {
   try {
@@ -202,7 +202,6 @@ async function getProfile() {
   } else {
     profile.value = data;
 
-    // Set profile and background images from database, with fallback to placeholders
     avatar_url.value = data.avatar_url
       ? await supabase.storage.from("files_wad2").getPublicUrl(data.avatar_url).data.publicUrl
       : profilePlaceholder;
@@ -213,7 +212,6 @@ async function getProfile() {
   }
 }
 
-// Start editing both name and bio
 function startEdit() {
   isEditing.value = true;
   editableFirstName.value = profile.value.first_name;
@@ -221,12 +219,10 @@ function startEdit() {
   editableBio.value = profile.value.bio;
 }
 
-// Cancel editing
 function cancelEdit() {
   isEditing.value = false;
 }
 
-// Save changes to both name and bio
 async function saveChanges() {
   const firstName = editableFirstName.value;
   const lastName = editableLastName.value;
@@ -249,38 +245,33 @@ async function saveChanges() {
 }
 
 async function getAvatar() {
-  // Check if the profile has an avatar URL
   if (!profile.value.avatar_url) {
-    avatar_url.value = profilePlaceholder; // Set to placeholder if not set
+    avatar_url.value = profilePlaceholder;
     return;
   }
-  
-  // Fetch the avatar image URL from Supabase if it exists
+
   const { data } = await supabase.storage.from("files_wad2").getPublicUrl(profile.value.avatar_url);
   if (data && data.publicUrl) {
     avatar_url.value = data.publicUrl;
   } else {
-    avatar_url.value = profilePlaceholder; // Use placeholder on error or null
+    avatar_url.value = profilePlaceholder;
   }
 }
 
 async function getBackground() {
-  // Check if the profile has a background URL
   if (!profile.value.background_url) {
-    background_url.value = backgroundPlaceholder; // Set to placeholder if not set
+    background_url.value = backgroundPlaceholder;
     return;
   }
 
-  // Fetch the background image URL from Supabase if it exists
   const { data } = await supabase.storage.from("files_wad2").getPublicUrl(profile.value.background_url);
   if (data && data.publicUrl) {
     background_url.value = data.publicUrl;
   } else {
-    background_url.value = backgroundPlaceholder; // Use placeholder on error or null
+    background_url.value = backgroundPlaceholder;
   }
 }
 
-// Function to open file selection dialog
 function triggerFileInput() {
   fileInput.value && fileInput.value.click();
 }
@@ -298,17 +289,14 @@ async function updateAvatar(event) {
   try {
     const fileExt = file.name.split('.').pop();
     const fileName = `avatars/${user.value.id}.${fileExt}`;
-    
-    // Upload the file with Supabase Storage
+
     const { error: uploadError } = await supabase.storage.from('files_wad2').upload(fileName, file, { upsert: true });
     if (uploadError) throw uploadError;
 
-    // Get the public URL and update the avatar URL with a cache-busting timestamp
     const { data, error: urlError } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
     if (urlError || !data) throw urlError || new Error("Failed to get public URL");
-    avatar_url.value = `${data.publicUrl}?t=${new Date().getTime()}`; // Add cache-busting timestamp
+    avatar_url.value = `${data.publicUrl}?t=${new Date().getTime()}`;
 
-    // Update the profile with the new image file name
     const { error: updateError } = await supabase
       .from('profiles2')
       .update({ avatar_url: fileName })
@@ -330,17 +318,14 @@ async function updateBackgroundImage(event) {
   try {
     const fileExt = file.name.split('.').pop();
     const fileName = `background_images/${user.value.id}.${fileExt}`;
-    
-    // Upload the background image file
+
     const { error: uploadError } = await supabase.storage.from('files_wad2').upload(fileName, file, { upsert: true });
     if (uploadError) throw uploadError;
 
-    // Get the public URL and update the background URL with a cache-busting timestamp
     const { data, error: urlError } = await supabase.storage.from('files_wad2').getPublicUrl(fileName);
     if (urlError || !data) throw urlError || new Error("Failed to get public URL");
-    background_url.value = `${data.publicUrl}?t=${new Date().getTime()}`; // Add cache-busting timestamp
+    background_url.value = `${data.publicUrl}?t=${new Date().getTime()}`;
 
-    // Update the profile with the new background image file name
     const { error: updateError } = await supabase
       .from('profiles2')
       .update({ background_url: fileName })
@@ -419,24 +404,9 @@ onMounted(async () => {
   height: auto;
 }
 
-/* .profile {
-  position: relative;
-  top: -30vh; 
-  margin: 0 auto;
-  width: 90%; 
-  max-width: 800px;
-  background: white;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-} */
-
 .profile {
   position: relative;
-  top: -10vh; /* Adjust to control profile overlap */
+  top: -10vh;
   margin: 0 auto;
   width: 90%;
   max-width: 800px;
@@ -444,7 +414,7 @@ onMounted(async () => {
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  z-index: 2; /* Ensure profile card is above games */
+  z-index: 2;
 }
 
 .profile-left {
@@ -556,7 +526,7 @@ onMounted(async () => {
 }
 
 .name h1 {
-  font-size: calc(1.5em + 1vw); /* Responsive font size */
+  font-size: calc(1.5em + 1vw);
   font-weight: 600;
   text-align: center;
 }
@@ -645,17 +615,6 @@ onMounted(async () => {
 .file-input::-webkit-file-upload-button:hover {
   background-color: #b2a9ec;
 }
-
-/* .background-img {
-  position: relative;
-  width: 100%;
-  max-height: 600px;
-  overflow: hidden;
-}
-
-.background-img img {
-  width: 100%;
-} */
 
 .background-img {
   width: 100%;
@@ -747,7 +706,6 @@ onMounted(async () => {
   height: 20px;
 }
 
-/* Optional: Add active states for the buttons */
 .message-btn:active {
   transform: scale(0.98);
 }
@@ -758,8 +716,8 @@ onMounted(async () => {
 
 .content {
   position: relative;
-  margin-top: -20vh; /* Adjust this to control overlap */
-  padding-top: 20vh; /* Keeps space above profile for overlap */
+  margin-top: -20vh;
+  padding-top: 20vh;
 }
 
 .games-container,
@@ -769,7 +727,7 @@ onMounted(async () => {
   gap: 20px;
   justify-content: center;
   padding: 20px;
-  margin-top: 0vh; /* Adjust to control games overlap */
+  margin-top: 0vh;
   z-index: 1;
 }
 .card {
@@ -807,7 +765,7 @@ onMounted(async () => {
 
 .truncate-text {
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limits the text to 2 lines */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -826,7 +784,7 @@ onMounted(async () => {
   }
 
   .name h1 {
-    font-size: 1.5em; /* Reduced font size on smaller screens */
+    font-size: 1.5em;
   }
 
   .bio,

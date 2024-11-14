@@ -12,7 +12,6 @@
 </template>
 
 <style>
-/* Remove scoped to ensure styles are applied */
 .skeleton-card {
   width: 100%;
   max-height: 70vh;

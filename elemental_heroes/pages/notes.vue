@@ -44,7 +44,9 @@
         <h4>Confirm Deletion</h4>
         <p>Are you sure you want to delete "{{ noteName }}"?</p>
         <div class="modal-buttons">
-          <button @click="proceedWithDelete" class="btn btn-danger">Delete</button>
+          <button @click="proceedWithDelete" class="btn btn-danger">
+            Delete
+          </button>
           <button @click="closeModal" class="btn btn-secondary">Cancel</button>
         </div>
       </div>
@@ -80,7 +82,6 @@ const showDeleteModal = ref(false);
 const showSuccessModal = ref(false);
 const modalMessage = ref("");
 
-
 async function getPDF() {
   const { data, error } = await supabase.storage
     .from("files_wad2")
@@ -92,24 +93,22 @@ async function getPDF() {
 }
 
 function handleDelete() {
-  showDeleteModal.value = true; // Opens the delete confirmation modal
+  showDeleteModal.value = true;
 }
 
 async function proceedWithDelete() {
   try {
-    // Delete the PDF file
     const { error: deletePDFError } = await supabase.storage
       .from("files_wad2")
       .remove([`user_pdfs/${noteName}.pdf`]);
 
-    // Delete PDF preview file
     const { error: deletePreviewError } = await supabase.storage
       .from("files_wad2")
       .remove([`previews/${noteName}.png`]);
 
-    if (deletePDFError || deletePreviewError) throw deletePDFError || deletePreviewError;
+    if (deletePDFError || deletePreviewError)
+      throw deletePDFError || deletePreviewError;
 
-    // Show success modal with custom message
     modalMessage.value = `"${noteName}" deleted successfully.`;
     showSuccessModal.value = true;
   } catch (error) {
@@ -117,14 +116,14 @@ async function proceedWithDelete() {
     modalMessage.value = "Failed to delete note. Please try again.";
     showSuccessModal.value = true;
   } finally {
-    showDeleteModal.value = false; // Close delete confirmation modal
+    showDeleteModal.value = false;
   }
 }
 
 function closeModal() {
   if (showSuccessModal.value) {
     showSuccessModal.value = false;
-    router.push("/revision"); // Redirects to revision page
+    router.push("/revision");
   } else {
     showDeleteModal.value = false;
   }
@@ -172,7 +171,7 @@ onMounted(() => {
 
 .pdf-viewer {
   width: 80%;
-  height: 100vh; /* Sets height to 70% of the viewport height */
+  height: 100vh;
   border: none;
 }
 

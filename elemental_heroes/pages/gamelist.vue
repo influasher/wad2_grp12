@@ -5,7 +5,8 @@
         <div v-for="(tag, index) in tags" :key="index" class="mb-2 me-2">
           <button
             class="btn rounded-pill my-1"
-            :class="`${tag.colorClass} text-white`" disabled
+            :class="`${tag.colorClass} text-white`"
+            disabled
           >
             <span>{{ tag.label }}</span>
           </button>
@@ -14,7 +15,6 @@
     </div>
 
     <div class="row custom-row justify-content-center">
-      <!-- Game container: Full width on small screens, 10 columns on large screens -->
       <div
         id="game-container"
         class="screen col-12 col-xl-9 d-none d-lg-block"
@@ -27,7 +27,6 @@
         <CarouselSkeleton />
       </div>
 
-      <!-- Message card: Visible only on screens smaller than large -->
       <div class="col-12 d-flex justify-content-center d-lg-none">
         <div class="card not-playable-card">
           <div class="card-body">
@@ -92,12 +91,12 @@ const tags = ref([
 }
 
 #game-container {
-  width: 60vw; /* Set the fixed width of the game */
-  height: auto; /* Set the fixed height of the game */
-  padding: 10px; /* Add padding inside the container */
+  width: 60vw;
+  height: auto;
+  padding: 10px;
   display: flex;
-  justify-content: center; /* Center the game inside the container */
-  align-items: center; /* Center the game vertically inside */
+  justify-content: center;
+  align-items: center;
 }
 
 #subjects {
@@ -106,10 +105,9 @@ const tags = ref([
 }
 
 button:disabled {
-  opacity: 1 !important; 
+  opacity: 1 !important;
   pointer-events: none;
 }
-
 
 .btn-light {
   background-color: #f9f9f9;

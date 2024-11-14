@@ -9,7 +9,6 @@
 
       <div class="row g-4">
         <div class="col-md-3">
-          <!-- Modified upload card to handle file selection -->
           <div class="card custom-card upload-card" @click="triggerFileInput">
             <input
               type="file"
@@ -38,7 +37,6 @@
           </div>
         </div>
 
-        <!-- Skeleton Loaders -->
         <template v-if="isLoadingNotes">
           <div class="col-md-3" v-for="n in 3" :key="'skeleton-' + n">
             <NoteFlashcardSkeleton />
@@ -67,7 +65,6 @@
               </div>
             </NuxtLink>
 
-            <!-- Add delete button -->
             <button
               class="delete-btn"
               @click.prevent="confirmDelete(note.name)"
@@ -94,19 +91,16 @@
       </div>
     </div>
 
-    <!-- My Flashcards Section -->
     <div class="mb-5">
       <h2 class="section-title">My Flashcards</h2>
 
       <div class="row g-4">
-        <!-- Skeleton Loaders -->
         <template v-if="isLoadingFlashcards">
           <div class="col-md-3" v-for="n in 3" :key="'skeleton-' + n">
             <NoteFlashcardSkeleton />
           </div>
         </template>
 
-        <!-- Show actual content when loaded -->
         <div
           class="col-md-3"
           v-for="folder in flashcardFolders"
@@ -115,7 +109,6 @@
           <div
             class="card custom-card flashcard position-relative card-container"
           >
-            <!-- Card content wrapped in NuxtLink -->
             <NuxtLink
               :to="{
                 path: '/flashcard',
@@ -131,7 +124,6 @@
               </div>
             </NuxtLink>
 
-            <!-- Delete button -->
             <button
               class="delete-btn"
               @click.prevent="confirmFlashcardDelete(folder.name)"
@@ -164,30 +156,38 @@
         <button @click="closeModal" class="btn btn-primary">OK</button>
       </div>
     </div>
-    <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteModal" class="modal-overlay">
       <div class="modal-content">
         <h4>Confirm Deletion</h4>
         <p>Are you sure you want to delete "{{ itemToDelete }}"?</p>
         <div class="modal-buttons">
-          <button @click="proceedWithDelete" class="btn btn-danger">Delete</button>
-          <button @click="closeDeleteModal" class="btn btn-secondary">Cancel</button>
+          <button @click="proceedWithDelete" class="btn btn-danger">
+            Delete
+          </button>
+          <button @click="closeDeleteModal" class="btn btn-secondary">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
-    <!-- Flashcard Delete Confirmation Modal -->
     <div v-if="showDeleteFlashcardModal" class="modal-overlay">
       <div class="modal-content">
         <h4>Confirm Deletion</h4>
-        <p>Are you sure you want to delete "{{ flashcardToDelete }}" and all its flashcards?</p>
+        <p>
+          Are you sure you want to delete "{{ flashcardToDelete }}" and all its
+          flashcards?
+        </p>
         <div class="modal-buttons">
-          <button @click="proceedWithFlashcardDelete" class="btn btn-danger">Delete</button>
-          <button @click="closeFlashcardModal" class="btn btn-secondary">Cancel</button>
+          <button @click="proceedWithFlashcardDelete" class="btn btn-danger">
+            Delete
+          </button>
+          <button @click="closeFlashcardModal" class="btn btn-secondary">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Flashcard Success Modal -->
     <div v-if="showFlashcardSuccessModal" class="modal-overlay">
       <div class="modal-content">
         <h4>Success</h4>
@@ -195,12 +195,14 @@
         <button @click="closeFlashcardModal" class="btn btn-primary">OK</button>
       </div>
     </div>
-    <!-- Deletion Progress Modal -->
     <div v-if="showDeletionProgressModal" class="modal-overlay">
       <div class="modal-content">
         <h4>Deleting {{ flashcardToDelete }}</h4>
         <div class="progress-bar">
-          <div class="progress" :style="{ width: deletionProgress + '%' }"></div>
+          <div
+            class="progress"
+            :style="{ width: deletionProgress + '%' }"
+          ></div>
         </div>
         <p>{{ deletionProgressMessage }}</p>
       </div>
@@ -245,26 +247,21 @@ const showDeletionProgressModal = ref(false);
 const deletionProgress = ref(0);
 const deletionProgressMessage = ref("");
 
-// Function to initiate flashcard delete confirmation modal
 const confirmFlashcardDelete = (folderName) => {
   flashcardToDelete.value = folderName;
   showDeleteFlashcardModal.value = true;
 };
 
-// Function to proceed with flashcard deletion
 const proceedWithFlashcardDelete = async () => {
   try {
     isDeleting.value = true;
-    
-    // Close the delete confirmation modal
+
     showDeleteFlashcardModal.value = false;
 
-    // Show the deletion progress modal
     showDeletionProgressModal.value = true;
-    deletionProgress.value = 0; // Reset progress
+    deletionProgress.value = 0;
     deletionProgressMessage.value = "Deleting...";
 
-    // List all files in the flashcard folder
     const { data: files, error: listError } = await supabase.storage
       .from("files_wad2")
       .list(`flashcards/${flashcardToDelete.value}`);
@@ -274,7 +271,6 @@ const proceedWithFlashcardDelete = async () => {
     const totalFiles = files.length;
     let filesDeleted = 0;
 
-    // Delete each file in the folder and update progress
     for (const file of files) {
       const { error: deleteError } = await supabase.storage
         .from("files_wad2")
@@ -285,24 +281,24 @@ const proceedWithFlashcardDelete = async () => {
       filesDeleted++;
       deletionProgress.value = Math.round((filesDeleted / totalFiles) * 100);
 
-      // Update message without percentage
       deletionProgressMessage.value = "Deleting...";
 
       await new Promise((resolve) => setTimeout(resolve, 200));
     }
 
-    // Complete deletion of the folder
     await supabase.storage
       .from("files_wad2")
-      .remove([`flashcards/${flashcardToDelete.value}/.emptyFolderPlaceholder`]);
+      .remove([
+        `flashcards/${flashcardToDelete.value}/.emptyFolderPlaceholder`,
+      ]);
 
-    // Refresh flashcards list
     await getFlashcards();
     flashcardModalMessage.value = `"${flashcardToDelete.value}" deleted successfully.`;
     showFlashcardSuccessModal.value = true;
   } catch (error) {
     console.error("Error deleting flashcard folder:", error);
-    flashcardModalMessage.value = "Error deleting flashcard folder. Please try again.";
+    flashcardModalMessage.value =
+      "Error deleting flashcard folder. Please try again.";
     showFlashcardSuccessModal.value = true;
   } finally {
     isDeleting.value = false;
@@ -311,25 +307,21 @@ const proceedWithFlashcardDelete = async () => {
   }
 };
 
-// Function to close flashcard modals
 const closeFlashcardModal = () => {
   showDeleteFlashcardModal.value = false;
   showFlashcardSuccessModal.value = false;
   flashcardModalMessage.value = "";
 };
 
-// Function to initiate delete confirmation modal
 const confirmDelete = (noteName) => {
   itemToDelete.value = noteName;
   showDeleteModal.value = true;
 };
 
-// Function to proceed with deletion
 const proceedWithDelete = () => {
   handleNoteDelete();
 };
 
-// Function to close the delete confirmation modal
 const closeDeleteModal = () => {
   showDeleteModal.value = false;
 };
@@ -338,7 +330,6 @@ const handleNoteDelete = async () => {
   try {
     isDeleting.value = true;
 
-    // Delete the PDF file and preview
     const { error: deletePDFError } = await supabase.storage
       .from("files_wad2")
       .remove([`user_pdfs/${itemToDelete.value}.pdf`]);
@@ -347,12 +338,11 @@ const handleNoteDelete = async () => {
       .from("files_wad2")
       .remove([`previews/${itemToDelete.value}.png`]);
 
-    if (deletePDFError || deletePreviewError) throw deletePDFError || deletePreviewError;
+    if (deletePDFError || deletePreviewError)
+      throw deletePDFError || deletePreviewError;
 
-    // Refresh the notes list
     await getNotes();
-    
-    // Update modal title and message with the specific note name
+
     modalTitle.value = "PDF Deletion Successful";
     modalMessage.value = `"${itemToDelete.value}" deleted successfully.`;
     showModal.value = true;
@@ -366,14 +356,12 @@ const handleNoteDelete = async () => {
   }
 };
 
-// Function to trigger file input
 const triggerFileInput = () => {
   if (!selectedFile.value) {
     pdfInput.value.click();
   }
 };
 
-// Function to handle file selection
 const handleFileSelected = (event) => {
   const file = event.target.files[0];
   if (file && file.type === "application/pdf") {
@@ -388,55 +376,53 @@ const uploadPdf = async (event) => {
   event.stopPropagation();
 
   if (!selectedFile.value) {
-    modalMessage.value = "Please select a PDF file first."; // Message to prompt file selection
-    showModal.value = true; // Open the modal
+    modalMessage.value = "Please select a PDF file first.";
+    showModal.value = true;
     return;
   }
 
-  // Check for duplicate file
   try {
-    const fileNameWithoutExtension = selectedFile.value.name.replace(/\.[^/.]+$/, "");
-    
-    // List all files in user_pdfs to check for duplicates
+    const fileNameWithoutExtension = selectedFile.value.name.replace(
+      /\.[^/.]+$/,
+      ""
+    );
+
     const { data: existingFiles, error: listError } = await supabase.storage
       .from("files_wad2")
       .list("user_pdfs");
-    
+
     if (listError) throw listError;
-    
-    // Check if the selected file name already exists
-    const isDuplicate = existingFiles.some(file => file.name.replace(/\.[^/.]+$/, "") === fileNameWithoutExtension);
-    
+
+    const isDuplicate = existingFiles.some(
+      (file) => file.name.replace(/\.[^/.]+$/, "") === fileNameWithoutExtension
+    );
+
     if (isDuplicate) {
       modalTitle.value = "Duplicate File Error";
-      modalMessage.value = "This file already exists. Duplicate files cannot be uploaded.";
+      modalMessage.value =
+        "This file already exists. Duplicate files cannot be uploaded.";
       showModal.value = true;
       selectedFile.value = null;
       return;
     }
 
-    // If no duplicates, proceed with upload
     const formData = new FormData();
     formData.append("file", selectedFile.value);
 
-    // Start upload process
     uploading.value = true;
     uploadBtnText.value = "Uploading...";
     uploadStatus.value = "Uploading PDF...";
 
-    // Upload the PDF file
     const response = await axios.post(
       "https://elementalbackend.vercel.app/api/supabase/upload-pdf",
       formData
     );
 
-    // Show the success message in the modal
     uploadStatus.value = "";
-    modalTitle.value = "PDF Upload Successful"; // Set title for upload success
+    modalTitle.value = "PDF Upload Successful";
     modalMessage.value = `${response.data.num_pages} pages found.`;
-    showModal.value = true; // Open the modal
+    showModal.value = true;
 
-    // Reset and refresh
     selectedFile.value = null;
     getNotes();
   } catch (error) {
@@ -444,21 +430,18 @@ const uploadPdf = async (event) => {
     modalTitle.value = "";
     uploadStatus.value = "";
     modalMessage.value = "Error uploading PDF. Please try again.";
-    showModal.value = true; // Open the modal to show the error
+    showModal.value = true;
     selectedFile.value = null;
-
   } finally {
     uploading.value = false;
     uploadBtnText.value = "Upload PDF";
   }
 };
 
-// Function to close the modal
 const closeModal = () => {
   showModal.value = false;
 };
 
-// Modify getNotes function to include preview URLs
 async function getNotes() {
   try {
     isLoadingNotes.value = true;
@@ -481,7 +464,6 @@ async function getNotes() {
             }
           );
 
-          // Get preview URL
           const { data: previewUrl } = supabase.storage
             .from("files_wad2")
             .getPublicUrl(`previews/${nameWithoutExtension}.png`);
@@ -506,7 +488,6 @@ async function getFlashcards() {
   try {
     isLoadingFlashcards.value = true;
 
-    // First, list all folders in the flashcards directory
     const { data: folders, error: foldersError } = await supabase.storage
       .from("files_wad2")
       .list("flashcards");
@@ -515,11 +496,9 @@ async function getFlashcards() {
       throw foldersError;
     }
 
-    // Process each folder
     const folderPromises = folders.map(async (folder) => {
       if (folder.name === ".emptyFolderPlaceholder") return null;
 
-      // List files in each folder
       const { data: files, error: filesError } = await supabase.storage
         .from("files_wad2")
         .list(`flashcards/${folder.name}`);
@@ -529,11 +508,10 @@ async function getFlashcards() {
         return null;
       }
 
-      // Download and process each file to get actual card count
       let totalCards = 0;
       for (const file of files) {
-        if (file.name.startsWith('.')) continue;
-        
+        if (file.name.startsWith(".")) continue;
+
         const { data: fileData, error: downloadError } = await supabase.storage
           .from("files_wad2")
           .download(`flashcards/${folder.name}/${file.name}`);
@@ -558,14 +536,12 @@ async function getFlashcards() {
       return {
         name: folder.name,
         totalCards: totalCards,
-        fileCount: files.filter(file => !file.name.startsWith('.')).length
+        fileCount: files.filter((file) => !file.name.startsWith(".")).length,
       };
     });
 
-    // Wait for all folder processing to complete
     const processedFolders = await Promise.all(folderPromises);
 
-    // Filter out null values and update the ref
     flashcardFolders.value = processedFolders.filter(
       (folder) => folder !== null
     );
@@ -587,25 +563,22 @@ onMounted(() => {
   padding: 20px;
 }
 
-/* Grid container for cards */
 .row {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 }
 
-/* Card base styles */
 .custom-card {
   background-color: #ffffff;
   border: 0.5px solid #e4e3e3;
   border-radius: 8px;
   transition: transform 0.2s, box-shadow 0.2s;
-  min-width: 280px; /* Minimum width for cards */
+  min-width: 280px;
   width: 100%;
   height: 100%;
 }
 
-/* Upload card specific styles */
 .upload-card {
   cursor: pointer;
   display: flex;
@@ -622,11 +595,10 @@ onMounted(() => {
   width: 100%;
 }
 
-button:disabled{
-  background-color: #9989FB;
+button:disabled {
+  background-color: #9989fb;
 }
 
-/* Card content styles */
 .card-body {
   padding: 1.25rem;
 }
@@ -642,19 +614,16 @@ button:disabled{
   margin-bottom: 0.5rem;
 }
 
-/* Card hover effects */
 .custom-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Container for card positioning */
 .card-container {
   position: relative;
   height: 100%;
 }
 
-/* Delete button styles */
 .delete-btn {
   position: absolute;
   bottom: 8px;
@@ -686,7 +655,6 @@ button:disabled{
   transform: scale(1.1);
 }
 
-/* Note card specific styles */
 .note-card .card-title {
   color: #374151;
   font-weight: 600;
@@ -707,7 +675,6 @@ button:disabled{
   background-repeat: no-repeat;
 }
 
-/* Flashcard specific styles */
 .flashcard:hover {
   transform: translateY(-3px);
   box-shadow: 0 16px 32px rgba(139, 110, 243, 0.25);
@@ -739,7 +706,6 @@ button:disabled{
   background-repeat: no-repeat;
 }
 
-/* Preview container styles */
 .preview-container {
   position: relative;
   width: 100%;
@@ -790,7 +756,6 @@ button:disabled{
   color: white;
 }
 
-/* Section title styles */
 .section-title {
   margin-bottom: 1rem;
   color: #374151;
@@ -849,7 +814,6 @@ button:disabled{
   transition: width 0.2s ease;
 }
 
-/* Media query for smaller screens */
 @media (max-width: 768px) {
   .home-page {
     padding: 10px;
