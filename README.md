@@ -14,11 +14,23 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 ## Features
 
 - **Flashcard Generator**: Upload PDFs and automatically generate flashcards using OpenAI's GPT models.
+  
 ![image](https://github.com/user-attachments/assets/ff5a4c22-917e-46cd-b11f-02b69d4be0cc)
 
 - **Interactive Games**: Engage with educational games built using Phaser.js, including chemical matching and laboratory simulations.
+
+![photo_2024-11-14_19-50-41](https://github.com/user-attachments/assets/76b9989c-1f0a-45e4-928f-19cec3655819)
+
+
 - **Study Assistant Chat**: Ask questions and receive answers related to the uploaded content via a conversational AI assistant.
+
+![image](https://github.com/user-attachments/assets/9f963daa-c02b-42c5-b523-42c346040357)
+
+
 - **User Profiles**: Create and manage user profiles with avatars and personal statistics.
+
+![image](https://github.com/user-attachments/assets/80413d2a-caf2-4e84-a831-ae5cda5f836d)
+
 - **Responsive Design**: Optimized for various devices with responsive layouts and modern UI elements.
 
 ## Pitch Video
