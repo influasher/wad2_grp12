@@ -509,6 +509,9 @@ const showNextCard = () => {
 };
 
 //if flashcard.vue is loaded for existing flashcards
+const logCurrentFile = () => {
+  console.log(fileName);
+};
 
 onMounted(() => {
   console.log("Mounted with mode:", mode.value);
@@ -516,6 +519,7 @@ onMounted(() => {
   if (mode.value === "review") {
     console.log("Initiating flashcard retrieval");
     retrieveExistingFlashcards();
+    logCurrentFile();
   } else if (mode.value === "generate") {
     console.log("Initiating flashcard generation");
     generateFlashcards();
