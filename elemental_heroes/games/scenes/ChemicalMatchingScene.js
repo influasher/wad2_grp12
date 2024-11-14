@@ -109,7 +109,8 @@ export class ChemicalMatchingScene extends Phaser.Scene {
         elements.forEach((elementData) => {
             const element = this.add.image(elementData.x, elementData.y, elementData.name)
                 .setScale(0.55)
-                .setInteractive();
+                .setInteractive()
+                .setDepth(5);
             this.input.setDraggable(element);
 
             element.originalX = elementData.x;
