@@ -402,7 +402,6 @@ const uploadPdf = async (event) => {
       modalMessage.value =
         "This file already exists. Duplicate files cannot be uploaded.";
       showModal.value = true;
-      selectedFile.value = null;
       return;
     }
 
@@ -431,7 +430,6 @@ const uploadPdf = async (event) => {
     uploadStatus.value = "";
     modalMessage.value = "Error uploading PDF. Please try again.";
     showModal.value = true;
-    selectedFile.value = null;
   } finally {
     uploading.value = false;
     uploadBtnText.value = "Upload PDF";
@@ -440,6 +438,7 @@ const uploadPdf = async (event) => {
 
 const closeModal = () => {
   showModal.value = false;
+  router.go(0);
 };
 
 async function getNotes() {
