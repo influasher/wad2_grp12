@@ -5,6 +5,7 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 ## Table of Contents
 
 - [Features](#features)
+- [Pitch Video](#pitch-video)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
 - [Installation and Running](#installation-and-running)
@@ -18,6 +19,8 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 - **User Profiles**: Create and manage user profiles with avatars and personal statistics.
 - **Responsive Design**: Optimized for various devices with responsive layouts and modern UI elements.
 
+## Pitch Video
+[![Video](Pitch Video)](https://www.youtube.com/watch?v=WEiXky7mL-8)
 ## Tech Stack
 
 - **Frontend**:
@@ -55,9 +58,9 @@ git clone https://github.com/influasher/wad2_grp12
 cd elemental-heroes
 ```
 
-2. **Environmental Variables:**
+2. **Environment Variables:**
 
-Create a .env file within the frontend directory. Do reach out to us if you need the Supabase URL or Key
+Create a .env file within the frontend directory. Do reach out to us if you need the Supabase URL or Key. This will be provided in the zip file.
 
 ```env
 SUPABASE_URL=<your-supabase-project-url>
@@ -71,7 +74,7 @@ npm install
 npm run dev
 ```
 
-Your frontend should be running on localhost!
+Your frontend should be running on localhost! Do note that the frontend is currently making API calls to the deployed backend. If you would like to test the backend on localhost, you need to change the various API calls to localhost. 
 
 **Backend**
 
@@ -83,7 +86,7 @@ cd flashcard-app
 
 2. **Environmental Variables:**
 
-Create a .env file within the backend directory. Do reach out to us if you need the Supabase and OpenAI keys. 
+Create a .env file within the backend directory. Do reach out to us if you need the Supabase and OpenAI keys. This will be provided in the zip file
 
 ```env
 OPENAI_API_KEY=<your-openai-api-key>
