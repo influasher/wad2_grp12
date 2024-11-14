@@ -8,6 +8,7 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
 - [Installation and Running](#installation-and-running)
+- [Login Credentials](#login-credentials)
 
 ## Features
 
@@ -111,9 +112,10 @@ python app.py
 
 Your backend should be running on localhost!
 
-5. ** Login Credentials **
+## Login Credentials
 
 You can use the following account to test our application, or create your own at the register page.
 
-Username: felix@gmail.com
-Password: Password1
+Username: ```felix@gmail.com```
+
+Password: ```Password1```
