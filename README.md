@@ -20,7 +20,7 @@ Elemental Heroes is an interactive web platform designed to enhance learning thr
 - **Responsive Design**: Optimized for various devices with responsive layouts and modern UI elements.
 
 ## Pitch Video
-[![Video][https://github.com/user-attachments/assets/ca5bffb6-4c51-4ec1-95e2-7c68ddee451e](https://www.youtube.com/watch?v=WEiXky7mL-8)
+[![Video](https://www.youtube.com/watch?v=WEiXky7mL-8)]
 ## Tech Stack
 
 - **Frontend**:
